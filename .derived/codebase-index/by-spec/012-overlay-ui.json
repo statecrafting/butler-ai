@@ -1,0 +1,219 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' crate unit '@butler-ai/desktop' does not match any discovered package"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' file unit 'apps/desktop/package.json' does not exist",
+        "path": "apps/desktop/package.json"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' file unit 'apps/desktop/index.html' does not exist",
+        "path": "apps/desktop/index.html"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' file unit 'apps/desktop/vite.config.ts' does not exist",
+        "path": "apps/desktop/vite.config.ts"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' file unit 'apps/desktop/tsconfig.json' does not exist",
+        "path": "apps/desktop/tsconfig.json"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' file unit 'apps/desktop/eslint.config.js' does not exist",
+        "path": "apps/desktop/eslint.config.js"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' file unit 'apps/desktop/src/index.tsx' does not exist",
+        "path": "apps/desktop/src/index.tsx"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' file unit 'apps/desktop/src/App.tsx' does not exist",
+        "path": "apps/desktop/src/App.tsx"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' file unit 'apps/desktop/src/ipc/client.ts' does not exist",
+        "path": "apps/desktop/src/ipc/client.ts"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' directory unit 'apps/desktop/src/state/' is not a directory",
+        "path": "apps/desktop/src/state/"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' directory unit 'apps/desktop/src/components/' is not a directory",
+        "path": "apps/desktop/src/components/"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' directory unit 'apps/desktop/src/styles/' is not a directory",
+        "path": "apps/desktop/src/styles/"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '012-overlay-ui' directory unit 'apps/desktop/src/test/' is not a directory",
+        "path": "apps/desktop/src/test/"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "001-workspace-layout",
+      "011-ipc-contract"
+    ],
+    "implementingPaths": [
+      {
+        "path": "docs/architecture.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "@butler-ai/desktop",
+          "kind": "crate"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": "apps/desktop/src/components/"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": "apps/desktop/src/state/"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": "apps/desktop/src/styles/"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": "apps/desktop/src/test/"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/eslint.config.js"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/index.html"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/package.json"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/App.tsx"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/index.tsx"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/ipc/client.ts"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/tsconfig.json"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/vite.config.ts"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/architecture.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "specId": "012-overlay-ui",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "aa2537a8ba7a82977f650341c8aea11964ebc885b2b09d438f72a7af8b4747ff"
+}

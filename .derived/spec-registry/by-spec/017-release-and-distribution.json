@@ -1,0 +1,82 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "003-governance-ci",
+      "004-desktop-shell",
+      "015-privacy-boundary"
+    ],
+    "domain": "distribution",
+    "establishes": [
+      {
+        "anchor": "on",
+        "file": ".github/workflows/release.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "permissions",
+        "file": ".github/workflows/release.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "jobs.build",
+        "file": ".github/workflows/release.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "jobs.publish",
+        "file": ".github/workflows/release.yml",
+        "kind": "section"
+      },
+      {
+        "kind": "file",
+        "path": "scripts/bump_version.py"
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 5,
+      "platforms": [
+        "windows",
+        "macos"
+      ]
+    },
+    "id": "017-release-and-distribution",
+    "implementation": "deferred",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "supply chain",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "refines": [
+      {
+        "aspect": "bundling-and-updater",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/tauri.conf.json"
+        }
+      }
+    ],
+    "risk": "high",
+    "sectionHeadings": [
+      "017: Release and distribution",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/017-release-and-distribution/spec.md",
+    "status": "draft",
+    "summary": "How a tagged commit becomes something a user can install and trust: a release workflow that builds on the two platform runners, code-signs (Authenticode on Windows; Developer ID plus notarization on macOS), emits SHA-256 sidecars and GitHub build-provenance attestations, and publishes a GitHub Release; an updater (`tauri-plugin-updater`) that is off by default and, when the user enables it, checks a single pinned endpoint over HTTPS with signature verification, as an amendment to the privacy boundary records. Version lives in three files kept in lockstep by a script. Deferred until phase 5; specified now so the shell's bundle config is authored with it in mind.\n",
+    "title": "Release and distribution: signed, notarized, attested desktop builds with an opt-in updater"
+  },
+  "shardHash": "6e244f0f1f3b24d928568c133c3dfcbf58ecbb9c7e387ac18677c0de18e3824d",
+  "specVersion": "1.1.0"
+}

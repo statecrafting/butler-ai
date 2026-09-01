@@ -1,0 +1,127 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "004-desktop-shell",
+      "006-screen-capture"
+    ],
+    "domain": "platform",
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::exclusion",
+          "kind": "module"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/exclusion/mod.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/exclusion/windows.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/exclusion/macos.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/exclusion/selftest.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::exclusion::apply_exclusion",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::exclusion::verify_exclusion",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::exclusion::ExclusionStatus",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 3,
+      "platforms": [
+        "windows",
+        "macos"
+      ]
+    },
+    "id": "005-capture-exclusion",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "threat model",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "refines": [
+      {
+        "aspect": "capture-exclusion",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/window.rs"
+        }
+      }
+    ],
+    "risk": "critical",
+    "sectionHeadings": [
+      "005: Capture exclusion",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 API",
+      "3.2 Windows",
+      "3.3 macOS",
+      "3.4 The self-test (`selftest.rs`)",
+      "3.5 Honesty contract (consumed by 009 and 012)",
+      "3.6 Feedback-loop guard",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/005-capture-exclusion/spec.md",
+    "status": "draft",
+    "summary": "The stealth mechanism and its verification. On Windows the overlay window's handle receives `SetWindowDisplayAffinity(WDA_EXCLUDEFROMCAPTURE)`; on macOS the `NSWindow.sharingType` is set to `NSWindowSharingNone`. Both are requests to the compositor, not guarantees, so this spec also defines a self-test that captures the screen through the same platform path recording tools use and asserts the overlay's pixels are absent, and a typed `ExclusionStatus` the runtime and UI must honour: the app never claims to be hidden when it has not verified that it is. The same property protects the pipeline from OCR-ing its own answers.\n",
+    "title": "Capture exclusion: keep the overlay out of the OS frame buffer, and verify it"
+  },
+  "shardHash": "24d1ce18117f99100e230a2622f14c7e2b01dab08d92f9a601c2a4e8d7bc7c99",
+  "specVersion": "1.1.0"
+}

@@ -1,0 +1,144 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' file unit 'crates/butler-core/src/settings.rs' does not exist",
+        "path": "crates/butler-core/src/settings.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' file unit 'crates/butler-core/tests/settings.rs' does not exist",
+        "path": "crates/butler-core/tests/settings.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' module unit 'butler_core::settings' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' symbol unit 'butler_core::settings::Settings' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' symbol unit 'butler_core::settings::SettingsPatch' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' file unit 'apps/desktop/src-tauri/src/settings_store.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/settings_store.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' symbol unit 'butler_desktop::settings_store::SettingsStore' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' file unit 'apps/desktop/src/components/SettingsPanel.tsx' does not exist",
+        "path": "apps/desktop/src/components/SettingsPanel.tsx"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '014-user-configuration' file unit 'crates/butler-core/src/ipc.rs' does not exist",
+        "path": "crates/butler-core/src/ipc.rs"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "004-desktop-shell",
+      "011-ipc-contract",
+      "012-overlay-ui"
+    ],
+    "implementingPaths": [],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/settings_store.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/components/SettingsPanel.tsx"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/settings.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/settings.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::settings",
+          "kind": "module"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::settings::Settings",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::settings::SettingsPatch",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::settings_store::SettingsStore",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "refines",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      }
+    ],
+    "specId": "014-user-configuration",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "6ab9abbbdd1c69b4b3fa9495273a3d0f7efa2f063b77b485074753fa149cd7db"
+}

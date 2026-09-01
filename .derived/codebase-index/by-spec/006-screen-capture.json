@@ -1,0 +1,170 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' crate unit 'butler-capture' does not match any discovered package"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' file unit 'crates/butler-capture/Cargo.toml' does not exist",
+        "path": "crates/butler-capture/Cargo.toml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' file unit 'crates/butler-capture/src/lib.rs' does not exist",
+        "path": "crates/butler-capture/src/lib.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' file unit 'crates/butler-capture/src/source.rs' does not exist",
+        "path": "crates/butler-capture/src/source.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' file unit 'crates/butler-capture/src/xcap_source.rs' does not exist",
+        "path": "crates/butler-capture/src/xcap_source.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' file unit 'crates/butler-capture/src/frame.rs' does not exist",
+        "path": "crates/butler-capture/src/frame.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' file unit 'crates/butler-capture/src/monitor.rs' does not exist",
+        "path": "crates/butler-capture/src/monitor.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' file unit 'crates/butler-capture/tests/frame_lifecycle.rs' does not exist",
+        "path": "crates/butler-capture/tests/frame_lifecycle.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' symbol unit 'butler_capture::source::ScreenSource' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' symbol unit 'butler_capture::frame::Frame' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '006-screen-capture' symbol unit 'butler_capture::monitor::MonitorId' did not resolve"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "001-workspace-layout",
+      "009-pipeline-state-machine"
+    ],
+    "implementingPaths": [],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler-capture",
+          "kind": "crate"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/src/frame.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/src/lib.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/src/monitor.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/src/source.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/src/xcap_source.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/tests/frame_lifecycle.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_capture::frame::Frame",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_capture::monitor::MonitorId",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_capture::source::ScreenSource",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "specId": "006-screen-capture",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "43ba45ecf945c56de41f35bb33b3223fe37e360da80831dc92cfec0c9b9bbed4"
+}

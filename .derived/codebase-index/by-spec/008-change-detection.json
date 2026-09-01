@@ -1,0 +1,100 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '008-change-detection' file unit 'crates/butler-core/src/delta.rs' does not exist",
+        "path": "crates/butler-core/src/delta.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '008-change-detection' file unit 'crates/butler-core/tests/delta.rs' does not exist",
+        "path": "crates/butler-core/tests/delta.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '008-change-detection' module unit 'butler_core::delta' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '008-change-detection' symbol unit 'butler_core::delta::ChangeDetector' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '008-change-detection' symbol unit 'butler_core::delta::LevenshteinDetector' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '008-change-detection' symbol unit 'butler_core::delta::Verdict' did not resolve"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "007-text-recognition"
+    ],
+    "implementingPaths": [],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/delta.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/delta.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::delta",
+          "kind": "module"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::delta::ChangeDetector",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::delta::LevenshteinDetector",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::delta::Verdict",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "specId": "008-change-detection",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "499078739585af8e7fe32943d0342217a438ca19b6036317efce2d952c088a07"
+}

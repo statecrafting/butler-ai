@@ -1,0 +1,74 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '016-diagnostics-and-logging' file unit 'apps/desktop/src-tauri/src/logging.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/logging.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '016-diagnostics-and-logging' file unit 'apps/desktop/src-tauri/src/diagnostics.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/diagnostics.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '016-diagnostics-and-logging' symbol unit 'butler_desktop::logging::init' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '016-diagnostics-and-logging' symbol unit 'butler_desktop::diagnostics::DiagnosticsBundle' did not resolve"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "004-desktop-shell",
+      "015-privacy-boundary"
+    ],
+    "implementingPaths": [],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/diagnostics.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/logging.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::diagnostics::DiagnosticsBundle",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::logging::init",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "specId": "016-diagnostics-and-logging",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "c577ae7e03018cbe985c9e84453b9baa4cd2f5c00e796a81b395d94e338e9132"
+}

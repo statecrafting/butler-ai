@@ -1,0 +1,119 @@
+# Spec: specs/003-governance-ci/spec.md
+#
+# The language gates. Every step is guarded by the presence of the root
+# manifests, so this workflow is green until spec 001 lands the workspace and
+# real thereafter. `on`, `permissions`, `jobs.rust`, `jobs.web` are section
+# units owned by spec 003.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    name: rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect workspace
+        id: ws
+        shell: bash
+        run: echo "present=$([ -f Cargo.toml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Toolchain
+        if: steps.ws.outputs.present == 'true'
+        run: rustc --version && cargo --version
+      - name: Cache cargo
+        if: steps.ws.outputs.present == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build
+        if: steps.ws.outputs.present == 'true'
+        run: cargo build --workspace --locked
+      - name: Test
+        if: steps.ws.outputs.present == 'true'
+        run: cargo test --workspace --locked
+      - name: Clippy
+        if: steps.ws.outputs.present == 'true'
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Format
+        if: steps.ws.outputs.present == 'true'
+        run: cargo fmt --all --check
+      - name: cargo-deny
+        if: steps.ws.outputs.present == 'true'
+        uses: EmbarkStudios/cargo-deny-action@v2
+      # Spec 011: the committed TypeScript bindings must be what the Rust
+      # contract generates.
+      - name: IPC bindings are fresh
+        if: steps.ws.outputs.present == 'true' && hashFiles('apps/desktop/src-tauri/src/bin/export-bindings.rs') != ''
+        shell: bash
+        run: |
+          cargo run -p butler-desktop --bin export-bindings --locked
+          git diff --exit-code -- apps/desktop/src/generated
+      - name: No workspace yet
+        if: steps.ws.outputs.present == 'false'
+        run: echo "Cargo.toml absent; the Rust gates activate when spec 001 lands (phase 1)."
+
+  web:
+    name: web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect workspace
+        id: ws
+        run: echo "present=$([ -f pnpm-workspace.yaml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - uses: pnpm/action-setup@v4
+        if: steps.ws.outputs.present == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.ws.outputs.present == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install
+        if: steps.ws.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        if: steps.ws.outputs.present == 'true'
+        run: pnpm -r typecheck
+      - name: Lint
+        if: steps.ws.outputs.present == 'true'
+        run: pnpm -r lint
+      - name: Test
+        if: steps.ws.outputs.present == 'true'
+        run: pnpm -r test
+      - name: Build
+        if: steps.ws.outputs.present == 'true'
+        run: pnpm -r build
+      - name: No workspace yet
+        if: steps.ws.outputs.present == 'false'
+        run: echo "pnpm-workspace.yaml absent; the web gates activate when spec 001 lands (phase 1)."
+
+  gate:
+    name: gate
+    if: ${{ always() }}
+    needs: [rust, web]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all CI jobs to have passed
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "rust=${{ needs.rust.result }} web=${{ needs.web.result }}"
+          exit 1
+      - run: echo "gate passed"

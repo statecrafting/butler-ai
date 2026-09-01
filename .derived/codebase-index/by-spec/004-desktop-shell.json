@@ -1,0 +1,277 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' crate unit 'butler-desktop' does not match any discovered package"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
+        "path": "apps/desktop/src-tauri/Cargo.toml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' section unit 'package.metadata.butler' not found in apps/desktop/src-tauri/Cargo.toml",
+        "path": "apps/desktop/src-tauri/Cargo.toml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/build.rs' does not exist",
+        "path": "apps/desktop/src-tauri/build.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/tauri.conf.json' does not exist",
+        "path": "apps/desktop/src-tauri/tauri.conf.json"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' directory unit 'apps/desktop/src-tauri/capabilities/' is not a directory",
+        "path": "apps/desktop/src-tauri/capabilities/"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' directory unit 'apps/desktop/src-tauri/icons/' is not a directory",
+        "path": "apps/desktop/src-tauri/icons/"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/main.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/main.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/lib.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/window.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/window.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/shortcuts.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/shortcuts.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/tray.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/tray.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/permissions.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/permissions.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/app_state.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/app_state.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' symbol unit 'butler_desktop::window::create_overlay_window' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' symbol unit 'butler_desktop::shortcuts::register_shortcuts' did not resolve"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "001-workspace-layout",
+      "014-user-configuration"
+    ],
+    "implementingPaths": [
+      {
+        "path": "docs/architecture.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": "docs/threat-model.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler-desktop",
+          "kind": "crate"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": "apps/desktop/src-tauri/capabilities/"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": "apps/desktop/src-tauri/icons/"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/build.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/app_state.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/main.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/permissions.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/shortcuts.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/tray.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/window.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/tauri.conf.json"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "package.metadata.butler",
+          "file": "apps/desktop/src-tauri/Cargo.toml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_desktop::shortcuts::register_shortcuts",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_desktop::window::create_overlay_window",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/architecture.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/threat-model.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "specId": "004-desktop-shell",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "b7562b66576df2a9a54fbcee4323aa200d3214f86704273dee09097faa7ffd22"
+}

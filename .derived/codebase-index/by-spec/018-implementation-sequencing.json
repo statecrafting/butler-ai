@@ -1,0 +1,32 @@
+{
+  "mapping": {
+    "dependsOn": [
+      "000-butler-bootstrap"
+    ],
+    "implementingPaths": [
+      {
+        "path": "docs/architecture.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "docs/architecture.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "specId": "018-implementation-sequencing",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "3e5206ac77d9b23c6ce18e9fe330449be266eabc308e64c6ef3cfec11ced9dc1"
+}

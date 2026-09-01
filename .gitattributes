@@ -1,0 +1,27 @@
+# Spec: specs/003-governance-ci/spec.md
+# LF everywhere on checkout: the spec-spine content hash normalizes CRLF, but
+# LF in the working tree keeps diffs clean on Windows and keeps the committed
+# shards byte-identical across platforms.
+*                 text=auto eol=lf
+*.rs              text eol=lf
+*.ts              text eol=lf
+*.tsx             text eol=lf
+*.md              text eol=lf
+*.toml            text eol=lf
+*.json            text eol=lf
+*.yml             text eol=lf
+*.yaml            text eol=lf
+*.sh              text eol=lf
+Makefile          text eol=lf
+
+# Binary assets.
+*.png             binary
+*.icns            binary
+*.ico             binary
+
+# Derived shard trees (spec-spine spec 024 sharding; spec 020 merge driver).
+# The driver is opt-in per clone: ./.githooks/enable-merge-driver.sh
+.derived/spec-registry/by-spec/*.json     merge=spec-spine-derived-regen
+.derived/codebase-index/by-spec/*.json    merge=spec-spine-derived-regen
+.derived/codebase-index/by-package/*.json merge=spec-spine-derived-regen
+.derived/codebase-index/slices.json       merge=spec-spine-derived-regen

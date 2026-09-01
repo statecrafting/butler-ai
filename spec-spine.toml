@@ -1,0 +1,126 @@
+# spec-spine configuration for butler-ai.
+#
+# butler-ai is specified before it is built: every product spec declares the
+# crates, files, modules and symbols it will own, and `spec-spine index` reports
+# each not-yet-existing unit as a counted W-001 warning (spec-spine spec 025).
+# That warning list IS the build burn-down (`make burndown`). As code lands,
+# warnings resolve; when a spec flips to `implementation: complete`, an
+# unresolved unit becomes a hard error. Nothing here is a default left implicit:
+# every knob is written out so the governance model is legible in one file.
+
+[manifest]
+# Cargo: `[package.metadata.butler].spec = "NNN-slug"`
+# npm:   `"butler": { "spec": "NNN-slug" }` in package.json
+metadata_namespace = "butler"
+
+[domains]
+# Closed taxonomy: every spec declares exactly one (L-002 otherwise).
+#   governance   the corpus, the harness, CI, release plumbing
+#   platform     the desktop shell, OS hooks, configuration, diagnostics
+#   pipeline     capture -> OCR -> change detection -> state machine
+#   assistant    inference, prompting, provider routing, secrets
+#   ui           the overlay DOM, rendering, pacing presentation
+#   distribution packaging, signing, updates
+allowed = ["governance", "platform", "pipeline", "assistant", "ui", "distribution"]
+
+[kind]
+# Closed taxonomy: every spec declares exactly one (L-003 otherwise).
+#   constitutional-bootstrap  tier-1, exactly one (000)
+#   feature                   a capability with owned code units
+#   tooling                   developer/CI/harness surface
+#   constraint                cross-cutting invariants asserted via `constrains`
+#   plan                      a sequencing plan over other specs (no code units)
+allowed = ["constitutional-bootstrap", "feature", "tooling", "constraint", "plan"]
+
+[layout]
+specs_dir     = "specs"
+derived_dir   = ".derived"
+standards_dir = "standards/spec"
+schemas_dir   = "standards/schemas"
+# Spec 001: one root Cargo workspace (crates/* + apps/desktop/src-tauri) and one
+# pnpm workspace (apps/*). Both are discovered from the root manifests; nothing
+# lives outside them, so the standalone lists stay empty.
+cargo_workspace = "Cargo.toml"
+npm_workspaces = ["package.json", "pnpm-workspace.yaml"]
+standalone_rust_workspaces = []
+standalone_npm_packages    = []
+
+[index]
+# Everything the harness and the gates depend on is folded into the staleness
+# hash, so an edit to any of it without `spec-spine index` fails `index check`.
+# `.claude/agent-memory/` is deliberately NOT matched (gitignored local state).
+extra_hashed_inputs = [
+  "standards/**",
+  ".github/workflows/**",
+  ".claude/settings.json",
+  ".claude/agents/**",
+  ".claude/rules/**",
+  ".claude/skills/**",
+  ".mcp.json",
+  "AGENTS.md",
+  "CLAUDE.md",
+  "Makefile",
+  "apps/desktop/src-tauri/tauri.conf.json",
+  "apps/desktop/src-tauri/capabilities/**",
+]
+resolver_exclusions = ["target", "node_modules", ".derived", "dist", "build", ".next", ".vite", "gen"]
+
+# Named hash slices (spec-spine spec 012): `spec-spine index check --slice <name>`
+# fails independently of the global hash, so a PR that touches only the harness
+# can be gated on the harness slice alone.
+[index.slices]
+governance = [
+  "standards/**",
+  ".claude/settings.json",
+  ".claude/agents/**",
+  ".claude/rules/**",
+  ".claude/skills/**",
+  ".mcp.json",
+  "AGENTS.md",
+  "CLAUDE.md",
+  ".github/workflows/**",
+]
+# The Tauri security surface: window config, CSP, and the capability grants.
+# Spec 004 owns the file; spec 015 constrains it. A change here is a security
+# review by construction.
+desktop-security = [
+  "apps/desktop/src-tauri/tauri.conf.json",
+  "apps/desktop/src-tauri/capabilities/**",
+]
+
+[branding]
+compiler_id = "butler-ai"
+indexer_id  = "butler-ai"
+
+[coupling]
+# Additions to the built-in bypass floor (docs/, README.md, LICENSE, lockfiles,
+# .derived/, .github/ ...). Additive only.
+#   **/README.md   per-crate / per-app prose
+#   plans/         /implement-plan working files (never authority)
+#   .editorconfig  editor hygiene
+bypass_prefixes = ["**/README.md", "plans/", ".editorconfig", ".nvmrc"]
+waiver_keyword = "Spec-Drift-Waiver:"
+# The ownership ratchet (spec-spine spec 032), ON from day one: butler-ai is
+# greenfield, so there is no debt to burn down and no reason to ever admit a
+# source file that no spec specifically claims. A changed source file covered
+# only by its crate's manifest floor, or by nothing, is a C-002 refusal. CI also
+# runs `index coverage --fail-on-untraced` (spec 003). Bootstrap anchor:
+# `ownership-ratchet` (specs/000-butler-bootstrap).
+require_ownership = true
+# Dependabot-class PRs (version-pin-only manifest edits) self-waive; anything
+# more fails closed (spec-spine spec 005 §3.5 / spec 030).
+auto_waive_dependency_only = true
+
+[provenance.uri_schemes]
+knowledge        = "knowledge://"
+code-fingerprint = "fingerprint://"
+# Architecture decisions recorded in docs/ are cited from specs by this scheme.
+adr              = "adr://"
+
+[frontmatter]
+# butler-specific keys, promoted to first-class so they carry any YAML value
+# (spec-spine spec 013) and are validated by the corpus lint documented in
+# standards/spec/contract.md §"Extra keys":
+#   platforms  list of target OSes a spec applies to: "windows" | "macos" | "all"
+#   phase      integer build phase from specs/018-implementation-sequencing
+extra_known_keys = ["platforms", "phase"]

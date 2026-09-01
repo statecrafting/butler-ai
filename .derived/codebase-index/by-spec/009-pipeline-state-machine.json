@@ -1,0 +1,198 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' crate unit 'butler-core' does not match any discovered package"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/Cargo.toml' does not exist",
+        "path": "crates/butler-core/Cargo.toml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/src/lib.rs' does not exist",
+        "path": "crates/butler-core/src/lib.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/src/machine.rs' does not exist",
+        "path": "crates/butler-core/src/machine.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/tests/machine.rs' does not exist",
+        "path": "crates/butler-core/tests/machine.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' module unit 'butler_core::machine' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::State' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::Event' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::Effect' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::reduce' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' file unit 'apps/desktop/src-tauri/src/runtime.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/runtime.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_desktop::runtime::Runtime' did not resolve"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "001-workspace-layout"
+    ],
+    "implementingPaths": [
+      {
+        "path": "docs/architecture.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler-core",
+          "kind": "crate"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/machine.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/machine.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_core::machine",
+          "kind": "module"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_core::machine::Effect",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_core::machine::Event",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_core::machine::State",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_core::machine::reduce",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/runtime.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::runtime::Runtime",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/architecture.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "specId": "009-pipeline-state-machine",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "8c38808b297a1cf186c49cada1a8c6948cfea751e46fec06af0317833c4a1075"
+}

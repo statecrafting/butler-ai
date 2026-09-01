@@ -1,0 +1,202 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'crates/butler-core/src/redaction.rs' does not exist",
+        "path": "crates/butler-core/src/redaction.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'crates/butler-core/tests/redaction.rs' does not exist",
+        "path": "crates/butler-core/tests/redaction.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' module unit 'butler_core::redaction' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' symbol unit 'butler_core::redaction::redact' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' symbol unit 'butler_core::redaction::RedactedText' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'crates/butler-capture/src/frame.rs' does not exist",
+        "path": "crates/butler-capture/src/frame.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'crates/butler-ocr/src/recognized.rs' does not exist",
+        "path": "crates/butler-ocr/src/recognized.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'crates/butler-llm/src/anthropic.rs' does not exist",
+        "path": "crates/butler-llm/src/anthropic.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'crates/butler-llm/src/secrets.rs' does not exist",
+        "path": "crates/butler-llm/src/secrets.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'apps/desktop/src-tauri/src/logging.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/logging.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'apps/desktop/src-tauri/tauri.conf.json' does not exist",
+        "path": "apps/desktop/src-tauri/tauri.conf.json"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '015-privacy-boundary' directory unit 'apps/desktop/src-tauri/capabilities/' is not a directory",
+        "path": "apps/desktop/src-tauri/capabilities/"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "009-pipeline-state-machine"
+    ],
+    "implementingPaths": [
+      {
+        "path": "docs/threat-model.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/redaction.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/redaction.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::redaction",
+          "kind": "module"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::redaction::RedactedText",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::redaction::redact",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "constrains",
+        "unit": {
+          "kind": "directory",
+          "path": "apps/desktop/src-tauri/capabilities/"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "constrains",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/logging.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "constrains",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/tauri.conf.json"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "constrains",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/src/frame.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "constrains",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-llm/src/anthropic.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "constrains",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-llm/src/secrets.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "constrains",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/src/recognized.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/threat-model.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "specId": "015-privacy-boundary",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "a870663f84ace533ad0207b1edffb03301ea3813c5e268863ad5ecebcf60101c"
+}

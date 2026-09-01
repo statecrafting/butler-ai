@@ -1,0 +1,197 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' crate unit 'butler-ocr' does not match any discovered package"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' file unit 'crates/butler-ocr/Cargo.toml' does not exist",
+        "path": "crates/butler-ocr/Cargo.toml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' file unit 'crates/butler-ocr/src/lib.rs' does not exist",
+        "path": "crates/butler-ocr/src/lib.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' file unit 'crates/butler-ocr/src/recognizer.rs' does not exist",
+        "path": "crates/butler-ocr/src/recognizer.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' file unit 'crates/butler-ocr/src/recognized.rs' does not exist",
+        "path": "crates/butler-ocr/src/recognized.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' file unit 'crates/butler-ocr/src/normalize.rs' does not exist",
+        "path": "crates/butler-ocr/src/normalize.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' file unit 'crates/butler-ocr/src/apple_vision.rs' does not exist",
+        "path": "crates/butler-ocr/src/apple_vision.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' file unit 'crates/butler-ocr/src/windows_ocr.rs' does not exist",
+        "path": "crates/butler-ocr/src/windows_ocr.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' file unit 'crates/butler-ocr/tests/normalize.rs' does not exist",
+        "path": "crates/butler-ocr/tests/normalize.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' directory unit 'crates/butler-ocr/tests/fixtures/' is not a directory",
+        "path": "crates/butler-ocr/tests/fixtures/"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' symbol unit 'butler_ocr::recognizer::TextRecognizer' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' symbol unit 'butler_ocr::recognized::Recognized' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '007-text-recognition' symbol unit 'butler_ocr::normalize::normalize' did not resolve"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "006-screen-capture"
+    ],
+    "implementingPaths": [],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler-ocr",
+          "kind": "crate"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": "crates/butler-ocr/tests/fixtures/"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/src/apple_vision.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/src/lib.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/src/normalize.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/src/recognized.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/src/recognizer.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/src/windows_ocr.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/tests/normalize.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_ocr::normalize::normalize",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_ocr::recognized::Recognized",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "id": "butler_ocr::recognizer::TextRecognizer",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "specId": "007-text-recognition",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "a76c2db4406e01f77058b88395cd401f017ec4cab1fa8f3f9efc0b46ec0cebf3"
+}

@@ -1,0 +1,114 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "015-privacy-boundary",
+      "014-user-configuration"
+    ],
+    "domain": "assistant",
+    "establishes": [
+      {
+        "id": "butler-llm",
+        "kind": "crate"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/Cargo.toml"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/src/lib.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/src/assistant.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/src/anthropic.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/src/sse.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/src/prompt.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/src/secrets.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/src/budget.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/tests/sse.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-llm/tests/prompt.rs"
+      },
+      {
+        "kind": "directory",
+        "path": "crates/butler-llm/tests/fixtures/"
+      },
+      {
+        "id": "butler_llm::assistant::Assistant",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_llm::assistant::InferenceRequest",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_llm::assistant::Chunk",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_llm::anthropic::AnthropicAssistant",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_llm::secrets::SecretStore",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_llm::budget::SpendGuard",
+        "kind": "symbol"
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 4,
+      "platforms": "all"
+    },
+    "id": "010-assistant-inference",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "risk": "high",
+    "sectionHeadings": [
+      "010: Assistant inference",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 The trait",
+      "3.2 Reference provider: Claude Messages API (`anthropic.rs`)",
+      "3.3 Prompt contract (`prompt.rs`)",
+      "3.4 Secrets (`secrets.rs`)",
+      "3.5 Spend guard (`budget.rs`)",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/010-assistant-inference/spec.md",
+    "status": "draft",
+    "summary": "The `butler-llm` crate: an `Assistant` trait that streams `Chunk`s for an `InferenceRequest`, the Claude Messages API reference implementation over raw HTTPS (Rust has no official SDK; the wire contract is pinned by fixture tests), an SSE parser, the prompt contract (system prompt, context budget, trimming order, refusal and stop-reason handling), an OS-keychain-backed `SecretStore` so an API key is never in a file, and a `SpendGuard` that bounds requests per minute and tokens per day. The provider is selected by settings; exactly one endpoint is ever contacted (spec 015).\n",
+    "title": "Assistant inference: a provider-agnostic streaming client, the Claude reference provider, prompt contract, secrets, and spend guard"
+  },
+  "shardHash": "72dc221c1738a5c44bfe478169c7f9b957b79023849ec4f423efc34f8dc92ebe",
+  "specVersion": "1.1.0"
+}
