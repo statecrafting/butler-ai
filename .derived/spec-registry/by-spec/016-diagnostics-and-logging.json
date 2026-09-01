@@ -1,0 +1,70 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "004-desktop-shell",
+      "015-privacy-boundary"
+    ],
+    "domain": "platform",
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/logging.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/diagnostics.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::logging::init",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::diagnostics::DiagnosticsBundle",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 2,
+      "platforms": "all"
+    },
+    "id": "016-diagnostics-and-logging",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "risk": "medium",
+    "sectionHeadings": [
+      "016: Diagnostics and logging",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 Logging (`logging::init(settings) -> Result<Guard>`)",
+      "3.2 Diagnostics bundle",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/016-diagnostics-and-logging/spec.md",
+    "status": "draft",
+    "summary": "Operational visibility without content: `tracing` with a rolling file appender in the platform log directory, level from settings (default `info`; `trace` records every state transition by id), structured fields restricted to a closed set of key names, and a diagnostics bundle (recent log, settings, versions, exclusion status, platform info) that the user builds from the tray and saves where they choose. The privacy boundary (015) constrains `logging.rs`; this spec makes the constraint operational with a field allowlist enforced at compile time.\n",
+    "title": "Diagnostics and logging: structured, content-free tracing and a user-initiated diagnostics bundle"
+  },
+  "shardHash": "76e70dd99458e43fe1baf2bcc47904fb6404790edcd25a5ac0cb1e9ebd451554",
+  "specVersion": "1.1.0"
+}

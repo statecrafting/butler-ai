@@ -1,0 +1,123 @@
+{
+  "record": {
+    "constrains": [
+      {
+        "flavor": "invariant-freeze",
+        "note": "Within an IPC_CONTRACT_VERSION major, changes are additive: new variants and optional fields only. Removing or retyping a field is a major bump and a spec amendment.",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      }
+    ],
+    "created": "2026-09-01",
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "004-desktop-shell",
+      "012-overlay-ui"
+    ],
+    "domain": "platform",
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::ipc",
+          "kind": "module"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::ipc::UiEvent",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::ipc::UiCommand",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::ipc::IPC_CONTRACT_VERSION",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/commands.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/events.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/bin/export-bindings.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/generated/bindings.ts"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 2,
+      "platforms": "all"
+    },
+    "id": "011-ipc-contract",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "risk": "medium",
+    "sectionHeadings": [
+      "011: IPC contract",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 Types (`ipc.rs`)",
+      "3.2 Tauri glue",
+      "3.3 Generated bindings",
+      "3.4 Versioning",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/011-ipc-contract/spec.md",
+    "status": "draft",
+    "summary": "The typed seam between the Rust process and the webview. `UiEvent` (Rust → UI: runtime status, answer lifecycle, paced chunks, exclusion status, prompts for credentials or permissions) and `UiCommand` (UI → Rust: arm, disarm, ask now, dismiss, set interaction, read and update settings, store a secret, run the self-test) are defined once in `butler-core::ipc` as serde types, exposed as Tauri commands and events in the desktop crate, and exported to TypeScript with `tauri-specta` into a committed, generated bindings file whose regeneration CI verifies is a no-op. The contract is versioned and additive within a major.\n",
+    "title": "IPC contract: typed commands and events between the Rust runtime and the overlay, with generated bindings"
+  },
+  "shardHash": "ddf2e3f526c578d7f18c96f4148fd763c6697e689d1e72545973ee3a576eaa6e",
+  "specVersion": "1.1.0"
+}

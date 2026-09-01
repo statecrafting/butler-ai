@@ -1,0 +1,115 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "004-desktop-shell",
+      "011-ipc-contract",
+      "012-overlay-ui"
+    ],
+    "domain": "platform",
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/settings.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/settings.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::settings",
+          "kind": "module"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::settings::Settings",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::settings::SettingsPatch",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/settings_store.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::settings_store::SettingsStore",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/components/SettingsPanel.tsx"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 2,
+      "platforms": "all"
+    },
+    "id": "014-user-configuration",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "refines": [
+      {
+        "aspect": "settings-dtos",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      }
+    ],
+    "risk": "medium",
+    "sectionHeadings": [
+      "014: User configuration",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 The model (`settings.rs`)",
+      "3.2 The store (`settings_store.rs`)",
+      "3.3 Flow",
+      "3.4 Panel (`SettingsPanel.tsx`)",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/014-user-configuration/spec.md",
+    "status": "draft",
+    "summary": "One typed `Settings` struct in `butler-core` is the only configuration surface: capture (monitor, interval, region), detection (threshold, stability), assistant (provider, model, effort, answer style, budget caps, endpoint override), pacing (words per minute), shortcuts, privacy toggles (redaction on, allow degraded mode, diagnostics level), and window geometry. Defaults are in code, validation is pure, the file is TOML in the platform config directory written atomically, secrets are never in it (010), and every change flows through one `UpdateSettings` command that validates, persists, applies, and broadcasts. No environment variables configure the product.\n",
+    "title": "User configuration: a typed settings model, an atomic on-disk store, and the settings panel"
+  },
+  "shardHash": "7072a7e587c751725d9e84daf573f21dec05c02a22cb2e651d834871bb06e9c0",
+  "specVersion": "1.1.0"
+}

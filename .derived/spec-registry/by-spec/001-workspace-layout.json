@@ -1,0 +1,101 @@
+{
+  "record": {
+    "coAuthority": [
+      {
+        "unit": {
+          "anchor": "build",
+          "file": "Makefile",
+          "kind": "section"
+        },
+        "with_specs": [
+          "002-agentic-harness"
+        ]
+      },
+      {
+        "unit": {
+          "anchor": "test",
+          "file": "Makefile",
+          "kind": "section"
+        },
+        "with_specs": [
+          "002-agentic-harness"
+        ]
+      },
+      {
+        "unit": {
+          "anchor": "lint",
+          "file": "Makefile",
+          "kind": "section"
+        },
+        "with_specs": [
+          "002-agentic-harness"
+        ]
+      }
+    ],
+    "created": "2026-09-01",
+    "dependsOn": [
+      "000-butler-bootstrap"
+    ],
+    "domain": "governance",
+    "establishes": [
+      {
+        "kind": "file",
+        "path": "Cargo.toml"
+      },
+      {
+        "kind": "file",
+        "path": "rust-toolchain.toml"
+      },
+      {
+        "kind": "file",
+        "path": "deny.toml"
+      },
+      {
+        "kind": "file",
+        "path": "package.json"
+      },
+      {
+        "kind": "file",
+        "path": "pnpm-workspace.yaml"
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 1,
+      "platforms": "all"
+    },
+    "id": "001-workspace-layout",
+    "implementation": "pending",
+    "kind": "tooling",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "context",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "risk": "low",
+    "sectionHeadings": [
+      "001: Workspace layout",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 Cargo workspace",
+      "3.2 pnpm workspace",
+      "3.3 Manifest metadata (linkage floor)",
+      "3.4 Naming",
+      "3.5 Build targets (co-owned with spec 002)",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/001-workspace-layout/spec.md",
+    "status": "draft",
+    "summary": "Fixes the physical shape of the repository so every later spec can name its territory unambiguously: a single root Cargo workspace (`crates/*` plus the Tauri app crate under `apps/desktop/src-tauri`), a single pnpm workspace (`apps/*`), pinned Rust and Node toolchains, edition 2024, a supply-chain policy (`deny.toml`), and the manifest metadata every package must carry so spec-spine discovers it and maps it to its owning spec. Owns the root manifests and co-owns the Makefile's build/test/lint targets with the harness spec. Establishes no product code.\n",
+    "title": "Workspace layout: one Cargo workspace, one pnpm workspace, pinned toolchains"
+  },
+  "shardHash": "56eb1c1ef768ba8e4e4b3a4f5f3ce7abf8efb26f47ad0d881e308a40d45d9002",
+  "specVersion": "1.1.0"
+}

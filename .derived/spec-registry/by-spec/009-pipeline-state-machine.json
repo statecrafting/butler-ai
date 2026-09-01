@@ -1,0 +1,107 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "001-workspace-layout"
+    ],
+    "domain": "pipeline",
+    "establishes": [
+      {
+        "id": "butler-core",
+        "kind": "crate"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-core/Cargo.toml"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-core/src/lib.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-core/src/machine.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-core/tests/machine.rs"
+      },
+      {
+        "id": "butler_core::machine",
+        "kind": "module"
+      },
+      {
+        "id": "butler_core::machine::State",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_core::machine::Event",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_core::machine::Effect",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_core::machine::reduce",
+        "kind": "symbol"
+      }
+    ],
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/runtime.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::runtime::Runtime",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 1,
+      "platforms": "all"
+    },
+    "id": "009-pipeline-state-machine",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "state diagram",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "risk": "high",
+    "sectionHeadings": [
+      "009: Pipeline state machine",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 States",
+      "3.2 Events",
+      "3.3 Effects",
+      "3.4 The reducer",
+      "3.5 The runtime (`runtime.rs`)",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/009-pipeline-state-machine/spec.md",
+    "status": "draft",
+    "summary": "The heart of butler-ai and the owner of the `butler-core` crate: the pipeline is a strict state machine expressed as a pure reducer `reduce(state, event) -> (state, effects)` with no I/O, no clock and no threads, plus a runtime in the desktop crate that executes the effects (capture, recognize, evaluate, infer, emit) against the real traits and feeds the results back as events. The outline's five states become an armed/disarmed session flag over a capture cycle with single in-flight inference, explicit cancellation, a fault state with backoff, and a degraded state driven by the exclusion status. Duplicate or out-of-order frames cannot reach the assistant because the reducer refuses them by construction.\n",
+    "title": "Pipeline state machine: a pure reducer that encloses capture → OCR → evaluate → infer → render"
+  },
+  "shardHash": "ddc39bb7ae3ed33269fd4b3c472f695731a6f6933943090b96f3381eed651b1a",
+  "specVersion": "1.1.0"
+}

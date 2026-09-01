@@ -1,0 +1,102 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "001-workspace-layout",
+      "011-ipc-contract"
+    ],
+    "domain": "ui",
+    "establishes": [
+      {
+        "id": "@butler-ai/desktop",
+        "kind": "crate"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/package.json"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/index.html"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/vite.config.ts"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/tsconfig.json"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/eslint.config.js"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src/index.tsx"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src/App.tsx"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src/ipc/client.ts"
+      },
+      {
+        "kind": "directory",
+        "path": "apps/desktop/src/state/"
+      },
+      {
+        "kind": "directory",
+        "path": "apps/desktop/src/components/"
+      },
+      {
+        "kind": "directory",
+        "path": "apps/desktop/src/styles/"
+      },
+      {
+        "kind": "directory",
+        "path": "apps/desktop/src/test/"
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 2,
+      "platforms": "all"
+    },
+    "id": "012-overlay-ui",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "context",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "risk": "medium",
+    "sectionHeadings": [
+      "012: Overlay UI",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 Stack",
+      "3.2 Transparency and input",
+      "3.3 Components",
+      "3.4 State",
+      "3.5 Accessibility",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/012-overlay-ui/spec.md",
+    "status": "draft",
+    "summary": "The overlay's DOM: a SolidJS application built with Vite whose root is fully transparent (`rgba(0,0,0,0)` everywhere, no body background, no scrollbars), which renders exactly what the runtime tells it through the IPC contract: a status strip (disarmed, armed, inferencing, degraded with the visible-to-screen-sharing banner), the answer panel that receives paced chunks, the onboarding and credential panels, the settings panel, and the exclusion self-test sentinel. Pointer events are off unless the interaction modifier is held. SolidJS is chosen for fine-grained reactivity under token streaming without virtual-DOM churn.\n",
+    "title": "Overlay UI: a transparent SolidJS surface that renders runtime state and answers"
+  },
+  "shardHash": "9c66276d981edf16b263bc3def5948d9c1046c5b55368d5705bc1752d70f20f1",
+  "specVersion": "1.1.0"
+}

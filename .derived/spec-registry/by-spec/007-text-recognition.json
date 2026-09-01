@@ -1,0 +1,94 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "006-screen-capture"
+    ],
+    "domain": "pipeline",
+    "establishes": [
+      {
+        "id": "butler-ocr",
+        "kind": "crate"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-ocr/Cargo.toml"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-ocr/src/lib.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-ocr/src/recognizer.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-ocr/src/recognized.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-ocr/src/normalize.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-ocr/src/apple_vision.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-ocr/src/windows_ocr.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-ocr/tests/normalize.rs"
+      },
+      {
+        "kind": "directory",
+        "path": "crates/butler-ocr/tests/fixtures/"
+      },
+      {
+        "id": "butler_ocr::recognizer::TextRecognizer",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_ocr::recognized::Recognized",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_ocr::normalize::normalize",
+        "kind": "symbol"
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 3,
+      "platforms": [
+        "windows",
+        "macos"
+      ]
+    },
+    "id": "007-text-recognition",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "risk": "medium",
+    "sectionHeadings": [
+      "007: Text recognition",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 The trait",
+      "3.2 `Recognized`",
+      "3.3 Engines",
+      "3.4 Normalization (`normalize(lines: &[Line], frame: Size) -> String`)",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/007-text-recognition/spec.md",
+    "status": "draft",
+    "summary": "The `butler-ocr` crate: a `TextRecognizer` trait that turns a `FrameView` into `Recognized` text with per-line geometry and confidence, backed by the operating system's own OCR engine (Apple Vision `VNRecognizeTextRequest` on macOS, `Windows.Media.Ocr` on Windows) so no model ships with the app and no pixels leave the process; plus a deterministic normalization pass that turns engine output into the stable, layout-ordered string the change detector (008) compares and the assistant (010) reads. Recognition runs entirely on device.\n",
+    "title": "Text recognition: native on-device OCR with a normalized text output"
+  },
+  "shardHash": "0a5ebeafbaa39ab632b9e68a80aa9a48e18136f5c41cae183dc16dabdfc7e9b6",
+  "specVersion": "1.1.0"
+}

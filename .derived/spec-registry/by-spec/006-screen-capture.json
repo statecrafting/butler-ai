@@ -1,0 +1,87 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "001-workspace-layout",
+      "009-pipeline-state-machine"
+    ],
+    "domain": "pipeline",
+    "establishes": [
+      {
+        "id": "butler-capture",
+        "kind": "crate"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-capture/Cargo.toml"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-capture/src/lib.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-capture/src/source.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-capture/src/xcap_source.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-capture/src/frame.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-capture/src/monitor.rs"
+      },
+      {
+        "kind": "file",
+        "path": "crates/butler-capture/tests/frame_lifecycle.rs"
+      },
+      {
+        "id": "butler_capture::source::ScreenSource",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_capture::frame::Frame",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_capture::monitor::MonitorId",
+        "kind": "symbol"
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 3,
+      "platforms": [
+        "windows",
+        "macos"
+      ]
+    },
+    "id": "006-screen-capture",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "risk": "medium",
+    "sectionHeadings": [
+      "006: Screen capture",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 The trait",
+      "3.2 `Frame`",
+      "3.3 The `xcap` implementation",
+      "3.4 Monitor selection",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/006-screen-capture/spec.md",
+    "status": "draft",
+    "summary": "The `butler-capture` crate: a `ScreenSource` trait that yields one `Frame` of one monitor on demand, an `xcap`-backed implementation for Windows and macOS, monitor enumeration and selection, and the `Frame` type whose lifecycle rules (in-memory only, no `Serialize`, dropped after recognition) are the first link in the privacy chain. Snapshot polling at a configurable interval replaces continuous video capture: the pipeline asks for a frame when the state machine says so, never on a free-running loop. Cadence, scheduling and backoff are the state machine's (009); this crate only knows how to take one picture.\n",
+    "title": "Screen capture: snapshot polling of one monitor through the compositor"
+  },
+  "shardHash": "d9e2e569afd79bfdab55c4059154b58ada50b04e03a6c242d77dfe18d2db1b97",
+  "specVersion": "1.1.0"
+}

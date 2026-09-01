@@ -1,0 +1,165 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '001-workspace-layout' file unit 'Cargo.toml' does not exist",
+        "path": "Cargo.toml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '001-workspace-layout' file unit 'rust-toolchain.toml' does not exist",
+        "path": "rust-toolchain.toml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '001-workspace-layout' file unit 'deny.toml' does not exist",
+        "path": "deny.toml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '001-workspace-layout' file unit 'package.json' does not exist",
+        "path": "package.json"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '001-workspace-layout' file unit 'pnpm-workspace.yaml' does not exist",
+        "path": "pnpm-workspace.yaml"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "000-butler-bootstrap"
+    ],
+    "implementingPaths": [
+      {
+        "path": "Makefile",
+        "source": "spec-edge"
+      },
+      {
+        "path": "docs/architecture.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "deny.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "package.json"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "pnpm-workspace.yaml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "rust-toolchain.toml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 83,
+              "startLine": 83
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "build",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 101,
+              "startLine": 101
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "lint",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 92,
+              "startLine": 92
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "test",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/architecture.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "specId": "001-workspace-layout",
+    "specStatus": "draft"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "043c1a04a038c05455ef86836669ffec1fde6716d0c416a23f6122fde31b74ce"
+}

@@ -1,0 +1,105 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "010-assistant-inference",
+      "011-ipc-contract",
+      "012-overlay-ui"
+    ],
+    "domain": "ui",
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/pacing.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/pacing.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::pacing",
+          "kind": "module"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::pacing::PacingPolicy",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::pacing::Pacer",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/components/PacedAnswer.tsx"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 4,
+      "platforms": "all"
+    },
+    "id": "013-output-pacing",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "refines": [
+      {
+        "aspect": "rendering-state",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/machine.rs"
+        }
+      },
+      {
+        "aspect": "answer-chunk-event",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      }
+    ],
+    "risk": "low",
+    "sectionHeadings": [
+      "013: Output pacing",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 Policy",
+      "3.2 Machine and IPC integration",
+      "3.3 UI (`PacedAnswer.tsx`)",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/013-output-pacing/spec.md",
+    "status": "draft",
+    "summary": "Model output arrives in bursts of tokens; the outline requires that the overlay present it at a natural reading pace in chunks rather than as a wall of text that appears at once. The pacing policy is a pure function in `butler-core` (`Pacer`), driven by the runtime's tick: it buffers provider chunks, releases them at a configurable words-per-minute rate with sentence and clause boundaries preferred, front-loads the first clause so the answer starts quickly, and never exceeds a burst cap. The machine's `Rendering` state (009) ends when the pacer drains. The UI (012) is a passive consumer of `AnswerChunk` events; it applies no timing of its own.\n",
+    "title": "Output pacing: deliver the answer in chunks at a human reading rate"
+  },
+  "shardHash": "5a644297bd695f19c0f0f88c2dc0ecbbe3a14231a5ea414e261d53dbd91df15a",
+  "specVersion": "1.1.0"
+}

@@ -1,0 +1,307 @@
+{
+  "mapping": {
+    "dependsOn": [
+      "000-butler-bootstrap"
+    ],
+    "implementingPaths": [
+      {
+        "path": ".claude/agents/",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/rules/adversarial-prompt-refusal.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/rules/build-commands.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/rules/governed-artifact-reads.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/rules/orchestrator-rules.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/rules/overlay-frontend.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/rules/rust-crates.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/rules/spec-authoring.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/settings.json",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".claude/skills/",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".mcp.json",
+        "source": "spec-edge"
+      },
+      {
+        "path": "AGENTS.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": "CLAUDE.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": "Makefile",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": ".claude/agents/"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": ".claude/agents/"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/skills/"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": ".claude/skills/"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/rules/build-commands.md"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/rules/build-commands.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/rules/overlay-frontend.md"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/rules/overlay-frontend.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/rules/rust-crates.md"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/rules/rust-crates.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/rules/spec-authoring.md"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/rules/spec-authoring.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/settings.json"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/settings.json"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".mcp.json"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".mcp.json"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "AGENTS.md"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "AGENTS.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "CLAUDE.md"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "CLAUDE.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "Makefile"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 83,
+              "startLine": 83
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "build",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 101,
+              "startLine": 101
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "lint",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 92,
+              "startLine": 92
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "test",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/rules/adversarial-prompt-refusal.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/rules/adversarial-prompt-refusal.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/rules/governed-artifact-reads.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/rules/governed-artifact-reads.md"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".claude/rules/orchestrator-rules.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/rules/orchestrator-rules.md"
+        }
+      }
+    ],
+    "specId": "002-agentic-harness",
+    "specStatus": "approved"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "3cf1e2fb58b318555a65ffe9caa4d5c889002c74b61da30863bc597ea299f563"
+}

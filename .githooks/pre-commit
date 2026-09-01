@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+# Spec: specs/003-governance-ci/spec.md
+#
+# Opt-in pre-commit hook: refuse a commit when the committed spec-spine
+# artifacts are stale against the working tree. Read-only; never mutates.
+#   enable:  git config core.hooksPath .githooks
+#   disable: git config --unset core.hooksPath
+#   bypass:  git commit --no-verify
+set -eu
+sc="$(command -v spec-spine 2>/dev/null || true)"
+[ -n "$sc" ] || sc="$HOME/.cargo/bin/spec-spine"
+if [ ! -x "$sc" ]; then
+  echo "[pre-commit] spec-spine not found; run 'make setup' (or commit with --no-verify)" >&2
+  exit 1
+fi
+if ! "$sc" compile --check >/dev/null 2>&1; then
+  echo "[pre-commit] spec registry is stale or invalid: run 'spec-spine compile' and stage .derived/" >&2
+  exit 1
+fi
+if ! "$sc" index check >/dev/null 2>&1; then
+  echo "[pre-commit] codebase index is stale: run 'spec-spine index' and stage .derived/" >&2
+  exit 1
+fi
