@@ -23,18 +23,15 @@ establishes:
   - { kind: symbol, id: "butler_core::machine::Event" }
   - { kind: symbol, id: "butler_core::machine::Effect" }
   - { kind: symbol, id: "butler_core::machine::reduce" }
-extends:
-  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/runtime.rs", nature: additive }
-  - { spec: "004-desktop-shell", unit: { kind: symbol, id: "butler_desktop::runtime::Runtime" }, nature: additive }
 references:
   - { unit: { kind: file, path: "docs/architecture.md" }, role: "state diagram" }
 summary: >
   The heart of butler-ai and the owner of the `butler-core` crate: the
   pipeline is a strict state machine expressed as a pure reducer
   `reduce(state, event) -> (state, effects)` with no I/O, no clock and no
-  threads, plus a runtime in the desktop crate that executes the effects
-  (capture, recognize, evaluate, infer, emit) against the real traits and
-  feeds the results back as events. The outline's five states become an
+  threads. The effects it returns are executed by the runtime host in the
+  desktop crate (019), which feeds every result back as an event; this spec
+  owns the decision, not the execution. The outline's five states become an
   armed/disarmed session flag over a capture cycle with single in-flight
   inference, explicit cancellation, a fault state with backoff, and a degraded
   state driven by the exclusion status. Duplicate or out-of-order frames
@@ -60,8 +57,11 @@ deterministic for the same reason the corpus is.
   transition table tests and property tests. Other core modules are added by
   their specs: `delta` (008), `pacing` (013), `settings` (014), `redaction`
   (015), `ipc` (011).
-- `apps/desktop/src-tauri/src/runtime.rs` (added to spec 004's crate): the
-  effect executor, the only place the traits from 006/007/010 are called.
+
+The effect executor that runs these effects against the real traits
+(`apps/desktop/src-tauri/src/runtime.rs` and `butler_desktop::runtime::Runtime`)
+is spec 019's territory, not this spec's: it lives inside the crate spec 004
+establishes, and 018 puts that crate a phase later (019 D-1).
 
 `butler-core` MUST depend on no platform crate, no `tokio`, no `tauri`. Its
 only dependencies are `serde` (for the IPC DTOs), `strsim`, `thiserror`, and
@@ -160,25 +160,6 @@ Vec<Effect>)`. Normative transitions (the full table lives in
 Every transition MUST be total: an `(state, event)` pair not in the table
 returns the same state with `[Log(Warn, "ignored")]`, never a panic.
 
-### 3.5 The runtime (`runtime.rs`)
-
-`Runtime` owns: the `State`, the traits (`Box<dyn ScreenSource>`, `Box<dyn
-TextRecognizer>`, `Box<dyn Assistant>`, the detector, the pacing policy),
-the frame and text slots, a `CancellationToken` per inference, and a tokio
-task per blocking effect. It MUST:
-
-- process events strictly in order on one task (an `mpsc` channel), applying
-  `reduce` and then executing effects; effects that produce results send
-  events back on the same channel;
-- run `Capture` and `Recognize` on `spawn_blocking`, `StartInference` on an
-  async task bound to the request's cancellation token;
-- drop the frame slot on `ReleaseFrame` (which zeroes it, 006);
-- emit `runtime.status` (011) on every state change with the state name,
-  `seq`, `request`, exclusion status and the last error kind (never error
-  text that could carry screen content);
-- record every `(state, event) -> state` transition at `trace` level (016)
-  with ids only.
-
 ## 4. Functional requirements
 
 - **FR-001.** `reduce` is a pure function: same `(state, event, cfg)` → same
@@ -193,13 +174,13 @@ task per blocking effect. It MUST:
   inference was in flight, exactly one `CancelInference` for its id.
 - **FR-006.** `Degraded` is unreachable with `allow_degraded = false`: any
   non-`Verified` exclusion status leads to `Disarmed`.
-- **FR-007.** The runtime executes a full cycle against mock traits in under
-  50 ms of overhead beyond the mocks' own latency.
 
 ## 5. Acceptance criteria
 
-- **AC-1.** `cargo test -p butler-core machine::` passes on Linux, macOS and
-  Windows with the transition table as a data-driven test.
+- **AC-1.** `cargo test -p butler-core machine::` passes on every host in the
+  CI matrix (003 §3.2) with the transition table as a data-driven test. The
+  crate's independence from any host is AC-3's job, not a third runner's
+  (018 D-3).
 - **AC-2.** `docs/architecture.md` §State machine shows the diagram and it
   matches the table (a test renders the table to the same Mermaid source and
   diffs it against the doc; the doc is regenerated, never hand-edited, for
@@ -210,4 +191,17 @@ task per blocking effect. It MUST:
 ## 6. Out of scope
 
 - The algorithms behind each effect (006, 007, 008, 010, 013).
+- The effect executor and everything it needs to be impure: tokio, blocking
+  pools, cancellation tokens, the frame and text slots (019).
 - Persisting state across launches: the machine always starts `Disarmed`.
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-02).** This spec originally claimed `runtime.rs` and
+  `butler_desktop::runtime::Runtime` as `extends` edges into spec 004's crate,
+  and carried the executor's behavior as §3.5 and FR-007. Both units are now
+  spec 019's, for the reason recorded in 019 D-1: a phase 1 spec cannot reach
+  zero unresolved units while two of them sit inside a crate that phase 2
+  builds. What remains here is exactly what the phase 1 entry condition
+  claims, a crate with no OS, no `tokio` and no `tauri` in its tree (AC-3),
+  buildable and testable on Linux CI before any desktop code exists.

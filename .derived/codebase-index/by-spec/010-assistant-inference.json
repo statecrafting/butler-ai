@@ -89,6 +89,8 @@
   },
   "mapping": {
     "dependsOn": [
+      "005-capture-exclusion",
+      "007-text-recognition",
       "009-pipeline-state-machine",
       "015-privacy-boundary",
       "014-user-configuration"
@@ -262,5 +264,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "037f6d43ea6815718d356dac2ee5d2b1e3b32171ce2d2b5ab61ce1a8d9a00705"
+  "shardHash": "22543c6bc6b702b7b87c7c84962140557ad6a405e78f9490f1005831029d16be"
 }

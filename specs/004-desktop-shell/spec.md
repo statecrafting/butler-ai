@@ -11,7 +11,15 @@ risk: high
 platforms: ["windows", "macos"]
 phase: 2
 depends_on:
+  # Phase 2 entry (018 R-002, R-007): the whole of phase 1 must be complete.
+  # 009 is also a build dependency, not only a gate: this crate joins the
+  # workspace by adding `apps/desktop/src-tauri` to `members`, and cargo
+  # refuses that list while the `crates/*` glob beside it still matches
+  # nothing (001 D-1). `butler-core` is what populates it.
   - "001-workspace-layout"
+  - "008-change-detection"
+  - "009-pipeline-state-machine"
+  - "015-privacy-boundary"
 establishes:
   - { kind: crate, id: "butler-desktop" }
   - "apps/desktop/src-tauri/Cargo.toml"
@@ -66,7 +74,7 @@ binary, and one codebase for both platforms.
 The crate `butler-desktop` at `apps/desktop/src-tauri/` (manifest floor for
 every file in it), and specifically the files listed in the frontmatter. Other
 specs add files to this crate through `extends` edges: `exclusion/` (005),
-`runtime.rs` (009), `commands.rs` and `events.rs` (011), `settings_store.rs`
+`runtime.rs` (019), `commands.rs` and `events.rs` (011), `settings_store.rs`
 (014), `logging.rs` and `diagnostics.rs` (016). Those files are theirs; this
 spec's `lib.rs` wires them.
 
@@ -87,12 +95,12 @@ over nothing else in `Cargo.toml`.
 - `main.rs` MUST only call `butler_desktop::run()`. `lib.rs` builds the Tauri
   app: plugins, state, the setup hook, the command handler.
 - `AppState` (`app_state.rs`) is the single shared state: the settings handle
-  (014), the runtime handle (009), the exclusion status (005), the overlay
+  (014), the runtime handle (019), the exclusion status (005), the overlay
   window handle. It MUST be `Send + Sync` and expose only typed accessors.
 - The setup hook MUST, in order: initialize logging (016), load settings
   (014), create the overlay window (§3.2), apply capture exclusion (005) and
   record its verified status, register shortcuts (§3.3), build the tray
-  (§3.4), start the runtime disarmed (009).
+  (§3.4), start the runtime disarmed (019).
 
 ### 3.2 The overlay window (`window.rs`)
 
@@ -194,7 +202,20 @@ unless a spec adds it with a stated need (015 constrains this).
 
 ## 6. Out of scope
 
-- Capture exclusion (005), the pipeline runtime (009), IPC (011), the overlay
+- Capture exclusion (005), the pipeline runtime (019), IPC (011), the overlay
   DOM (012), settings persistence (014), logging (016), packaging (017).
 - Multi-window UI. There is one overlay; settings and onboarding are panels
   inside it, not windows (a second window would need its own exclusion).
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-02).** The pipeline runtime inside this crate is spec 019's,
+  not spec 009's. The citations in §2, §3.1 and §3.3 moved with it; nothing
+  about this spec's own territory changed. See 019 D-1 for why the executor
+  was split out of 009.
+- **D-2 (2026-09-02).** `depends_on` gained the rest of phase 1 (008, 009,
+  015). Three of those four edges are the 018 R-002 phase gate made
+  mechanical rather than advisory, because the orchestrator driving this
+  corpus schedules on `depends_on` alone and would otherwise start this spec
+  the moment 001 shipped. The 009 edge is additionally a real build
+  dependency (see the frontmatter comment).

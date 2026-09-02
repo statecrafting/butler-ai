@@ -11,8 +11,11 @@ risk: high
 platforms: ["windows", "macos"]
 phase: 5
 depends_on:
+  # Phase 5 entry (018 R-002, R-007). 013 is the leaf of phase 4 and
+  # transitively requires 010, 011 and 012.
   - "003-governance-ci"
   - "004-desktop-shell"
+  - "013-output-pacing"
   - "015-privacy-boundary"
 establishes:
   - { kind: section, file: ".github/workflows/release.yml", anchor: "on" }
@@ -101,3 +104,9 @@ is 004's).
 - App stores (Microsoft Store, Mac App Store): sandboxing conflicts with the
   window flags the shell needs; revisit if the flags become permissible.
 - Linux packaging (spec 001 §6).
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-02).** `depends_on` gained 013, the phase 4 leaf, as the 018
+  R-002 gate: a release cannot be cut before the product it ships works end
+  to end, and the orchestrator schedules on `depends_on` alone.

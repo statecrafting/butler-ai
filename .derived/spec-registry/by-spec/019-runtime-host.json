@@ -1,0 +1,64 @@
+{
+  "record": {
+    "created": "2026-09-02",
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "004-desktop-shell"
+    ],
+    "domain": "pipeline",
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/runtime.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "id": "butler_desktop::runtime::Runtime",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 2,
+      "platforms": "all"
+    },
+    "id": "019-runtime-host",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "state diagram",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "risk": "high",
+    "sectionHeadings": [
+      "019: Runtime host",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 The runtime (`runtime.rs`)",
+      "3.2 Construction and shutdown",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope",
+      "7. Resolved decisions"
+    ],
+    "specPath": "specs/019-runtime-host/spec.md",
+    "status": "approved",
+    "summary": "The impure half of the pipeline: `Runtime`, the effect executor that lives in spec 004's Tauri crate, owns the machine's `State`, holds the trait objects from 006, 007 and 010, and turns the `Effect` values that `reduce` returns into real capture, recognition, inference and IPC emission, feeding every result back as an ordered event. Spec 009 keeps the pure reducer and the `butler-core` crate; this spec keeps everything the reducer refuses to know about: tokio tasks, cancellation tokens, blocking pools, and the frame and text slots. The split is what lets 009 be phase 1 (no OS, no tauri, Linux CI) while its executor waits for the phase 2 crate that hosts it.\n",
+    "title": "Runtime host: the effect executor that drives the pure reducer from inside the desktop crate"
+  },
+  "shardHash": "888214ec00edddc1dad3b88b49a69208b57dfd6358bf09c946dcce2fb4db488f",
+  "specVersion": "1.1.0"
+}

@@ -58,7 +58,10 @@
   "mapping": {
     "dependsOn": [
       "001-workspace-layout",
-      "009-pipeline-state-machine"
+      "009-pipeline-state-machine",
+      "014-user-configuration",
+      "016-diagnostics-and-logging",
+      "019-runtime-host"
     ],
     "implementingPaths": [],
     "resolvedUnits": [
@@ -166,5 +169,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "b15fa557bd8bb8669a9d7ec4bf7601e18b9506b12f8adb317265b2ee99a3dfe6"
+  "shardHash": "332a1083606c63c28d2d93885d8a7cd4fb1b1765edae7842907118d0feb91bc2"
 }

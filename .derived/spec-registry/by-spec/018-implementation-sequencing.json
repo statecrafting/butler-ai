@@ -3,7 +3,7 @@
     "constrains": [
       {
         "kind": "sequencing-plan",
-        "note": "Phase 1: workspace and the pure core. Everything here runs on Linux CI with no OS dependency.",
+        "note": "Phase 1: workspace and the pure core. Everything here is platform-free and builds on any host, Linux included; the Rust CI matrix itself is Windows and macOS (003 §3.2).",
         "target_specs": [
           "001-workspace-layout",
           "009-pipeline-state-machine",
@@ -13,18 +13,19 @@
       },
       {
         "kind": "sequencing-plan",
-        "note": "Phase 2: the shell, the IPC seam, the overlay skeleton, settings and logging. Requires phase 1 complete.",
+        "note": "Phase 2: the shell, the IPC seam, the overlay skeleton, settings, logging, and the runtime host that executes phase 1's reducer. Requires phase 1 complete.",
         "target_specs": [
           "004-desktop-shell",
           "011-ipc-contract",
           "012-overlay-ui",
           "014-user-configuration",
-          "016-diagnostics-and-logging"
+          "016-diagnostics-and-logging",
+          "019-runtime-host"
         ]
       },
       {
         "kind": "sequencing-plan",
-        "note": "Phase 3: the platform pipeline crates and the exclusion self-test. Requires phase 2 complete; 005 last because its self-test needs 006.",
+        "note": "Phase 3: the platform pipeline crates and the exclusion self-test. Requires phase 2 complete; 005 after 006, because its self-test captures through `ScreenSource`.",
         "target_specs": [
           "006-screen-capture",
           "007-text-recognition",
@@ -75,13 +76,14 @@
       "1. Purpose",
       "2. Phases",
       "3. Rules",
-      "4. Out of scope"
+      "4. Out of scope",
+      "5. Resolved decisions"
     ],
     "specPath": "specs/018-implementation-sequencing/spec.md",
     "status": "approved",
-    "summary": "The build order for butler-ai as a sequencing plan over the product specs, expressed with spec-scoped `constrains` edges so the plan is part of the authority graph rather than a README. Five phases, each with an entry condition, an exit criterion (the phase's specs at zero `W-001` and flipped to `implementation: complete`), and the parallelism an orchestrator may use within it. The `phase` frontmatter key on every product spec mirrors this plan; the two MUST agree.\n",
+    "summary": "The build order for butler-ai as a sequencing plan over the product specs, expressed with spec-scoped `constrains` edges so the plan is part of the authority graph rather than a README. Five phases, each with an entry condition, an exit criterion (the phase's specs at zero `W-001` and flipped to `implementation: complete`), and the parallelism an orchestrator may use within it. The `phase` frontmatter key on every product spec mirrors this plan, and so does its `depends_on` (R-007); all three MUST agree.\n",
     "title": "Implementation sequencing: the phased build order for agentic development"
   },
-  "shardHash": "0cd4e155efe673017d6528be26967b28547aa873de9c02d1bd9cc094ae9213bb",
+  "shardHash": "c0804494094546444c05fd5de93a18c3fa2efb88f1cf31db85afbdacb809e05f",
   "specVersion": "1.1.0"
 }

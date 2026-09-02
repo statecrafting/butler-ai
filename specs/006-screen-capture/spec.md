@@ -11,8 +11,14 @@ risk: medium
 platforms: ["windows", "macos"]
 phase: 3
 depends_on:
+  # Phase 3 entry (018 R-002, R-007). 014, 016 and 019 are the leaves of
+  # phase 2: between them they transitively require 004, 011, 012 and 015,
+  # so these five edges gate the whole of phases 1 and 2.
   - "001-workspace-layout"
   - "009-pipeline-state-machine"
+  - "014-user-configuration"
+  - "016-diagnostics-and-logging"
+  - "019-runtime-host"
 establishes:
   - { kind: crate, id: "butler-capture" }
   - "crates/butler-capture/Cargo.toml"
@@ -159,3 +165,10 @@ pub struct Frame {
 - Region-of-interest selection and window-scoped capture (a later feature;
   the outline captures the whole display).
 - Video or audio capture of any kind.
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-02).** `depends_on` gained the phase 2 leaves (014, 016,
+  019) as the 018 R-002 gate. Nothing in this crate calls settings, logging
+  or the runtime; the edges exist so the orchestrator, which schedules on
+  `depends_on` alone, cannot start phase 3 while phase 2 is unfinished.

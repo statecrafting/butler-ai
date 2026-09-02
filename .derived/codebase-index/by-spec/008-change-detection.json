@@ -32,8 +32,7 @@
   },
   "mapping": {
     "dependsOn": [
-      "009-pipeline-state-machine",
-      "007-text-recognition"
+      "009-pipeline-state-machine"
     ],
     "implementingPaths": [],
     "resolvedUnits": [
@@ -96,5 +95,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "e167ba80c0a64c14ef914b064d42a54d105beb6b8e921e7c5d2d65aa4c71e887"
+  "shardHash": "f0f9dc5ed53c2f12b6a6a83c79220dd8a10fbddaa474abc5e9c9fbbcfa8b57cb"
 }

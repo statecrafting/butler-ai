@@ -11,6 +11,10 @@ risk: high
 platforms: "all"
 phase: 4
 depends_on:
+  # Phase 4 entry (018 R-002, R-007). 005 and 007 are the leaves of phase 3
+  # and transitively require 004 and 006.
+  - "005-capture-exclusion"
+  - "007-text-recognition"
   - "009-pipeline-state-machine"
   - "015-privacy-boundary"
   - "014-user-configuration"
@@ -194,3 +198,10 @@ cycle returns to `Idle`) with a `budget.exhausted` UI event once per hour.
   one screen at a time.
 - Local models. The trait admits an on-device provider; none ships in v1.
 - Redaction itself (015) and the pacing of the rendered answer (013).
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-02).** `depends_on` gained the phase 3 leaves (005, 007) as
+  the 018 R-002 gate. This crate names no capture or OCR type; the edges make
+  the phase order mechanical for an orchestrator that schedules on
+  `depends_on` alone.
