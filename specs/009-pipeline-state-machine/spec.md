@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-01"
-implementation: in-progress
+implementation: complete
 owner: "butler-ai maintainers"
 risk: high
 platforms: "all"

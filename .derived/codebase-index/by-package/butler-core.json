@@ -1,0 +1,11 @@
+{
+  "package": {
+    "kind": "rust-lib",
+    "name": "butler-core",
+    "path": "crates/butler-core",
+    "specRef": "009-pipeline-state-machine",
+    "version": "0.1.0"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "6ff02a73c2388144a36d714115459f6f493235beef6b6e63550ceba679eb9edc"
+}

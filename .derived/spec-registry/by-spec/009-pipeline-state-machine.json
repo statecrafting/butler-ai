@@ -52,7 +52,7 @@
       "platforms": "all"
     },
     "id": "009-pipeline-state-machine",
-    "implementation": "in-progress",
+    "implementation": "complete",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "references": [
@@ -84,6 +84,6 @@
     "summary": "The heart of butler-ai and the owner of the `butler-core` crate: the pipeline is a strict state machine expressed as a pure reducer `reduce(state, event) -> (state, effects)` with no I/O, no clock and no threads. The effects it returns are executed by the runtime host in the desktop crate (019), which feeds every result back as an event; this spec owns the decision, not the execution. The outline's five states become an armed/disarmed session flag over a capture cycle with single in-flight inference, explicit cancellation, a fault state with backoff, and a degraded state driven by the exclusion status. Duplicate or out-of-order frames cannot reach the assistant because the reducer refuses them by construction.\n",
     "title": "Pipeline state machine: a pure reducer that encloses capture → OCR → evaluate → infer → render"
   },
-  "shardHash": "eb7d3d923809cf19e8f70d559e64ea716fb96ae7d5f42317a4fa60b41cd9f834",
+  "shardHash": "afddc0141bbbcc5caf0f5d3ab4f8fe228ccf50c9231908a35413928d11674959",
   "specVersion": "1.1.0"
 }

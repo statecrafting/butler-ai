@@ -31,11 +31,6 @@
       },
       {
         "code": "W-001",
-        "message": "spec '013-output-pacing' file unit 'crates/butler-core/src/machine.rs' does not exist",
-        "path": "crates/butler-core/src/machine.rs"
-      },
-      {
-        "code": "W-001",
         "message": "spec '013-output-pacing' file unit 'crates/butler-core/src/ipc.rs' does not exist",
         "path": "crates/butler-core/src/ipc.rs"
       }
@@ -48,7 +43,12 @@
       "011-ipc-contract",
       "012-overlay-ui"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "crates/butler-core/src/machine.rs",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
       {
         "locations": [],
@@ -114,7 +114,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "refines",
         "unit": {

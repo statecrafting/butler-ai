@@ -56,23 +56,23 @@ the code.
 ```mermaid
 stateDiagram-v2
     [*] --> Disarmed
-    Disarmed --> Armed: Arm (exclusion Verified)
-    Disarmed --> Degraded: Arm (exclusion not Verified, allow_degraded)
     state Armed {
         [*] --> Idle
         Idle --> Capturing: Tick reaches 0 / ForceCapture
-        Capturing --> Recognizing: Captured{seq==current}
+        Capturing --> Recognizing: Captured (seq matches)
         Recognizing --> Evaluating: Recognized
-        Evaluating --> Idle: Evaluated{Unchanged|Pending}
-        Evaluating --> Inferencing: Evaluated{Changed}
+        Evaluating --> Idle: Evaluated (Unchanged / Pending)
+        Evaluating --> Inferencing: Evaluated (Changed)
         Inferencing --> Rendering: InferenceDone
-        Inferencing --> Idle: InferenceFailed{retryable=false}
-        Rendering --> Idle: ChunkRendered (remaining==0)
+        Inferencing --> Idle: InferenceFailed (not retryable)
+        Rendering --> Idle: ChunkRendered (last)
     }
+    Disarmed --> Armed: Arm (exclusion Verified)
+    Disarmed --> Degraded: Arm (exclusion not Verified, allow_degraded)
+    Armed --> Fault: inference timeout / InferenceFailed (retryable) / CaptureFailed / RecognizeFailed
     Armed --> Disarmed: Disarm / ScreenLocked
-    Armed --> Degraded: ExclusionChanged{!Verified}
-    Degraded --> Armed: ExclusionChanged{Verified}
-    Armed --> Fault: CaptureFailed / RecognizeFailed / InferenceFailed{retryable} / timeout
+    Armed --> Degraded: ExclusionChanged (not Verified)
+    Degraded --> Armed: ExclusionChanged (Verified)
     Fault --> Armed: retry_in reaches 0
     Fault --> Disarmed: Disarm
 ```
