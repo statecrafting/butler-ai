@@ -81,7 +81,10 @@ spec-new:
 	  echo "scaffolded $$dir/spec.md; fill in title, summary, edges, then: spec-spine compile && spec-spine lint --fail-on-warn"
 
 build:
-ifneq ($(HAS_CARGO),)
+# Spec 001 §3.5: the cargo half activates on a populated workspace (at least
+# one crates/*/Cargo.toml), not on the root manifest alone, which cargo cannot
+# load while its member entries match nothing.
+ifneq ($(wildcard crates/*/Cargo.toml),)
 	cargo build --workspace --locked
 endif
 ifneq ($(HAS_PNPM),)
@@ -90,7 +93,7 @@ endif
 	@test -n "$(HAS_CARGO)$(HAS_PNPM)" || echo "[build] no workspace manifests yet (spec 001, phase 1); nothing to build"
 
 test:
-ifneq ($(HAS_CARGO),)
+ifneq ($(wildcard crates/*/Cargo.toml),)
 	cargo test --workspace --locked
 endif
 ifneq ($(HAS_PNPM),)
@@ -99,7 +102,7 @@ endif
 	@test -n "$(HAS_CARGO)$(HAS_PNPM)" || echo "[test] no workspace manifests yet; nothing to test"
 
 lint:
-ifneq ($(HAS_CARGO),)
+ifneq ($(wildcard crates/*/Cargo.toml),)
 	cargo fmt --all --check
 	cargo clippy --workspace --all-targets --locked -- -D warnings
 	cargo deny check

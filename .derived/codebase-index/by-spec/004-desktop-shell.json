@@ -87,6 +87,10 @@
     ],
     "implementingPaths": [
       {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
         "path": "docs/architecture.md",
         "source": "spec-edge"
       },
@@ -244,6 +248,24 @@
       {
         "locations": [
           {
+            "file": "Cargo.toml",
+            "span": {
+              "endLine": 42,
+              "startLine": 16
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "workspace",
+          "file": "Cargo.toml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": "docs/architecture.md"
           }
         ],
@@ -272,5 +294,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "fe11780027675d380ad422fc8e84920d0cf3dc12eff6e5629def99da47208365"
+  "shardHash": "a3736327d1d51eabb719a8797b8885128ef2be98cb9f124a646919976751c2cb"
 }

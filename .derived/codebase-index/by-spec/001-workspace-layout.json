@@ -102,6 +102,24 @@
       {
         "locations": [
           {
+            "file": "Cargo.toml",
+            "span": {
+              "endLine": 42,
+              "startLine": 16
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "workspace",
+          "file": "Cargo.toml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": "Makefile",
             "span": {
               "endLine": 83,
@@ -122,8 +140,8 @@
           {
             "file": "Makefile",
             "span": {
-              "endLine": 101,
-              "startLine": 101
+              "endLine": 104,
+              "startLine": 104
             }
           }
         ],
@@ -140,8 +158,8 @@
           {
             "file": "Makefile",
             "span": {
-              "endLine": 92,
-              "startLine": 92
+              "endLine": 95,
+              "startLine": 95
             }
           }
         ],
@@ -171,5 +189,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "cacf8034f8f87b9a9d237f2dc18d15a0f3c3ba28436a1073ca80d47a0a22de3d"
+  "shardHash": "b2b8f4bd7bd3e0ddd4a4bea877f51af3d3bfcc15912c08113cef87338c484ca1"
 }
