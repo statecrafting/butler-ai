@@ -5,6 +5,10 @@
     ],
     "implementingPaths": [
       {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
         "path": "crates/butler-core",
         "source": "multiple"
       },
@@ -179,6 +183,19 @@
       {
         "locations": [
           {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": "docs/architecture.md"
           }
         ],
@@ -194,5 +211,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "e054fc121bc17496c5ace35a81e70ad4e4039ccbffd6e50c94dfa8169250e984"
+  "shardHash": "eb46bb64ad4b51875df006148fde5974872e5314833ff416d5686ab93e0f5470"
 }
