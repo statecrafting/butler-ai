@@ -1,0 +1,24 @@
+# Spec: specs/003-governance-ci/spec.md
+# GitHub requests a review from the listed owner on any PR touching a matching
+# path (enforced once branch protection requires Code Owner review).
+
+*                                       @bartekus
+
+# The governed authority ledger and its configuration.
+/specs/                                 @bartekus
+/standards/                             @bartekus
+/spec-spine.toml                        @bartekus
+
+# What agents may do.
+/.claude/                               @bartekus
+/AGENTS.md                              @bartekus
+/CLAUDE.md                              @bartekus
+/Makefile                               @bartekus
+
+# What runs with tokens.
+/.github/                               @bartekus
+/.githooks/                             @bartekus
+
+# The Tauri security surface (specs 004, 015).
+/apps/desktop/src-tauri/tauri.conf.json @bartekus
+/apps/desktop/src-tauri/capabilities/   @bartekus

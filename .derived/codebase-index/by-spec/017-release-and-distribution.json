@@ -1,0 +1,127 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '017-release-and-distribution' section unit 'on' not found in .github/workflows/release.yml",
+        "path": ".github/workflows/release.yml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '017-release-and-distribution' section unit 'permissions' not found in .github/workflows/release.yml",
+        "path": ".github/workflows/release.yml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '017-release-and-distribution' section unit 'jobs.build' not found in .github/workflows/release.yml",
+        "path": ".github/workflows/release.yml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '017-release-and-distribution' section unit 'jobs.publish' not found in .github/workflows/release.yml",
+        "path": ".github/workflows/release.yml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '017-release-and-distribution' file unit 'scripts/bump_version.py' does not exist",
+        "path": "scripts/bump_version.py"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '017-release-and-distribution' file unit 'apps/desktop/src-tauri/tauri.conf.json' does not exist",
+        "path": "apps/desktop/src-tauri/tauri.conf.json"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "003-governance-ci",
+      "004-desktop-shell",
+      "015-privacy-boundary"
+    ],
+    "implementingPaths": [
+      {
+        "path": "docs/threat-model.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "scripts/bump_version.py"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.build",
+          "file": ".github/workflows/release.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.publish",
+          "file": ".github/workflows/release.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "on",
+          "file": ".github/workflows/release.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "permissions",
+          "file": ".github/workflows/release.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "refines",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/tauri.conf.json"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/threat-model.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "specId": "017-release-and-distribution",
+    "specStatus": "approved"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "6503697dc14129ab0ea80c086139b8379cbd7cf8f5ad70b29ec3f568ff277024"
+}

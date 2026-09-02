@@ -1,0 +1,236 @@
+{
+  "mapping": {
+    "dependsOn": [
+      "000-butler-bootstrap",
+      "002-agentic-harness"
+    ],
+    "implementingPaths": [
+      {
+        "path": ".gitattributes",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".githooks/",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".github/dependabot.yml",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "source": "spec-edge"
+      },
+      {
+        "path": ".github/workflows/spec-spine.yml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "CODEOWNERS",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": ".githooks/"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "directory",
+          "path": ".githooks/"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".gitattributes"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".gitattributes"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/dependabot.yml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".github/dependabot.yml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "CODEOWNERS"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "CODEOWNERS"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/ci.yml",
+            "span": {
+              "endLine": 73,
+              "startLine": 22
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.rust",
+          "file": ".github/workflows/ci.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/ci.yml",
+            "span": {
+              "endLine": 107,
+              "startLine": 74
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.web",
+          "file": ".github/workflows/ci.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/ci.yml",
+            "span": {
+              "endLine": 14,
+              "startLine": 9
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "on",
+          "file": ".github/workflows/ci.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/ci.yml",
+            "span": {
+              "endLine": 17,
+              "startLine": 15
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "permissions",
+          "file": ".github/workflows/ci.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/spec-spine.yml",
+            "span": {
+              "endLine": 76,
+              "startLine": 65
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.gate",
+          "file": ".github/workflows/spec-spine.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/spec-spine.yml",
+            "span": {
+              "endLine": 63,
+              "startLine": 20
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.govern",
+          "file": ".github/workflows/spec-spine.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/spec-spine.yml",
+            "span": {
+              "endLine": 15,
+              "startLine": 10
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "on",
+          "file": ".github/workflows/spec-spine.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/spec-spine.yml",
+            "span": {
+              "endLine": 18,
+              "startLine": 16
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "permissions",
+          "file": ".github/workflows/spec-spine.yml",
+          "kind": "section"
+        }
+      }
+    ],
+    "specId": "003-governance-ci",
+    "specStatus": "approved"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "9f83a2a2f0f76bb9b0f467817cd6bfdbc126062eb8529470a669b61140d51a1a"
+}

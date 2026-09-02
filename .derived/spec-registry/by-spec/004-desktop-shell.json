@@ -1,0 +1,125 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "001-workspace-layout"
+    ],
+    "domain": "platform",
+    "establishes": [
+      {
+        "id": "butler-desktop",
+        "kind": "crate"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/Cargo.toml"
+      },
+      {
+        "anchor": "package.metadata.butler",
+        "file": "apps/desktop/src-tauri/Cargo.toml",
+        "kind": "section"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/build.rs"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/tauri.conf.json"
+      },
+      {
+        "kind": "directory",
+        "path": "apps/desktop/src-tauri/capabilities/"
+      },
+      {
+        "kind": "directory",
+        "path": "apps/desktop/src-tauri/icons/"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/src/main.rs"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/src/lib.rs"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/src/window.rs"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/src/shortcuts.rs"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/src/tray.rs"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/src/permissions.rs"
+      },
+      {
+        "kind": "file",
+        "path": "apps/desktop/src-tauri/src/app_state.rs"
+      },
+      {
+        "id": "butler_desktop::window::create_overlay_window",
+        "kind": "symbol"
+      },
+      {
+        "id": "butler_desktop::shortcuts::register_shortcuts",
+        "kind": "symbol"
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 2,
+      "platforms": [
+        "windows",
+        "macos"
+      ]
+    },
+    "id": "004-desktop-shell",
+    "implementation": "pending",
+    "kind": "feature",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "context",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      },
+      {
+        "role": "context",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "risk": "high",
+    "sectionHeadings": [
+      "004: Desktop shell",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 Process and state",
+      "3.2 The overlay window (`window.rs`)",
+      "3.3 Shortcuts (`shortcuts.rs`)",
+      "3.4 Tray (`tray.rs`)",
+      "3.5 Permissions (`permissions.rs`)",
+      "3.6 Capabilities",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/004-desktop-shell/spec.md",
+    "status": "approved",
+    "summary": "The Tauri v2 application crate `butler-desktop`: process entry, the single overlay window (transparent, undecorated, always on top, present on every workspace, hidden from the taskbar and app switcher, click-through by default), the global shortcuts that arm/disarm capture and toggle interaction, the tray icon that is the only visible presence when the overlay is idle, the screen-recording permission onboarding on macOS, the least-privilege capability grants, and the shared `AppState` the runtime and commands hang off. It is the host every other desktop-side spec extends; it deliberately contains no pipeline logic.\n",
+    "title": "Desktop shell: the Tauri v2 app crate, the transparent always-on-top overlay window, shortcuts, tray, and permission onboarding"
+  },
+  "shardHash": "e7349f3a558b9b2f6be75cbae2870b8ce9284ef117940793cf2f07056bc9d1f7",
+  "specVersion": "1.1.0"
+}

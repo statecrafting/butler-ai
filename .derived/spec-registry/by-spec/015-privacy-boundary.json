@@ -1,0 +1,147 @@
+{
+  "record": {
+    "constrains": [
+      {
+        "flavor": "invariant-freeze",
+        "note": "Frame: no Serialize, no Clone, private pixels, zeroize on drop, monotonic timestamps only.",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/src/frame.rs"
+        }
+      },
+      {
+        "flavor": "invariant-freeze",
+        "note": "Recognized: no Serialize; leaves the process only as RedactedText inside an InferenceRequest.",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/src/recognized.rs"
+        }
+      },
+      {
+        "flavor": "invariant-freeze",
+        "note": "Exactly one outbound host per provider; https only; the endpoint override is surfaced in the UI and logged as an event kind.",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-llm/src/anthropic.rs"
+        }
+      },
+      {
+        "flavor": "invariant-freeze",
+        "note": "Secrets live in the OS keychain only; Secret has no Debug/Display/Clone.",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-llm/src/secrets.rs"
+        }
+      },
+      {
+        "flavor": "invariant-freeze",
+        "note": "Logs carry ids, kinds and counts, never screen text, prompts, answers, or secrets.",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/logging.rs"
+        }
+      },
+      {
+        "flavor": "invariant-freeze",
+        "note": "CSP as in spec 004 §3.2; no remote content; no devtools in release.",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/tauri.conf.json"
+        }
+      },
+      {
+        "flavor": "invariant-freeze",
+        "note": "No fs, shell, http, or dialog grants without a spec that amends this one.",
+        "unit": {
+          "kind": "directory",
+          "path": "apps/desktop/src-tauri/capabilities/"
+        }
+      }
+    ],
+    "created": "2026-09-01",
+    "dependsOn": [
+      "009-pipeline-state-machine"
+    ],
+    "domain": "platform",
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/redaction.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/redaction.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::redaction",
+          "kind": "module"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::redaction::redact",
+          "kind": "symbol"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "id": "butler_core::redaction::RedactedText",
+          "kind": "symbol"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 1,
+      "platforms": "all"
+    },
+    "id": "015-privacy-boundary",
+    "implementation": "pending",
+    "kind": "constraint",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "threat model",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "risk": "critical",
+    "sectionHeadings": [
+      "015: Privacy boundary",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 Data classes and their rules",
+      "3.2 Redaction (`redact(text: &str, policy: &RedactionPolicy) -> RedactedText`)",
+      "3.3 Network",
+      "3.4 Disk",
+      "3.5 Logs and diagnostics",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/015-privacy-boundary/spec.md",
+    "status": "approved",
+    "summary": "The cross-cutting invariants that make constitution §V enforceable, asserted as `constrains` edges over the exact units that could violate them, plus the one piece of code the boundary needs: `redact`, a pure pass that removes secret-shaped content (API keys, tokens, card and account numbers, private key blocks, e-mail addresses and phone numbers when the user opts in) from recognized text before it can become an `InferenceRequest`. Frames and recognized text never touch disk; one endpoint per provider; secrets in the keychain; logs carry no content; the webview has no network or filesystem. An exception to any of these is an amendment to this spec, never a feature's side effect.\n",
+    "title": "Privacy boundary: what may leave the process, what may touch disk, and what may be logged"
+  },
+  "shardHash": "c51caf05c4ca624ff4740428f3dbdb96899c70905bf2fd5e9ab03117ffa9e488",
+  "specVersion": "1.1.0"
+}

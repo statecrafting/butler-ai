@@ -1,0 +1,156 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src/generated/bindings.ts' does not exist",
+        "path": "apps/desktop/src/generated/bindings.ts"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' file unit 'crates/butler-core/src/ipc.rs' does not exist",
+        "path": "crates/butler-core/src/ipc.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' module unit 'butler_core::ipc' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' symbol unit 'butler_core::ipc::UiEvent' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' symbol unit 'butler_core::ipc::UiCommand' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' symbol unit 'butler_core::ipc::IPC_CONTRACT_VERSION' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/src/commands.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/commands.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/src/events.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/events.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/src/bin/export-bindings.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/bin/export-bindings.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' file unit 'crates/butler-core/src/ipc.rs' does not exist",
+        "path": "crates/butler-core/src/ipc.rs"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "004-desktop-shell"
+    ],
+    "implementingPaths": [],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/generated/bindings.ts"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/bin/export-bindings.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/commands.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/events.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::ipc",
+          "kind": "module"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::ipc::IPC_CONTRACT_VERSION",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::ipc::UiCommand",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_core::ipc::UiEvent",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "constrains",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      }
+    ],
+    "specId": "011-ipc-contract",
+    "specStatus": "approved"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "0f13925ab900fdc3dddaddb72bb88df9e3ede823e644087bbea6045f7698bf59"
+}

@@ -1,0 +1,160 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' module unit 'butler_desktop::exclusion' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/exclusion/mod.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/exclusion/mod.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/exclusion/windows.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/exclusion/windows.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/exclusion/macos.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/exclusion/macos.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/exclusion/selftest.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/exclusion/selftest.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' symbol unit 'butler_desktop::exclusion::apply_exclusion' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' symbol unit 'butler_desktop::exclusion::verify_exclusion' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' symbol unit 'butler_desktop::exclusion::ExclusionStatus' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/window.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/window.rs"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "004-desktop-shell",
+      "006-screen-capture"
+    ],
+    "implementingPaths": [
+      {
+        "path": "docs/threat-model.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/exclusion/macos.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/exclusion/mod.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/exclusion/selftest.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/exclusion/windows.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::exclusion",
+          "kind": "module"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::exclusion::ExclusionStatus",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::exclusion::apply_exclusion",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::exclusion::verify_exclusion",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "refines",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/window.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/threat-model.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "specId": "005-capture-exclusion",
+    "specStatus": "approved"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "96b8220a77d1e3b33031c42737aa4dc633aab1ed05fa225f88c84538c673ff0f"
+}

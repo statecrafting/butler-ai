@@ -1,0 +1,95 @@
+{
+  "record": {
+    "created": "2026-09-01",
+    "dependsOn": [
+      "000-butler-bootstrap",
+      "002-agentic-harness"
+    ],
+    "domain": "governance",
+    "establishes": [
+      {
+        "anchor": "on",
+        "file": ".github/workflows/spec-spine.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "permissions",
+        "file": ".github/workflows/spec-spine.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "jobs.govern",
+        "file": ".github/workflows/spec-spine.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "jobs.gate",
+        "file": ".github/workflows/spec-spine.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "on",
+        "file": ".github/workflows/ci.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "permissions",
+        "file": ".github/workflows/ci.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "jobs.rust",
+        "file": ".github/workflows/ci.yml",
+        "kind": "section"
+      },
+      {
+        "anchor": "jobs.web",
+        "file": ".github/workflows/ci.yml",
+        "kind": "section"
+      },
+      {
+        "kind": "file",
+        "path": ".github/dependabot.yml"
+      },
+      {
+        "kind": "file",
+        "path": "CODEOWNERS"
+      },
+      {
+        "kind": "file",
+        "path": ".gitattributes"
+      },
+      {
+        "kind": "directory",
+        "path": ".githooks/"
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 0,
+      "platforms": "all"
+    },
+    "id": "003-governance-ci",
+    "implementation": "complete",
+    "kind": "tooling",
+    "owner": "butler-ai maintainers",
+    "risk": "high",
+    "sectionHeadings": [
+      "003: Governance CI",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 `spec-spine.yml` (the governance gate)",
+      "3.2 `ci.yml` (the language gates)",
+      "3.3 Repository hygiene",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope"
+    ],
+    "specPath": "specs/003-governance-ci/spec.md",
+    "status": "approved",
+    "summary": "Makes the governance model enforceable: a `spec-spine` workflow that runs the full gate chain (`compile --check`, `index check`, `lint --fail-on-warn`, `index coverage --fail-on-untraced`, `couple` against the PR's frozen base and head SHAs with the PR-body waiver) on every pull request; a `ci` workflow for the language gates that activates itself when the workspace lands; a single `gate` status check for branch protection; CODEOWNERS for the load-bearing paths; LF normalization and the opt-in merge driver for the committed shard trees; Dependabot for actions, cargo and npm. Owns the security-relevant workflow keys (`on`, `permissions`, the jobs) as section units so a token-scope or trigger change forces this spec's review.\n",
+    "title": "Governance CI: the gate chain on every PR, code ownership, and derived-artifact merge hygiene"
+  },
+  "shardHash": "9e3f0ccfba79fac9350ced51354b5b1dc258427335d3c687e7ec6696d0550464",
+  "specVersion": "1.1.0"
+}
