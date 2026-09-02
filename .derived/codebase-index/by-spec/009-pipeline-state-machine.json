@@ -1,52 +1,52 @@
 {
   "diagnostics": {
-    "errors": [],
-    "warnings": [
+    "errors": [
       {
-        "code": "W-001",
+        "code": "I-003",
         "message": "spec '009-pipeline-state-machine' crate unit 'butler-core' does not match any discovered package"
       },
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/Cargo.toml' does not exist",
         "path": "crates/butler-core/Cargo.toml"
       },
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/src/lib.rs' does not exist",
         "path": "crates/butler-core/src/lib.rs"
       },
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/src/machine.rs' does not exist",
         "path": "crates/butler-core/src/machine.rs"
       },
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/tests/machine.rs' does not exist",
         "path": "crates/butler-core/tests/machine.rs"
       },
       {
-        "code": "W-001",
+        "code": "I-008",
         "message": "spec '009-pipeline-state-machine' module unit 'butler_core::machine' did not resolve"
       },
       {
-        "code": "W-001",
+        "code": "I-005",
         "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::State' did not resolve"
       },
       {
-        "code": "W-001",
+        "code": "I-005",
         "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::Event' did not resolve"
       },
       {
-        "code": "W-001",
+        "code": "I-005",
         "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::Effect' did not resolve"
       },
       {
-        "code": "W-001",
+        "code": "I-005",
         "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::reduce' did not resolve"
       }
-    ]
+    ],
+    "warnings": []
   },
   "mapping": {
     "dependsOn": [
@@ -167,5 +167,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "6aaff9a232a7e963652f8d74207c472860d3b6caf8f9527c7280f325cc3d94b0"
+  "shardHash": "df6ad271f5cdfa3636fb97664d26e818a5247762f1052e3a9f227d42c46415bc"
 }
