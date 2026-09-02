@@ -1,21 +1,24 @@
 # Spec: specs/001-workspace-layout/spec.md
 #
 # The one Cargo workspace (spec 001 §3.1): virtual (no root package), resolver
-# 3, members `crates/*` plus the Tauri app crate. A crate boundary is an
-# ownership boundary: every member is owned by exactly one spec and names it in
-# `[package.metadata.butler]`. Third-party crates are pinned here once and
-# referenced by members as `{ workspace = true }`; Cargo.lock is committed and
-# every cargo invocation runs `--locked`.
+# 3, members `crates/*` plus, once it exists, the Tauri app crate. A crate
+# boundary is an ownership boundary: every member is owned by exactly one spec
+# and names it in `[package.metadata.butler]`. Third-party crates are pinned
+# here once and referenced by members as `{ workspace = true }`; Cargo.lock is
+# committed and every cargo invocation runs `--locked`.
 #
-# Cargo refuses to load a workspace whose member entries match nothing, so the
-# Rust gates (`make build test lint`, `.github/workflows/ci.yml`) stay red until
-# the member crates exist: `crates/butler-core` (spec 009), `crates/butler-capture`
-# (006), `crates/butler-ocr` (007), `crates/butler-llm` (010) and
-# `apps/desktop/src-tauri` (004). Each of those manifests belongs to its spec.
+# The members list fills in with the phases (spec 001 §3.1, D-1): cargo treats
+# a glob that matches nothing as a literal path and refuses any member without
+# a manifest, so an entry lands in the same change as the crate it names.
+# `crates/*` covers `butler-core` (spec 009), `butler-capture` (006),
+# `butler-ocr` (007) and `butler-llm` (010); spec 004 appends
+# `apps/desktop/src-tauri` when it lands the app crate (co-authority over this
+# `[workspace]` table). Until the first crate exists the language gates are
+# no-ops (spec 001 §3.5, spec 003 §3.2).
 
 [workspace]
 resolver = "3"
-members = ["crates/*", "apps/desktop/src-tauri"]
+members = ["crates/*"]
 
 # Inherited by every member with `<field>.workspace = true`.
 [workspace.package]
