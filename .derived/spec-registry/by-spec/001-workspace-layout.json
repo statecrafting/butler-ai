@@ -74,7 +74,7 @@
       "platforms": "all"
     },
     "id": "001-workspace-layout",
-    "implementation": "pending",
+    "implementation": "complete",
     "kind": "tooling",
     "owner": "butler-ai maintainers",
     "references": [
@@ -107,6 +107,6 @@
     "summary": "Fixes the physical shape of the repository so every later spec can name its territory unambiguously: a single root Cargo workspace (`crates/*` plus the Tauri app crate under `apps/desktop/src-tauri`), a single pnpm workspace (`apps/*`), pinned Rust and Node toolchains, edition 2024, a supply-chain policy (`deny.toml`), and the manifest metadata every package must carry so spec-spine discovers it and maps it to its owning spec. Owns the root manifests and co-owns the Makefile's build/test/lint targets with the harness spec. Establishes no product code.\n",
     "title": "Workspace layout: one Cargo workspace, one pnpm workspace, pinned toolchains"
   },
-  "shardHash": "ebbf7009144e1824fc7f4cb85ec44080a4c7f1d782414fcadd95f3f167990cb1",
+  "shardHash": "96088a4b9809c7d7c7245494328722c7f94ba6f78a894d678daa3b2d101a45c2",
   "specVersion": "1.1.0"
 }

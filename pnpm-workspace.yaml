@@ -1,0 +1,9 @@
+# Spec: specs/001-workspace-layout/spec.md
+#
+# The one pnpm workspace (spec 001 §3.2). Every npm package lives under apps/
+# and carries `"butler": { "spec": "NNN-slug" }` so the indexer maps it to its
+# owning spec; `@butler-ai/desktop` (spec 012) is the first member. The root
+# package.json is the workspace declaration, not a package: it has no `name`,
+# so the indexer counts exactly the members.
+packages:
+  - "apps/*"

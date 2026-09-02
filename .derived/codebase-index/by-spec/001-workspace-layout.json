@@ -1,56 +1,45 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '001-workspace-layout' file unit 'Cargo.toml' does not exist",
-        "path": "Cargo.toml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '001-workspace-layout' file unit 'rust-toolchain.toml' does not exist",
-        "path": "rust-toolchain.toml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '001-workspace-layout' file unit 'deny.toml' does not exist",
-        "path": "deny.toml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '001-workspace-layout' file unit 'package.json' does not exist",
-        "path": "package.json"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '001-workspace-layout' file unit 'pnpm-workspace.yaml' does not exist",
-        "path": "pnpm-workspace.yaml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '001-workspace-layout' section unit 'workspace' not found in Cargo.toml",
-        "path": "Cargo.toml"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "000-butler-bootstrap"
     ],
     "implementingPaths": [
       {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
         "path": "Makefile",
+        "source": "spec-edge"
+      },
+      {
+        "path": "deny.toml",
         "source": "spec-edge"
       },
       {
         "path": "docs/architecture.md",
         "source": "spec-edge"
+      },
+      {
+        "path": "package.json",
+        "source": "spec-edge"
+      },
+      {
+        "path": "pnpm-workspace.yaml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "rust-toolchain.toml",
+        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -59,7 +48,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "deny.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -68,7 +61,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "package.json"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -77,7 +74,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "pnpm-workspace.yaml"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -86,7 +87,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "rust-toolchain.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -95,7 +100,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "Cargo.toml",
+            "span": {
+              "endLine": 45,
+              "startLine": 19
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "co_authority",
         "unit": {
@@ -176,5 +189,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "dab61623a7ec587e287e044b69a9b36c22cdb9732f062cc217b97c1084ca5651"
+  "shardHash": "5f965c6fae1205e4acb0f990559a66f7efcabfcb54a324bc1568a325661dbbbd"
 }
