@@ -115,7 +115,7 @@ reading its own answers back.
 | # | Decision | Alternatives | Why |
 |---|---|---|---|
 | D1 | Tauri v2 (Rust process + system webview) | Electron; native Swift/WinUI apps | Native window handles for exclusion; one codebase for two platforms; small binary; typed IPC via `tauri-specta`. |
-| D2 | SolidJS for the overlay | React | Fine-grained reactivity under token streaming without VDOM churn; small bundle; no runtime scheduling surprises. |
+| D2 | SolidJS for the overlay | React | The overlay is a passive mirror of one external store fed by one event stream; Solid's `createStore` + `reconcile` is that primitive, with per-field subscription and no memoization discipline. Synchronous DOM commits keep the exclusion self-test's "is the sentinel painted" question one step (React 18 batches and may defer the commit). No dependency arrays or effect re-runs, the React defect class that typechecks and ships; the Solid-specific class (destructured props, conditional returns, untracked signal reads) is caught by `eslint-plugin-solid` (012 §3.1). Token-rate streaming is not the reason (pacing is in core, D7); bundle size is not either (assets load from disk). |
 | D3 | Pure reducer + effect runtime (009) | Async tasks with shared state; an actor per stage | Exhaustively testable transition table; the outline's ordering guarantees become properties, not hopes. |
 | D4 | OS-native OCR (Vision, Windows.Media.Ocr) | Tesseract; PaddleOCR / RapidOCR via ONNX | No bundled model, no GPU dependency of our own, hardware-accelerated, on-device by definition. |
 | D5 | Snapshot polling (2.5 s default) | Continuous SCStream / DXGI stream | Text changes on the order of seconds; polling is an order of magnitude cheaper in CPU and battery. |
