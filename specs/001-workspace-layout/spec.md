@@ -5,7 +5,7 @@ status: approved
 kind: "tooling"
 domain: "governance"
 created: "2026-09-01"
-implementation: pending
+implementation: in-progress
 owner: "butler-ai maintainers"
 risk: low
 platforms: "all"

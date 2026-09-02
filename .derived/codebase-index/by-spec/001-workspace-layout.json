@@ -1,33 +1,33 @@
 {
   "diagnostics": {
-    "errors": [],
-    "warnings": [
+    "errors": [
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '001-workspace-layout' file unit 'Cargo.toml' does not exist",
         "path": "Cargo.toml"
       },
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '001-workspace-layout' file unit 'rust-toolchain.toml' does not exist",
         "path": "rust-toolchain.toml"
       },
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '001-workspace-layout' file unit 'deny.toml' does not exist",
         "path": "deny.toml"
       },
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '001-workspace-layout' file unit 'package.json' does not exist",
         "path": "package.json"
       },
       {
-        "code": "W-001",
+        "code": "I-004",
         "message": "spec '001-workspace-layout' file unit 'pnpm-workspace.yaml' does not exist",
         "path": "pnpm-workspace.yaml"
       }
-    ]
+    ],
+    "warnings": []
   },
   "mapping": {
     "dependsOn": [
@@ -161,5 +161,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "80ad3e302715057d62818d424dd10a3990a1e7c3130c704d29fe09214c54d7e2"
+  "shardHash": "53488ae513b25fb27eaed837aab265f75437daece439b9a6ed6d5d54b1c39edf"
 }
