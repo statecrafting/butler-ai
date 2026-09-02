@@ -1,0 +1,42 @@
+# Spec: specs/001-workspace-layout/spec.md
+#
+# The one Cargo workspace (spec 001 §3.1): virtual (no root package), resolver
+# 3, members `crates/*` plus the Tauri app crate. A crate boundary is an
+# ownership boundary: every member is owned by exactly one spec and names it in
+# `[package.metadata.butler]`. Third-party crates are pinned here once and
+# referenced by members as `{ workspace = true }`; Cargo.lock is committed and
+# every cargo invocation runs `--locked`.
+#
+# Cargo refuses to load a workspace whose member entries match nothing, so the
+# Rust gates (`make build test lint`, `.github/workflows/ci.yml`) stay red until
+# the member crates exist: `crates/butler-core` (spec 009), `crates/butler-capture`
+# (006), `crates/butler-ocr` (007), `crates/butler-llm` (010) and
+# `apps/desktop/src-tauri` (004). Each of those manifests belongs to its spec.
+
+[workspace]
+resolver = "3"
+members = ["crates/*", "apps/desktop/src-tauri"]
+
+# Inherited by every member with `<field>.workspace = true`.
+[workspace.package]
+edition = "2024"
+rust-version = "1.92.0"
+license = "AGPL-3.0-only"
+repository = "https://github.com/bartekus/butler-ai"
+
+# Every third-party crate is declared here exactly once (spec 001 FR-004) and
+# referenced by members as `name = { workspace = true }`. Versions are caret
+# requirements here and exact pins in Cargo.lock. The table fills as the
+# crate-owning specs land their dependencies.
+[workspace.dependencies]
+
+[workspace.lints.rust]
+# `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,
+# butler-desktop) carry FFI under `#[allow(unsafe_code)]` with a `// SAFETY:`
+# comment on the smallest possible block, so every exception is grep-able
+# (spec 001 FR-005). Never in butler-core or butler-llm.
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+all = "deny"
+pedantic = "warn"

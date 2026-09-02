@@ -1,0 +1,66 @@
+# Spec: specs/001-workspace-layout/spec.md
+#
+# Supply-chain policy for the workspace (spec 001 §3.1, FR-003), enforced by
+# `cargo deny check` in `make lint` and in CI: only the listed licenses, no
+# vulnerable or yanked crates, crates.io as the only source.
+
+[graph]
+# Evaluate the dependency graph for the shipped targets only (the pins in
+# rust-toolchain.toml), so a crate pulled in solely for another platform never
+# trips a check here.
+targets = [
+  "x86_64-pc-windows-msvc",
+  "aarch64-apple-darwin",
+  "x86_64-apple-darwin",
+]
+all-features = false
+
+[advisories]
+# cargo-deny's advisory check (config v2) treats every vulnerability as an
+# error; there is no lower level to set. Yanked releases are refused too: a
+# pinned lockfile that names one is a signal, not an inconvenience.
+yanked = "deny"
+# Ignored advisories carry an id and a reason, one per line. None at bootstrap.
+ignore = []
+
+[licenses]
+# The allowlist from spec 001 §3.1. AGPL-3.0-only is our own crates
+# (`[workspace.package] license`); everything else is what a dependency may
+# carry. A crate outside this list fails the check; add it here, with the
+# spec that needs it, never as a per-crate exception.
+allow = [
+  "MIT",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Zlib",
+  "Unicode-3.0",
+  "MPL-2.0",
+  "AGPL-3.0-only",
+  "Unlicense",
+]
+confidence-threshold = 0.8
+exceptions = []
+
+[licenses.private]
+# Our own crates are unpublished but not exempt: their license is checked.
+ignore = false
+
+[bans]
+multiple-versions = "warn"
+# A `*` version requirement is never acceptable (spec 001 FR-004).
+wildcards = "deny"
+# Banned crates. None at bootstrap. Add an entry with a reason when a crate is
+# ruled out; spec 015 names the classes (anything that would persist, log, or
+# transmit screen content outside the configured provider).
+deny = []
+skip = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# Git dependencies are listed here explicitly, one per line with the spec that
+# needs it. None at bootstrap (spec 001 §3.1).
+allow-git = []

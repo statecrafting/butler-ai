@@ -1,0 +1,11 @@
+# Spec: specs/001-workspace-layout/spec.md
+#
+# The exact toolchain every build uses (spec 001 §3.1). MSRV equals this pin
+# (`rust-version` in Cargo.toml): a desktop application makes no separate MSRV
+# promise, so bump both together. The three targets are the shipped platforms
+# (Linux is deferred: docs/threat-model.md §7); rustup installs their standard
+# libraries on every host so cross-target `cargo check` works anywhere.
+[toolchain]
+channel = "1.92.0"
+components = ["rustfmt", "clippy"]
+targets = ["x86_64-pc-windows-msvc", "aarch64-apple-darwin", "x86_64-apple-darwin"]
