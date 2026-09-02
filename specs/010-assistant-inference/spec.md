@@ -1,7 +1,7 @@
 ---
 id: "010-assistant-inference"
 title: "Assistant inference: a provider-agnostic streaming client, the Claude reference provider, prompt contract, secrets, and spend guard"
-status: draft
+status: approved
 kind: "feature"
 domain: "assistant"
 created: "2026-09-01"

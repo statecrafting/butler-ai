@@ -153,8 +153,8 @@
       }
     ],
     "specId": "005-capture-exclusion",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "3a1da103696cfb0281f57590995831c5ae6ca01fb81ff86e751eadab4f12217b"
+  "shardHash": "96b8220a77d1e3b33031c42737aa4dc633aab1ed05fa225f88c84538c673ff0f"
 }

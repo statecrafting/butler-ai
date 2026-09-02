@@ -1,7 +1,7 @@
 ---
 id: "016-diagnostics-and-logging"
 title: "Diagnostics and logging: structured, content-free tracing and a user-initiated diagnostics bundle"
-status: draft
+status: approved
 kind: "feature"
 domain: "platform"
 created: "2026-09-01"

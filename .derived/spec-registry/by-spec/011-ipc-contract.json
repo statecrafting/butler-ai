@@ -13,10 +13,15 @@
     "created": "2026-09-01",
     "dependsOn": [
       "009-pipeline-state-machine",
-      "004-desktop-shell",
-      "012-overlay-ui"
+      "004-desktop-shell"
     ],
     "domain": "platform",
+    "establishes": [
+      {
+        "kind": "file",
+        "path": "apps/desktop/src/generated/bindings.ts"
+      }
+    ],
     "extends": [
       {
         "nature": "additive",
@@ -81,14 +86,6 @@
           "kind": "file",
           "path": "apps/desktop/src-tauri/src/bin/export-bindings.rs"
         }
-      },
-      {
-        "nature": "additive",
-        "spec": "012-overlay-ui",
-        "unit": {
-          "kind": "file",
-          "path": "apps/desktop/src/generated/bindings.ts"
-        }
       }
     ],
     "extraFrontmatter": {
@@ -114,10 +111,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/011-ipc-contract/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "The typed seam between the Rust process and the webview. `UiEvent` (Rust → UI: runtime status, answer lifecycle, paced chunks, exclusion status, prompts for credentials or permissions) and `UiCommand` (UI → Rust: arm, disarm, ask now, dismiss, set interaction, read and update settings, store a secret, run the self-test) are defined once in `butler-core::ipc` as serde types, exposed as Tauri commands and events in the desktop crate, and exported to TypeScript with `tauri-specta` into a committed, generated bindings file whose regeneration CI verifies is a no-op. The contract is versioned and additive within a major.\n",
     "title": "IPC contract: typed commands and events between the Rust runtime and the overlay, with generated bindings"
   },
-  "shardHash": "ddf2e3f526c578d7f18c96f4148fd763c6697e689d1e72545973ee3a576eaa6e",
+  "shardHash": "429251b76b7f761ee2c3625d8e784ca76ea9c92f4411638b06059ae3ff07734c",
   "specVersion": "1.1.0"
 }

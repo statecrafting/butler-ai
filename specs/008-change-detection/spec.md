@@ -1,7 +1,7 @@
 ---
 id: "008-change-detection"
 title: "Change detection: fire inference only when the screen's text has meaningfully changed"
-status: draft
+status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-01"

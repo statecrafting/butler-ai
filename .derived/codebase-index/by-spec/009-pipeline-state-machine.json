@@ -191,8 +191,8 @@
       }
     ],
     "specId": "009-pipeline-state-machine",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "8c38808b297a1cf186c49cada1a8c6948cfea751e46fec06af0317833c4a1075"
+  "shardHash": "d1d26aa6e16633fb63b519350dad80113f9b18d046b9dafd801f5d24f1dd1803"
 }

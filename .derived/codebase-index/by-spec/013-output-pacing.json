@@ -124,8 +124,8 @@
       }
     ],
     "specId": "013-output-pacing",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "ff5c2e68f604bbcacdb9fe34a31c1df9c33f9f3e41523891405de198825827a3"
+  "shardHash": "70970177ccf4c8540c7586be765082362f7dc90077eb5f3bc842715325d64aab"
 }

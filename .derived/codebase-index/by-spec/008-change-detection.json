@@ -93,8 +93,8 @@
       }
     ],
     "specId": "008-change-detection",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "499078739585af8e7fe32943d0342217a438ca19b6036317efce2d952c088a07"
+  "shardHash": "a31ce7573892a6a98f167e7d0591b04d2cb317784f70001af9b15923456d6ac1"
 }

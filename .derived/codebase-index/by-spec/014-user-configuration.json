@@ -137,8 +137,8 @@
       }
     ],
     "specId": "014-user-configuration",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "6ab9abbbdd1c69b4b3fa9495273a3d0f7efa2f063b77b485074753fa149cd7db"
+  "shardHash": "d4b72afc26cc5bcf4fbf06e3a9128121a5821a4b39236b8532ccbf04212171b6"
 }

@@ -85,10 +85,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/007-text-recognition/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "The `butler-ocr` crate: a `TextRecognizer` trait that turns a `FrameView` into `Recognized` text with per-line geometry and confidence, backed by the operating system's own OCR engine (Apple Vision `VNRecognizeTextRequest` on macOS, `Windows.Media.Ocr` on Windows) so no model ships with the app and no pixels leave the process; plus a deterministic normalization pass that turns engine output into the stable, layout-ordered string the change detector (008) compares and the assistant (010) reads. Recognition runs entirely on device.\n",
     "title": "Text recognition: native on-device OCR with a normalized text output"
   },
-  "shardHash": "0a5ebeafbaa39ab632b9e68a80aa9a48e18136f5c41cae183dc16dabdfc7e9b6",
+  "shardHash": "f50dec40709e0320da6e7101b9879635eaa3f29171806171e3d36c0810e0b0f4",
   "specVersion": "1.1.0"
 }

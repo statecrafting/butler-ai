@@ -1,7 +1,7 @@
 ---
 id: "012-overlay-ui"
 title: "Overlay UI: a transparent SolidJS surface that renders runtime state and answers"
-status: draft
+status: approved
 kind: "feature"
 domain: "ui"
 created: "2026-09-01"

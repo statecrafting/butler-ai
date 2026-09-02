@@ -1,7 +1,7 @@
 ---
 id: "005-capture-exclusion"
 title: "Capture exclusion: keep the overlay out of the OS frame buffer, and verify it"
-status: draft
+status: approved
 kind: "feature"
 domain: "platform"
 created: "2026-09-01"

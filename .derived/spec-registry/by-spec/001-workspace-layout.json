@@ -92,10 +92,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/001-workspace-layout/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "Fixes the physical shape of the repository so every later spec can name its territory unambiguously: a single root Cargo workspace (`crates/*` plus the Tauri app crate under `apps/desktop/src-tauri`), a single pnpm workspace (`apps/*`), pinned Rust and Node toolchains, edition 2024, a supply-chain policy (`deny.toml`), and the manifest metadata every package must carry so spec-spine discovers it and maps it to its owning spec. Owns the root manifests and co-owns the Makefile's build/test/lint targets with the harness spec. Establishes no product code.\n",
     "title": "Workspace layout: one Cargo workspace, one pnpm workspace, pinned toolchains"
   },
-  "shardHash": "56eb1c1ef768ba8e4e4b3a4f5f3ce7abf8efb26f47ad0d881e308a40d45d9002",
+  "shardHash": "dcea3298c79296b0a4b363d35e0ffcfbb880df93e46259403735e441207ab47d",
   "specVersion": "1.1.0"
 }

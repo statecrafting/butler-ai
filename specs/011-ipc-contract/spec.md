@@ -1,7 +1,7 @@
 ---
 id: "011-ipc-contract"
 title: "IPC contract: typed commands and events between the Rust runtime and the overlay, with generated bindings"
-status: draft
+status: approved
 kind: "feature"
 domain: "platform"
 created: "2026-09-01"
@@ -13,7 +13,8 @@ phase: 2
 depends_on:
   - "009-pipeline-state-machine"
   - "004-desktop-shell"
-  - "012-overlay-ui"
+establishes:
+  - "apps/desktop/src/generated/bindings.ts"
 extends:
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/ipc.rs", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: module, id: "butler_core::ipc" }, nature: additive }
@@ -23,7 +24,6 @@ extends:
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/commands.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/events.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/bin/export-bindings.rs", nature: additive }
-  - { spec: "012-overlay-ui", unit: "apps/desktop/src/generated/bindings.ts", nature: additive }
 constrains:
   - flavor: invariant-freeze
     unit: "crates/butler-core/src/ipc.rs"

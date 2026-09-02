@@ -45,7 +45,8 @@ jobs:
       - name: Ownership coverage (fail on untraced)
         run: spec-spine index coverage --fail-on-untraced
       - name: Burn-down (informational)
-        run: spec-spine index render | grep -c 'W-001' | sed 's/^/unresolved owning units: /' || true
+        run: |
+          spec-spine index render | grep -c 'W-001' | sed 's/^/unresolved owning units: /' || true
       # PR-only: the gate reads the PR-body waiver, which push/merge_group do
       # not carry. Diff the event's frozen SHAs, never the merge ref.
       - name: Coupling gate (spec/code drift + ownership)

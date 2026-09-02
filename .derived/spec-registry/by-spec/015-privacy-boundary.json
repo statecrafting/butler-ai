@@ -138,10 +138,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/015-privacy-boundary/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "The cross-cutting invariants that make constitution §V enforceable, asserted as `constrains` edges over the exact units that could violate them, plus the one piece of code the boundary needs: `redact`, a pure pass that removes secret-shaped content (API keys, tokens, card and account numbers, private key blocks, e-mail addresses and phone numbers when the user opts in) from recognized text before it can become an `InferenceRequest`. Frames and recognized text never touch disk; one endpoint per provider; secrets in the keychain; logs carry no content; the webview has no network or filesystem. An exception to any of these is an amendment to this spec, never a feature's side effect.\n",
     "title": "Privacy boundary: what may leave the process, what may touch disk, and what may be logged"
   },
-  "shardHash": "4f19bf5700fd07e94a79cc65b04e58784e7af1f91163420d7c1bc661c0d6050c",
+  "shardHash": "c51caf05c4ca624ff4740428f3dbdb96899c70905bf2fd5e9ab03117ffa9e488",
   "specVersion": "1.1.0"
 }

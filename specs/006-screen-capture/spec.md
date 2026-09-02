@@ -1,7 +1,7 @@
 ---
 id: "006-screen-capture"
 title: "Screen capture: snapshot polling of one monitor through the compositor"
-status: draft
+status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-01"

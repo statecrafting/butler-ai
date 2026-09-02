@@ -190,8 +190,8 @@
       }
     ],
     "specId": "007-text-recognition",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "a76c2db4406e01f77058b88395cd401f017ec4cab1fa8f3f9efc0b46ec0cebf3"
+  "shardHash": "61632d7de17ff98b2404b73ba79776e4ed3205fb816b2c6dd29c24e7cfe73e3c"
 }

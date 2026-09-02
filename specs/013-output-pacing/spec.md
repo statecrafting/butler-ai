@@ -1,7 +1,7 @@
 ---
 id: "013-output-pacing"
 title: "Output pacing: deliver the answer in chunks at a human reading rate"
-status: draft
+status: approved
 kind: "feature"
 domain: "ui"
 created: "2026-09-01"

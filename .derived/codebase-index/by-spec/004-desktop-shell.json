@@ -83,8 +83,7 @@
   },
   "mapping": {
     "dependsOn": [
-      "001-workspace-layout",
-      "014-user-configuration"
+      "001-workspace-layout"
     ],
     "implementingPaths": [
       {
@@ -270,8 +269,8 @@
       }
     ],
     "specId": "004-desktop-shell",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "b7562b66576df2a9a54fbcee4323aa200d3214f86704273dee09097faa7ffd22"
+  "shardHash": "fe11780027675d380ad422fc8e84920d0cf3dc12eff6e5629def99da47208365"
 }

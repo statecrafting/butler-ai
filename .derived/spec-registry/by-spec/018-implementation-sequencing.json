@@ -78,10 +78,10 @@
       "4. Out of scope"
     ],
     "specPath": "specs/018-implementation-sequencing/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "The build order for butler-ai as a sequencing plan over the product specs, expressed with spec-scoped `constrains` edges so the plan is part of the authority graph rather than a README. Five phases, each with an entry condition, an exit criterion (the phase's specs at zero `W-001` and flipped to `implementation: complete`), and the parallelism an orchestrator may use within it. The `phase` frontmatter key on every product spec mirrors this plan; the two MUST agree.\n",
     "title": "Implementation sequencing: the phased build order for agentic development"
   },
-  "shardHash": "7140eecb7575d03d937da57ef9b6531409bc571c4cf769d3008b7ee15922d556",
+  "shardHash": "0cd4e155efe673017d6528be26967b28547aa873de9c02d1bd9cc094ae9213bb",
   "specVersion": "1.1.0"
 }

@@ -1,7 +1,7 @@
 ---
 id: "014-user-configuration"
 title: "User configuration: a typed settings model, an atomic on-disk store, and the settings panel"
-status: draft
+status: approved
 kind: "feature"
 domain: "platform"
 created: "2026-09-01"

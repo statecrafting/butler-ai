@@ -67,8 +67,8 @@
       }
     ],
     "specId": "016-diagnostics-and-logging",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "c577ae7e03018cbe985c9e84453b9baa4cd2f5c00e796a81b395d94e338e9132"
+  "shardHash": "7ec0dc39b26b59877418e389744602c7c06da75d205e53964f3aefc5b41e01a7"
 }

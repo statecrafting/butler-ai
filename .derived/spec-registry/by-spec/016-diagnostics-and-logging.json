@@ -61,10 +61,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/016-diagnostics-and-logging/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "Operational visibility without content: `tracing` with a rolling file appender in the platform log directory, level from settings (default `info`; `trace` records every state transition by id), structured fields restricted to a closed set of key names, and a diagnostics bundle (recent log, settings, versions, exclusion status, platform info) that the user builds from the tray and saves where they choose. The privacy boundary (015) constrains `logging.rs`; this spec makes the constraint operational with a field allowlist enforced at compile time.\n",
     "title": "Diagnostics and logging: structured, content-free tracing and a user-initiated diagnostics bundle"
   },
-  "shardHash": "76e70dd99458e43fe1baf2bcc47904fb6404790edcd25a5ac0cb1e9ebd451554",
+  "shardHash": "998eff50807016ffeaa57b046a3cde38debd7fe6f675bce0bc6dc074076200d4",
   "specVersion": "1.1.0"
 }

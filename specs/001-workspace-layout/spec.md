@@ -1,7 +1,7 @@
 ---
 id: "001-workspace-layout"
 title: "Workspace layout: one Cargo workspace, one pnpm workspace, pinned toolchains"
-status: draft
+status: approved
 kind: "tooling"
 domain: "governance"
 created: "2026-09-01"

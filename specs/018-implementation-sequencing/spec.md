@@ -1,7 +1,7 @@
 ---
 id: "018-implementation-sequencing"
 title: "Implementation sequencing: the phased build order for agentic development"
-status: draft
+status: approved
 kind: "plan"
 domain: "governance"
 created: "2026-09-01"
@@ -57,7 +57,7 @@ spec-scoped `constrains`).
 |---|---|---|---|---|
 | 0 | 000, 002, 003 | none | corpus compiles; harness and CI green on `main` | n/a (done) |
 | 1 | 001, 009, 008, 015 | phase 0 | `make ci` green on Linux CI; `make burndown` shows zero for these four | 009 first (it owns `butler-core`); then 008 and 015 in parallel |
-| 2 | 004, 011, 012, 014, 016 | phase 1 | app launches on both platforms to a transparent, click-through overlay showing `Disarmed`; bindings fresh in CI | 004 first; then 011+012 together, 014 and 016 in parallel |
+| 2 | 004, 011, 012, 014, 016 | phase 1 | app launches on both platforms to a transparent, click-through overlay showing `Disarmed`; bindings fresh in CI | 004 first; then 011 (the contract and its generated bindings), then 012 (the UI that imports them), then 014; 016 in parallel once 004 is complete |
 | 3 | 006, 007, 005 | phase 2 | arming runs the self-test and reports `Verified` on both platforms; a static screen yields `Unchanged` cycles | 006 and 007 in parallel; 005 after 006 |
 | 4 | 010, 013 | phase 3 | a question on screen produces a paced answer end to end; 015 FR-004/005 pass | 013's pure policy may start with phase 1; wiring after 010 |
 | 5 | 017 | phase 4 | `v0.1.0` release with signed artifacts | n/a |

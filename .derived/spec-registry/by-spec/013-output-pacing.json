@@ -96,10 +96,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/013-output-pacing/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "Model output arrives in bursts of tokens; the outline requires that the overlay present it at a natural reading pace in chunks rather than as a wall of text that appears at once. The pacing policy is a pure function in `butler-core` (`Pacer`), driven by the runtime's tick: it buffers provider chunks, releases them at a configurable words-per-minute rate with sentence and clause boundaries preferred, front-loads the first clause so the answer starts quickly, and never exceeds a burst cap. The machine's `Rendering` state (009) ends when the pacer drains. The UI (012) is a passive consumer of `AnswerChunk` events; it applies no timing of its own.\n",
     "title": "Output pacing: deliver the answer in chunks at a human reading rate"
   },
-  "shardHash": "5a644297bd695f19c0f0f88c2dc0ecbbe3a14231a5ea414e261d53dbd91df15a",
+  "shardHash": "dfd4a31063b342c83059a700bf23bc025df02299cace8806ff3980f6c8a48952",
   "specVersion": "1.1.0"
 }

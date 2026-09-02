@@ -1,7 +1,7 @@
 ---
 id: "007-text-recognition"
 title: "Text recognition: native on-device OCR with a normalized text output"
-status: draft
+status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-01"

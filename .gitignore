@@ -13,6 +13,10 @@ node_modules/
 /apps/desktop/src-tauri/target/
 /apps/desktop/src-tauri/gen/schemas/
 
+# claude-observatory orchestrator state root for this project (journals,
+# evidence, session logs): never committed.
+/data/
+
 # spec-spine: the derived shard trees ARE committed (the coupling gate and the
 # staleness check compare against them). Only the wall-clock build metadata
 # and on-demand attestations are ignored.

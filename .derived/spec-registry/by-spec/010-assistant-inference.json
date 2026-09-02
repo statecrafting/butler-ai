@@ -105,10 +105,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/010-assistant-inference/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "The `butler-llm` crate: an `Assistant` trait that streams `Chunk`s for an `InferenceRequest`, the Claude Messages API reference implementation over raw HTTPS (Rust has no official SDK; the wire contract is pinned by fixture tests), an SSE parser, the prompt contract (system prompt, context budget, trimming order, refusal and stop-reason handling), an OS-keychain-backed `SecretStore` so an API key is never in a file, and a `SpendGuard` that bounds requests per minute and tokens per day. The provider is selected by settings; exactly one endpoint is ever contacted (spec 015).\n",
     "title": "Assistant inference: a provider-agnostic streaming client, the Claude reference provider, prompt contract, secrets, and spend guard"
   },
-  "shardHash": "72dc221c1738a5c44bfe478169c7f9b957b79023849ec4f423efc34f8dc92ebe",
+  "shardHash": "498dfcd8cf20b9cfbc2eac7657ea1fd78a21b8f703b925ae359c1d045ee6e0db",
   "specVersion": "1.1.0"
 }

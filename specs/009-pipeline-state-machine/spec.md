@@ -1,7 +1,7 @@
 ---
 id: "009-pipeline-state-machine"
 title: "Pipeline state machine: a pure reducer that encloses capture → OCR → evaluate → infer → render"
-status: draft
+status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-01"

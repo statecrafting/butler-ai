@@ -195,8 +195,8 @@
       }
     ],
     "specId": "015-privacy-boundary",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "a870663f84ace533ad0207b1edffb03301ea3813c5e268863ad5ecebcf60101c"
+  "shardHash": "d1b40fdde6e8c3f2e054eaaf62a7041c5ad9d8110f58f05e57fd6e7872dc9068"
 }

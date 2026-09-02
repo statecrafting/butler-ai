@@ -212,8 +212,8 @@
       }
     ],
     "specId": "012-overlay-ui",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "eb89860c709dfe3f1ef3aca6df333f4aa125c9fe50282ed2db3098f3e07259be"
+  "shardHash": "1b42ac382638b927de6eebf38d0f7415be4814c589ac1dcb4539f22e61be9357"
 }

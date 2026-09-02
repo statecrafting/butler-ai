@@ -259,8 +259,8 @@
       }
     ],
     "specId": "010-assistant-inference",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "71d63a2df64c3f513c2907827d1f6b59648342683438eef607b6eed7403ec693"
+  "shardHash": "73002d64228b6e66105849d9883cb21ad939295d2d1b91002f22ff3495a631c4"
 }

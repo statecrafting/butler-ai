@@ -118,10 +118,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/005-capture-exclusion/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "The stealth mechanism and its verification. On Windows the overlay window's handle receives `SetWindowDisplayAffinity(WDA_EXCLUDEFROMCAPTURE)`; on macOS the `NSWindow.sharingType` is set to `NSWindowSharingNone`. Both are requests to the compositor, not guarantees, so this spec also defines a self-test that captures the screen through the same platform path recording tools use and asserts the overlay's pixels are absent, and a typed `ExclusionStatus` the runtime and UI must honour: the app never claims to be hidden when it has not verified that it is. The same property protects the pipeline from OCR-ing its own answers.\n",
     "title": "Capture exclusion: keep the overlay out of the OS frame buffer, and verify it"
   },
-  "shardHash": "24d1ce18117f99100e230a2622f14c7e2b01dab08d92f9a601c2a4e8d7bc7c99",
+  "shardHash": "92fd07a2e750cbc374a336728a5a5cd474ab97fbc75de9b4059b2453dde668a9",
   "specVersion": "1.1.0"
 }

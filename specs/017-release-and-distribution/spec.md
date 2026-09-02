@@ -1,11 +1,11 @@
 ---
 id: "017-release-and-distribution"
 title: "Release and distribution: signed, notarized, attested desktop builds with an opt-in updater"
-status: draft
+status: approved
 kind: "feature"
 domain: "distribution"
 created: "2026-09-01"
-implementation: deferred
+implementation: pending
 owner: "butler-ai maintainers"
 risk: high
 platforms: ["windows", "macos"]

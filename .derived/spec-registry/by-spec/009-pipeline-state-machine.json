@@ -98,10 +98,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/009-pipeline-state-machine/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "The heart of butler-ai and the owner of the `butler-core` crate: the pipeline is a strict state machine expressed as a pure reducer `reduce(state, event) -> (state, effects)` with no I/O, no clock and no threads, plus a runtime in the desktop crate that executes the effects (capture, recognize, evaluate, infer, emit) against the real traits and feeds the results back as events. The outline's five states become an armed/disarmed session flag over a capture cycle with single in-flight inference, explicit cancellation, a fault state with backoff, and a degraded state driven by the exclusion status. Duplicate or out-of-order frames cannot reach the assistant because the reducer refuses them by construction.\n",
     "title": "Pipeline state machine: a pure reducer that encloses capture → OCR → evaluate → infer → render"
   },
-  "shardHash": "ddc39bb7ae3ed33269fd4b3c472f695731a6f6933943090b96f3381eed651b1a",
+  "shardHash": "621b26fec06cc87a63b6b51a4f4088046c2565fc2c4af3de0e765b7fb7c5a3b8",
   "specVersion": "1.1.0"
 }

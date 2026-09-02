@@ -120,8 +120,8 @@
       }
     ],
     "specId": "017-release-and-distribution",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "b8d0805f760b2e37648debe0a5bd24c5e5ab7a7b21ad3aad6697027b43127556"
+  "shardHash": "6503697dc14129ab0ea80c086139b8379cbd7cf8f5ad70b29ec3f568ff277024"
 }

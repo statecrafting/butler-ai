@@ -158,8 +158,8 @@
       }
     ],
     "specId": "001-workspace-layout",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "043c1a04a038c05455ef86836669ffec1fde6716d0c416a23f6122fde31b74ce"
+  "shardHash": "80ad3e302715057d62818d424dd10a3990a1e7c3130c704d29fe09214c54d7e2"
 }

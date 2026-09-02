@@ -160,8 +160,8 @@
           {
             "file": ".github/workflows/spec-spine.yml",
             "span": {
-              "endLine": 75,
-              "startLine": 64
+              "endLine": 76,
+              "startLine": 65
             }
           }
         ],
@@ -178,7 +178,7 @@
           {
             "file": ".github/workflows/spec-spine.yml",
             "span": {
-              "endLine": 62,
+              "endLine": 63,
               "startLine": 20
             }
           }
@@ -232,5 +232,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "5cea6bdfc5f3e348e318e78c60f3f3e8a3949c683f7d7890cf4acfa0ed7d9fb2"
+  "shardHash": "9f83a2a2f0f76bb9b0f467817cd6bfdbc126062eb8529470a669b61140d51a1a"
 }

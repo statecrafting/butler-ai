@@ -1,7 +1,7 @@
 ---
 id: "004-desktop-shell"
 title: "Desktop shell: the Tauri v2 app crate, the transparent always-on-top overlay window, shortcuts, tray, and permission onboarding"
-status: draft
+status: approved
 kind: "feature"
 domain: "platform"
 created: "2026-09-01"
@@ -12,7 +12,6 @@ platforms: ["windows", "macos"]
 phase: 2
 depends_on:
   - "001-workspace-layout"
-  - "014-user-configuration"
 establishes:
   - { kind: crate, id: "butler-desktop" }
   - "apps/desktop/src-tauri/Cargo.toml"

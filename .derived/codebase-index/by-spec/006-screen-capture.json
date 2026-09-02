@@ -163,8 +163,8 @@
       }
     ],
     "specId": "006-screen-capture",
-    "specStatus": "draft"
+    "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "43ba45ecf945c56de41f35bb33b3223fe37e360da80831dc92cfec0c9b9bbed4"
+  "shardHash": "8cdda492235fa269c40403e23611061568d1f43ca4e95ae61d3e8a0496e7f39c"
 }

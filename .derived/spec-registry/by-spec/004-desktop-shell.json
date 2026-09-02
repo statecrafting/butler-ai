@@ -2,8 +2,7 @@
   "record": {
     "created": "2026-09-01",
     "dependsOn": [
-      "001-workspace-layout",
-      "014-user-configuration"
+      "001-workspace-layout"
     ],
     "domain": "platform",
     "establishes": [
@@ -117,10 +116,10 @@
       "6. Out of scope"
     ],
     "specPath": "specs/004-desktop-shell/spec.md",
-    "status": "draft",
+    "status": "approved",
     "summary": "The Tauri v2 application crate `butler-desktop`: process entry, the single overlay window (transparent, undecorated, always on top, present on every workspace, hidden from the taskbar and app switcher, click-through by default), the global shortcuts that arm/disarm capture and toggle interaction, the tray icon that is the only visible presence when the overlay is idle, the screen-recording permission onboarding on macOS, the least-privilege capability grants, and the shared `AppState` the runtime and commands hang off. It is the host every other desktop-side spec extends; it deliberately contains no pipeline logic.\n",
     "title": "Desktop shell: the Tauri v2 app crate, the transparent always-on-top overlay window, shortcuts, tray, and permission onboarding"
   },
-  "shardHash": "6aceb7cbec155307a9246786b73963c093dc24fedc7277298d10a7f13b229bc5",
+  "shardHash": "e7349f3a558b9b2f6be75cbae2870b8ce9284ef117940793cf2f07056bc9d1f7",
   "specVersion": "1.1.0"
 }

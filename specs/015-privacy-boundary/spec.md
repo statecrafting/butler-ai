@@ -1,7 +1,7 @@
 ---
 id: "015-privacy-boundary"
 title: "Privacy boundary: what may leave the process, what may touch disk, and what may be logged"
-status: draft
+status: approved
 kind: "constraint"
 domain: "platform"
 created: "2026-09-01"
