@@ -29,6 +29,8 @@ establishes:
   - "apps/desktop/src-tauri/src/app_state.rs"
   - { kind: symbol, id: "butler_desktop::window::create_overlay_window" }
   - { kind: symbol, id: "butler_desktop::shortcuts::register_shortcuts" }
+co_authority:
+  - { unit: { kind: section, file: "Cargo.toml", anchor: "workspace" }, with_specs: ["001-workspace-layout"] }
 references:
   - { unit: { kind: file, path: "docs/architecture.md" }, role: "context" }
   - { unit: { kind: file, path: "docs/threat-model.md" }, role: "context" }
@@ -71,6 +73,12 @@ spec's `lib.rs` wires them.
 `tauri.conf.json` and `capabilities/` are the app's security surface: they are
 in the `desktop-security` index slice, constrained by spec 015, and listed in
 CODEOWNERS.
+
+The app crate is also a member of the root Cargo workspace. Its entry,
+`"apps/desktop/src-tauri"` in the `[workspace]` `members` list, lands in the
+same change as the crate (spec 001 §3.1: cargo refuses a member path without a
+manifest), so this spec holds co-authority with spec 001 over that table and
+over nothing else in `Cargo.toml`.
 
 ## 3. Behavior
 

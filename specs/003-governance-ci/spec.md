@@ -94,8 +94,12 @@ pre-commit staleness check).
 - `jobs.rust` runs on a matrix of `windows-latest` and `macos-latest`: `cargo
   build --workspace --locked`, `cargo test --workspace --locked`, `cargo clippy
   --workspace --all-targets --locked -- -D warnings`, `cargo fmt --all --check`,
-  `cargo deny check`. Each step is guarded by `hashFiles('Cargo.toml') != ''`
-  so the workflow is green until spec 001 lands and real thereafter.
+  `cargo deny check`. Every step is guarded by a populated workspace, spec 001
+  §3.5's predicate (`Cargo.toml` present and `crates/*/Cargo.toml` matching at
+  least one manifest), exported by a `Detect workspace` step as
+  `steps.ws.outputs.present`. Presence of `Cargo.toml` alone is not enough:
+  cargo refuses to load a workspace whose member entries match nothing, so the
+  job is green until spec 009 lands the first crate and real thereafter.
 - `jobs.web` runs on `ubuntu-latest`: `pnpm install --frozen-lockfile`, `pnpm
   -r typecheck`, `pnpm -r lint`, `pnpm -r test`, `pnpm -r build`, guarded by
   `hashFiles('pnpm-workspace.yaml') != ''`.

@@ -1,9 +1,10 @@
 # Spec: specs/003-governance-ci/spec.md
 #
-# The language gates. Every step is guarded by the presence of the root
-# manifests, so this workflow is green until spec 001 lands the workspace and
-# real thereafter. `on`, `permissions`, `jobs.rust`, `jobs.web` are section
-# units owned by spec 003.
+# The language gates. Every Rust step is guarded by a populated workspace
+# (Cargo.toml plus at least one crates/*/Cargo.toml, spec 001 §3.5) and every
+# web step by pnpm-workspace.yaml, so this workflow is green until there is
+# something to build and real thereafter. `on`, `permissions`, `jobs.rust`,
+# `jobs.web` are section units owned by spec 003.
 name: ci
 
 on:
@@ -31,7 +32,9 @@ jobs:
       - name: Detect workspace
         id: ws
         shell: bash
-        run: echo "present=$([ -f Cargo.toml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+        # Cargo refuses to load a workspace whose member entries match nothing
+        # (spec 001 §3.1), so the root manifest alone does not activate the gates.
+        run: echo "present=$([ -f Cargo.toml ] && ls crates/*/Cargo.toml >/dev/null 2>&1 && echo true || echo false)" >> "$GITHUB_OUTPUT"
       - name: Toolchain
         if: steps.ws.outputs.present == 'true'
         run: rustc --version && cargo --version
@@ -67,9 +70,9 @@ jobs:
         run: |
           cargo run -p butler-desktop --bin export-bindings --locked
           git diff --exit-code -- apps/desktop/src/generated
-      - name: No workspace yet
+      - name: No populated workspace yet
         if: steps.ws.outputs.present == 'false'
-        run: echo "Cargo.toml absent; the Rust gates activate when spec 001 lands (phase 1)."
+        run: echo "No Cargo workspace member yet; the Rust gates activate when spec 009 lands the first crate (phase 1)."
 
   web:
     name: web

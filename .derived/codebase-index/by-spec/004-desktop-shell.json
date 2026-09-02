@@ -78,6 +78,11 @@
       {
         "code": "W-001",
         "message": "spec '004-desktop-shell' symbol unit 'butler_desktop::shortcuts::register_shortcuts' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '004-desktop-shell' section unit 'workspace' not found in Cargo.toml",
+        "path": "Cargo.toml"
       }
     ]
   },
@@ -242,6 +247,16 @@
         }
       },
       {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "workspace",
+          "file": "Cargo.toml",
+          "kind": "section"
+        }
+      },
+      {
         "locations": [
           {
             "file": "docs/architecture.md"
@@ -272,5 +287,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "fe11780027675d380ad422fc8e84920d0cf3dc12eff6e5629def99da47208365"
+  "shardHash": "1d8a2d17853a0490752b042c2444a3f4c685ad1ed77d83e6463268162555ac59"
 }
