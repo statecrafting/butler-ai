@@ -30,6 +30,16 @@
         "with_specs": [
           "002-agentic-harness"
         ]
+      },
+      {
+        "unit": {
+          "anchor": "workspace",
+          "file": "Cargo.toml",
+          "kind": "section"
+        },
+        "with_specs": [
+          "004-desktop-shell"
+        ]
       }
     ],
     "created": "2026-09-01",
@@ -89,13 +99,14 @@
       "3.5 Build targets (co-owned with spec 002)",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions"
     ],
     "specPath": "specs/001-workspace-layout/spec.md",
     "status": "approved",
     "summary": "Fixes the physical shape of the repository so every later spec can name its territory unambiguously: a single root Cargo workspace (`crates/*` plus the Tauri app crate under `apps/desktop/src-tauri`), a single pnpm workspace (`apps/*`), pinned Rust and Node toolchains, edition 2024, a supply-chain policy (`deny.toml`), and the manifest metadata every package must carry so spec-spine discovers it and maps it to its owning spec. Owns the root manifests and co-owns the Makefile's build/test/lint targets with the harness spec. Establishes no product code.\n",
     "title": "Workspace layout: one Cargo workspace, one pnpm workspace, pinned toolchains"
   },
-  "shardHash": "dcea3298c79296b0a4b363d35e0ffcfbb880df93e46259403735e441207ab47d",
+  "shardHash": "ebbf7009144e1824fc7f4cb85ec44080a4c7f1d782414fcadd95f3f167990cb1",
   "specVersion": "1.1.0"
 }

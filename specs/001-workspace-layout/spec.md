@@ -22,6 +22,7 @@ co_authority:
   - { unit: { kind: section, file: "Makefile", anchor: "build" }, with_specs: ["002-agentic-harness"] }
   - { unit: { kind: section, file: "Makefile", anchor: "test" }, with_specs: ["002-agentic-harness"] }
   - { unit: { kind: section, file: "Makefile", anchor: "lint" }, with_specs: ["002-agentic-harness"] }
+  - { unit: { kind: section, file: "Cargo.toml", anchor: "workspace" }, with_specs: ["004-desktop-shell"] }
 references:
   - { unit: { kind: file, path: "docs/architecture.md" }, role: "context" }
 summary: >
@@ -55,7 +56,7 @@ on any CI runner; platform code lives in crates that are `cfg`-gated per OS.
 
 | Path | Role | Owner |
 |---|---|---|
-| `Cargo.toml` | root workspace manifest, shared `[workspace.dependencies]`, `[workspace.lints]` | this spec |
+| `Cargo.toml` | root workspace manifest, shared `[workspace.dependencies]`, `[workspace.lints]` | this spec (the `[workspace]` table is co-owned with 004, §3.1) |
 | `rust-toolchain.toml` | pinned channel, components (`rustfmt`, `clippy`) | this spec |
 | `deny.toml` | cargo-deny: licenses, advisories, banned crates, source allowlist | this spec |
 | `package.json` | pnpm workspace root (private), `engines`, root scripts | this spec |
@@ -76,8 +77,14 @@ owns the crate; this spec only prescribes what they MUST contain (§3.3).
 ### 3.1 Cargo workspace
 
 - `Cargo.toml` at the root MUST be a virtual workspace (`[workspace]`, no root
-  `[package]`) with `resolver = "3"` and members
-  `["crates/*", "apps/desktop/src-tauri"]`.
+  `[package]`) with `resolver = "3"`. The complete `members` list is
+  `["crates/*", "apps/desktop/src-tauri"]`, and it fills in with the phases:
+  cargo treats a glob that matches nothing as a literal path and refuses to
+  load a workspace with any member that has no manifest, so a member entry
+  MUST land in the same change as the crate it names. At phase 1 the list is
+  `["crates/*"]`; spec 004 appends `"apps/desktop/src-tauri"` when it lands
+  the app crate (co-authority over the `[workspace]` table, §2). No entry may
+  name a path that does not exist on `main`.
 - `[workspace.package]` MUST set `edition = "2024"`, `rust-version`, `license =
   "AGPL-3.0-only"`, and `repository`. Every member inherits them (`.workspace =
   true`).
@@ -142,9 +149,12 @@ The Makefile targets `build`, `test`, `lint` are the language gates the harness
 skills call. Their content is this spec's; their existence and names are spec
 002's. They MUST:
 
-- `build`: `cargo build --workspace --locked` and `pnpm -r build` (each guarded
-  by the presence of its root manifest, so the target is a no-op until the
-  workspace lands).
+- `build`: `cargo build --workspace --locked` and `pnpm -r build`. Each half is
+  guarded so the target is a no-op until there is something to build: the
+  cargo half by a *populated* workspace (`Cargo.toml` present and
+  `crates/*/Cargo.toml` matching at least one manifest; the root manifest
+  alone is not loadable, §3.1), the pnpm half by `pnpm-workspace.yaml`. Spec
+  003 §3.2 guards the CI jobs on the same two predicates.
 - `test`: `cargo test --workspace --locked` and `pnpm -r test`.
 - `lint`: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets
   --locked -- -D warnings`, `cargo deny check`, `pnpm -r lint`, `pnpm -r
@@ -155,7 +165,8 @@ skills call. Their content is this spec's; their existence and names are spec
 - **FR-001.** `spec-spine index` discovers exactly five Cargo packages and one
   npm package once the workspace lands, each with a `spec` metadata value that
   resolves to an existing spec id.
-- **FR-002.** `cargo build --workspace --locked` succeeds on Windows and macOS
+- **FR-002.** Once the workspace is populated (spec 009 lands the first
+  crate), `cargo build --workspace --locked` succeeds on Windows and macOS
   runners with the pinned toolchain and no network beyond crates.io.
 - **FR-003.** `cargo deny check` passes with the license allowlist in §3.1.
 - **FR-004.** No member declares a dependency version outside
@@ -170,7 +181,7 @@ skills call. Their content is this spec's; their existence and names are spec
 - **AC-1.** `spec-spine index coverage` reports every discovered package with
   a floor spec and `0 unclaimed`.
 - **AC-2.** `make build test lint` exits 0 on a clean checkout on both target
-  platforms.
+  platforms: as no-ops before the first crate lands, as the real gates after.
 - **AC-3.** `rg -n "unsafe" crates/butler-core` returns nothing.
 - **AC-4.** `cargo metadata --format-version 1 | jq` is NOT used anywhere in
   the harness for governance reads (spec 000 §1); `spec-spine registry` and
@@ -185,3 +196,19 @@ skills call. Their content is this spec's; their existence and names are spec
   compositor-level capture exclusion under X11 and Wayland portals differ, so
   Linux is deferred until an exclusion mechanism with the same guarantee
   exists).
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-02).** The first driven build of this spec (PR #3) landed the
+  root manifests alone, and both Rust CI jobs failed at `cargo build` with
+  "failed to load manifest for workspace member `crates/*`": cargo 1.92 falls
+  back to the literal path when a `members` glob matches nothing, and refuses
+  any member without a manifest. Three resolutions were on the table: merge
+  red and let 009 heal it (it cannot: the literal `apps/desktop/src-tauri`
+  entry stays unloadable until phase 2), bootstrap skeleton crates under a
+  drift waiver (they belong to 009 and 004), or make the members list and the
+  gate guards phase-aware. The third is what §3.1, §3.5 and spec 003 §3.2 now
+  say: a member entry lands with its crate, and the language gates activate on
+  a populated workspace rather than on the presence of `Cargo.toml`. This spec
+  is therefore complete when its five manifests exist and the gates are honest
+  no-ops; FR-002 becomes checkable when 009 lands.

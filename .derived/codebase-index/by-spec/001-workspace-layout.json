@@ -26,6 +26,11 @@
         "code": "W-001",
         "message": "spec '001-workspace-layout' file unit 'pnpm-workspace.yaml' does not exist",
         "path": "pnpm-workspace.yaml"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '001-workspace-layout' section unit 'workspace' not found in Cargo.toml",
+        "path": "Cargo.toml"
       }
     ]
   },
@@ -90,6 +95,16 @@
         }
       },
       {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "workspace",
+          "file": "Cargo.toml",
+          "kind": "section"
+        }
+      },
+      {
         "locations": [
           {
             "file": "Makefile",
@@ -112,8 +127,8 @@
           {
             "file": "Makefile",
             "span": {
-              "endLine": 101,
-              "startLine": 101
+              "endLine": 104,
+              "startLine": 104
             }
           }
         ],
@@ -130,8 +145,8 @@
           {
             "file": "Makefile",
             "span": {
-              "endLine": 92,
-              "startLine": 92
+              "endLine": 95,
+              "startLine": 95
             }
           }
         ],
@@ -161,5 +176,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "80ad3e302715057d62818d424dd10a3990a1e7c3130c704d29fe09214c54d7e2"
+  "shardHash": "dab61623a7ec587e287e044b69a9b36c22cdb9732f062cc217b97c1084ca5651"
 }
