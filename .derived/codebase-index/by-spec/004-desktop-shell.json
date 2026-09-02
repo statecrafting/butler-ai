@@ -83,7 +83,10 @@
   },
   "mapping": {
     "dependsOn": [
-      "001-workspace-layout"
+      "001-workspace-layout",
+      "008-change-detection",
+      "009-pipeline-state-machine",
+      "015-privacy-boundary"
     ],
     "implementingPaths": [
       {
@@ -294,5 +297,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "1f3152340ceab6b34aba0f2744c217d5f5ca087521602220e162cbd975824997"
+  "shardHash": "33006ab391c8982a81d0bbad1f12c7639b34448cbc8577e2094e138d230f8473"
 }

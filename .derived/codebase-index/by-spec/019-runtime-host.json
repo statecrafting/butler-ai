@@ -1,0 +1,65 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '019-runtime-host' file unit 'apps/desktop/src-tauri/src/runtime.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/runtime.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '019-runtime-host' symbol unit 'butler_desktop::runtime::Runtime' did not resolve"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "009-pipeline-state-machine",
+      "004-desktop-shell"
+    ],
+    "implementingPaths": [
+      {
+        "path": "docs/architecture.md",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/runtime.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "id": "butler_desktop::runtime::Runtime",
+          "kind": "symbol"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/architecture.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/architecture.md"
+        }
+      }
+    ],
+    "specId": "019-runtime-host",
+    "specStatus": "approved"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "8854ca854bab701dbd870f8ec4284bfc6bd05bb0d726f7e1948cb8a1fac948a0"
+}

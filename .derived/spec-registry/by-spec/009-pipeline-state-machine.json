@@ -47,24 +47,6 @@
         "kind": "symbol"
       }
     ],
-    "extends": [
-      {
-        "nature": "additive",
-        "spec": "004-desktop-shell",
-        "unit": {
-          "kind": "file",
-          "path": "apps/desktop/src-tauri/src/runtime.rs"
-        }
-      },
-      {
-        "nature": "additive",
-        "spec": "004-desktop-shell",
-        "unit": {
-          "id": "butler_desktop::runtime::Runtime",
-          "kind": "symbol"
-        }
-      }
-    ],
     "extraFrontmatter": {
       "phase": 1,
       "platforms": "all"
@@ -92,16 +74,16 @@
       "3.2 Events",
       "3.3 Effects",
       "3.4 The reducer",
-      "3.5 The runtime (`runtime.rs`)",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions"
     ],
     "specPath": "specs/009-pipeline-state-machine/spec.md",
     "status": "approved",
-    "summary": "The heart of butler-ai and the owner of the `butler-core` crate: the pipeline is a strict state machine expressed as a pure reducer `reduce(state, event) -> (state, effects)` with no I/O, no clock and no threads, plus a runtime in the desktop crate that executes the effects (capture, recognize, evaluate, infer, emit) against the real traits and feeds the results back as events. The outline's five states become an armed/disarmed session flag over a capture cycle with single in-flight inference, explicit cancellation, a fault state with backoff, and a degraded state driven by the exclusion status. Duplicate or out-of-order frames cannot reach the assistant because the reducer refuses them by construction.\n",
+    "summary": "The heart of butler-ai and the owner of the `butler-core` crate: the pipeline is a strict state machine expressed as a pure reducer `reduce(state, event) -> (state, effects)` with no I/O, no clock and no threads. The effects it returns are executed by the runtime host in the desktop crate (019), which feeds every result back as an event; this spec owns the decision, not the execution. The outline's five states become an armed/disarmed session flag over a capture cycle with single in-flight inference, explicit cancellation, a fault state with backoff, and a degraded state driven by the exclusion status. Duplicate or out-of-order frames cannot reach the assistant because the reducer refuses them by construction.\n",
     "title": "Pipeline state machine: a pure reducer that encloses capture → OCR → evaluate → infer → render"
   },
-  "shardHash": "621b26fec06cc87a63b6b51a4f4088046c2565fc2c4af3de0e765b7fb7c5a3b8",
+  "shardHash": "8d40f0c9671e71b95bc21915a4931424fa298d78b34f2c14e5e24f416538779c",
   "specVersion": "1.1.0"
 }

@@ -11,8 +11,9 @@ risk: medium
 platforms: "all"
 phase: 1
 depends_on:
+  # Phase 1 (018): this module is pure code over a normalized `String`. It
+  # never names a `butler-ocr` type, so it does not wait for 007.
   - "009-pipeline-state-machine"
-  - "007-text-recognition"
 extends:
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/delta.rs", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/tests/delta.rs", nature: additive }
@@ -131,3 +132,12 @@ that a time bound.
 - Semantic change detection (embeddings, structural diffing). The trait
   admits it; v1 ships Levenshtein.
 - Deciding *what* to send after a change (010) and *when* to evaluate (009).
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-02).** `depends_on` no longer lists 007. The edge described
+  the pipeline's data flow (OCR produces the text this module compares), not
+  an implementation dependency: `delta.rs` takes `&str`, names no
+  `butler_ocr` type, and this spec's own summary calls it pure code with no
+  OS. Keeping the edge put a phase 1 spec behind a phase 3 spec and made 018's
+  phase 1 unreachable in the graph the orchestrator actually schedules on.

@@ -2,6 +2,8 @@
   "record": {
     "created": "2026-09-01",
     "dependsOn": [
+      "005-capture-exclusion",
+      "007-text-recognition",
       "009-pipeline-state-machine",
       "015-privacy-boundary",
       "014-user-configuration"
@@ -102,13 +104,14 @@
       "3.5 Spend guard (`budget.rs`)",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions"
     ],
     "specPath": "specs/010-assistant-inference/spec.md",
     "status": "approved",
     "summary": "The `butler-llm` crate: an `Assistant` trait that streams `Chunk`s for an `InferenceRequest`, the Claude Messages API reference implementation over raw HTTPS (Rust has no official SDK; the wire contract is pinned by fixture tests), an SSE parser, the prompt contract (system prompt, context budget, trimming order, refusal and stop-reason handling), an OS-keychain-backed `SecretStore` so an API key is never in a file, and a `SpendGuard` that bounds requests per minute and tokens per day. The provider is selected by settings; exactly one endpoint is ever contacted (spec 015).\n",
     "title": "Assistant inference: a provider-agnostic streaming client, the Claude reference provider, prompt contract, secrets, and spend guard"
   },
-  "shardHash": "498dfcd8cf20b9cfbc2eac7657ea1fd78a21b8f703b925ae359c1d045ee6e0db",
+  "shardHash": "2029892cbe590905fc9627439daa97f09591343680fc4cd03b9d7a2f2b5584b7",
   "specVersion": "1.1.0"
 }

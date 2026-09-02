@@ -45,15 +45,6 @@
       {
         "code": "W-001",
         "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::reduce' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' file unit 'apps/desktop/src-tauri/src/runtime.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/runtime.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_desktop::runtime::Runtime' did not resolve"
       }
     ]
   },
@@ -159,24 +150,6 @@
         }
       },
       {
-        "locations": [],
-        "ownership": true,
-        "sourceField": "extends",
-        "unit": {
-          "kind": "file",
-          "path": "apps/desktop/src-tauri/src/runtime.rs"
-        }
-      },
-      {
-        "locations": [],
-        "ownership": true,
-        "sourceField": "extends",
-        "unit": {
-          "id": "butler_desktop::runtime::Runtime",
-          "kind": "symbol"
-        }
-      },
-      {
         "locations": [
           {
             "file": "docs/architecture.md"
@@ -194,5 +167,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "04fe26682ad74d27bf9ac58f4b3470910279a256444013ac9dfe34bda2dadd39"
+  "shardHash": "6aaff9a232a7e963652f8d74207c472860d3b6caf8f9527c7280f325cc3d94b0"
 }

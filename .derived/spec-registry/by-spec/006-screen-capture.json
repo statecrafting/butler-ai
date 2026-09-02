@@ -3,7 +3,10 @@
     "created": "2026-09-01",
     "dependsOn": [
       "001-workspace-layout",
-      "009-pipeline-state-machine"
+      "009-pipeline-state-machine",
+      "014-user-configuration",
+      "016-diagnostics-and-logging",
+      "019-runtime-host"
     ],
     "domain": "pipeline",
     "establishes": [
@@ -75,13 +78,14 @@
       "3.4 Monitor selection",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions"
     ],
     "specPath": "specs/006-screen-capture/spec.md",
     "status": "approved",
     "summary": "The `butler-capture` crate: a `ScreenSource` trait that yields one `Frame` of one monitor on demand, an `xcap`-backed implementation for Windows and macOS, monitor enumeration and selection, and the `Frame` type whose lifecycle rules (in-memory only, no `Serialize`, dropped after recognition) are the first link in the privacy chain. Snapshot polling at a configurable interval replaces continuous video capture: the pipeline asks for a frame when the state machine says so, never on a free-running loop. Cadence, scheduling and backoff are the state machine's (009); this crate only knows how to take one picture.\n",
     "title": "Screen capture: snapshot polling of one monitor through the compositor"
   },
-  "shardHash": "42c7aa10bb346847938d716b5984260ad783473fed3c9a5ccb657b47f7435c11",
+  "shardHash": "5358f585784a4cac33aef0f4540dd9cd6d14e7f73d42e0c3918c99c9cbfd45b6",
   "specVersion": "1.1.0"
 }
