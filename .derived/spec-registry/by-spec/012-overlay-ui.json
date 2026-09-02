@@ -94,9 +94,9 @@
     ],
     "specPath": "specs/012-overlay-ui/spec.md",
     "status": "draft",
-    "summary": "The overlay's DOM: a SolidJS application built with Vite whose root is fully transparent (`rgba(0,0,0,0)` everywhere, no body background, no scrollbars), which renders exactly what the runtime tells it through the IPC contract: a status strip (disarmed, armed, inferencing, degraded with the visible-to-screen-sharing banner), the answer panel that receives paced chunks, the onboarding and credential panels, the settings panel, and the exclusion self-test sentinel. Pointer events are off unless the interaction modifier is held. SolidJS is chosen for fine-grained reactivity under token streaming without virtual-DOM churn.\n",
+    "summary": "The overlay's DOM: a SolidJS application built with Vite whose root is fully transparent (`rgba(0,0,0,0)` everywhere, no body background, no scrollbars), which renders exactly what the runtime tells it through the IPC contract: a status strip (disarmed, armed, inferencing, degraded with the visible-to-screen-sharing banner), the answer panel that receives paced chunks, the onboarding and credential panels, the settings panel, and the exclusion self-test sentinel. Pointer events are off unless the interaction modifier is held. SolidJS is chosen because the overlay is a passive mirror of one external store fed by one event stream, which is Solid's native primitive, and because its synchronous DOM commits keep the exclusion self-test's \"is the sentinel painted\" question answerable in one step (docs/architecture.md D2).\n",
     "title": "Overlay UI: a transparent SolidJS surface that renders runtime state and answers"
   },
-  "shardHash": "9c66276d981edf16b263bc3def5948d9c1046c5b55368d5705bc1752d70f20f1",
+  "shardHash": "267923ae8d4d3c89372185bae8380fa57cae6946e31653a78bc55a3aba455bcf",
   "specVersion": "1.1.0"
 }

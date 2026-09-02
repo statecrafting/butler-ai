@@ -37,8 +37,11 @@ summary: >
   visible-to-screen-sharing banner), the answer panel that receives paced
   chunks, the onboarding and credential panels, the settings panel, and the
   exclusion self-test sentinel. Pointer events are off unless the interaction
-  modifier is held. SolidJS is chosen for fine-grained reactivity under token
-  streaming without virtual-DOM churn.
+  modifier is held. SolidJS is chosen because the overlay is a passive mirror
+  of one external store fed by one event stream, which is Solid's native
+  primitive, and because its synchronous DOM commits keep the exclusion
+  self-test's "is the sentinel painted" question answerable in one step
+  (docs/architecture.md D2).
 ---
 
 # 012: Overlay UI
@@ -65,9 +68,38 @@ SettingsPanel.tsx` is spec 014's (each added by `extends`).
 ### 3.1 Stack
 
 - SolidJS 1.x, TypeScript strict, Vite, Vitest with `@solidjs/testing-
-  library`, ESLint (flat config) with `@typescript-eslint` and a
+  library`, ESLint (flat config) with `@typescript-eslint`,
+  `eslint-plugin-solid` (its `recommended` config, at `error`), and a
   `no-restricted-imports` rule that forbids importing `@tauri-apps/api`
   anywhere except `src/ipc/client.ts` and forbids hand-written IPC types.
+  `eslint-plugin-solid` is load-bearing, not hygiene: Solid components run
+  once, so React idioms (destructured props, a conditional early `return`
+  in the component body, a signal read captured into a plain variable at
+  component top level) typecheck and render once, then silently stop
+  updating. The plugin turns that class of defect into a lint failure.
+
+**Why SolidJS over React (decision D2, `docs/architecture.md`).**
+
+- The overlay holds one store mirroring `RuntimeStatus` plus the answer
+  buffer (§3.4), patched by one event subscription. Solid's `createStore` +
+  `reconcile` is exactly that primitive; each component subscribes to the
+  fields it reads, so a status event does not re-render the answer panel.
+  React needs `useSyncExternalStore` or context plus reducer, then
+  memoization discipline, to reach the same granularity.
+- The exclusion self-test (005) mounts `Sentinel`, then captures the monitor
+  and asserts the pattern is absent. That assertion is only meaningful once
+  the sentinel is painted. A Solid signal write mutates the DOM
+  synchronously, so the only remaining wait is paint (two
+  `requestAnimationFrame`s). React 18 batches and may defer the commit,
+  adding `flushSync` and a larger reasoning surface at the one seam where
+  DOM timing is coupled to native capture.
+- Solid has no dependency arrays and no effect re-run semantics. The class of
+  React defect that typechecks and passes shallow tests (stale closures,
+  wrong `useEffect` deps, StrictMode double invocation) does not exist here;
+  the Solid-specific class that replaces it is caught by `eslint-plugin-solid`.
+- Token-rate streaming is not a reason: pacing lives in core (013, D7) and
+  the UI receives word-level chunks at reading pace. Bundle size is not a
+  reason either; assets load from disk into a resident webview.
 - No CSS framework; `styles/` holds a small token sheet (`tokens.css`) and
   component styles. No web fonts (no network; system font stack).
 - `package.json` carries `"butler": { "spec": "012-overlay-ui" }`.
@@ -129,6 +161,12 @@ announced. Contrast on the plate meets WCAG AA for the system font at 14 px.
   `src/ipc/client.ts`.
 - **FR-005.** `pnpm -r build` produces no external network references in
   `dist/` (grep for `http://` and `https://`).
+- **FR-006.** `pnpm -r lint` fails on a component that destructures its
+  props, returns conditionally from its body, or captures a signal read
+  into a plain variable at component top level (`eslint-plugin-solid`
+  `solid/no-destructure`, `solid/components-return-once`, `solid/reactivity`
+  and the rest of `recommended` at `error`); a fixture under `src/test/`
+  proves the rule set is wired.
 
 ## 5. Acceptance criteria
 
