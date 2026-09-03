@@ -29,6 +29,11 @@
       },
       {
         "code": "W-001",
+        "message": "spec '017-release-and-distribution' file unit 'apps/desktop/package.json' does not exist",
+        "path": "apps/desktop/package.json"
+      },
+      {
+        "code": "W-001",
         "message": "spec '017-release-and-distribution' file unit 'apps/desktop/src-tauri/tauri.conf.json' does not exist",
         "path": "apps/desktop/src-tauri/tauri.conf.json"
       }
@@ -42,6 +47,10 @@
       "015-privacy-boundary"
     ],
     "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
       {
         "path": "docs/threat-model.md",
         "source": "spec-edge"
@@ -98,6 +107,28 @@
         }
       },
       {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/package.json"
+        }
+      },
+      {
         "locations": [],
         "ownership": true,
         "sourceField": "refines",
@@ -124,5 +155,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "7c710a09ad5e009b7fdcc046097b96ec72eee1ad9d6806d359660103bfbfe34c"
+  "shardHash": "cd4810b6e60e37f41308833f87408fc24438c3798cfa201081c20f66450867ef"
 }

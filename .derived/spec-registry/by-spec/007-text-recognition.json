@@ -59,6 +59,16 @@
         "kind": "symbol"
       }
     ],
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      }
+    ],
     "extraFrontmatter": {
       "phase": 3,
       "platforms": [
@@ -89,6 +99,6 @@
     "summary": "The `butler-ocr` crate: a `TextRecognizer` trait that turns a `FrameView` into `Recognized` text with per-line geometry and confidence, backed by the operating system's own OCR engine (Apple Vision `VNRecognizeTextRequest` on macOS, `Windows.Media.Ocr` on Windows) so no model ships with the app and no pixels leave the process; plus a deterministic normalization pass that turns engine output into the stable, layout-ordered string the change detector (008) compares and the assistant (010) reads. Recognition runs entirely on device.\n",
     "title": "Text recognition: native on-device OCR with a normalized text output"
   },
-  "shardHash": "f50dec40709e0320da6e7101b9879635eaa3f29171806171e3d36c0810e0b0f4",
+  "shardHash": "7025bf844716ca66f77341d3647b72076ac53a777e0133e5bc4513bece35b583",
   "specVersion": "1.1.0"
 }

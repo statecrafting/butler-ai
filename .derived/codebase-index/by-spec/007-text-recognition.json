@@ -69,7 +69,12 @@
     "dependsOn": [
       "006-screen-capture"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
       {
         "locations": [],
@@ -187,11 +192,24 @@
           "id": "butler_ocr::recognizer::TextRecognizer",
           "kind": "symbol"
         }
+      },
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
       }
     ],
     "specId": "007-text-recognition",
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "d12c5a591d21dadb63fb97a29d447ddab23d1527cc0f75ef45a37b8ba32ff198"
+  "shardHash": "10eec79ce2fca13a3d1c805e037b73e076544416ffc6ecff83aba277e66bf7d7"
 }

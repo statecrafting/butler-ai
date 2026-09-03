@@ -25,6 +25,12 @@ extends:
   - { spec: "004-desktop-shell", unit: { kind: symbol, id: "butler_desktop::exclusion::apply_exclusion" }, nature: additive }
   - { spec: "004-desktop-shell", unit: { kind: symbol, id: "butler_desktop::exclusion::verify_exclusion" }, nature: additive }
   - { spec: "004-desktop-shell", unit: { kind: symbol, id: "butler_desktop::exclusion::ExclusionStatus" }, nature: additive }
+  # Host surfaces in spec 004's crate: `exclusion` is only reachable once
+  # `lib.rs` declares it, and the objc2/windows bindings are pinned once in
+  # the root manifest (001 FR-004) before the app manifest references them.
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/lib.rs", nature: additive }
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/Cargo.toml", nature: additive }
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 refines:
   - { aspect: "capture-exclusion", unit: "apps/desktop/src-tauri/src/window.rs" }
 references:

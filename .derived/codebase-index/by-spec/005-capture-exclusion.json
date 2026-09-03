@@ -40,6 +40,16 @@
       },
       {
         "code": "W-001",
+        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/lib.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
+        "path": "apps/desktop/src-tauri/Cargo.toml"
+      },
+      {
+        "code": "W-001",
         "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/window.rs' does not exist",
         "path": "apps/desktop/src-tauri/src/window.rs"
       }
@@ -52,11 +62,37 @@
     ],
     "implementingPaths": [
       {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
         "path": "docs/threat-model.md",
         "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
       {
         "locations": [],
         "ownership": true,
@@ -91,6 +127,15 @@
         "unit": {
           "kind": "file",
           "path": "apps/desktop/src-tauri/src/exclusion/windows.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
         }
       },
       {
@@ -156,5 +201,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "4c2a2a4357a782380a3d32eb820e93ff00fcae2c5fe16a4ef07e93a69ce93135"
+  "shardHash": "9820b4184408ede8495a582b0a9adc23f1e1991898085787fa5e9a6e5399ef05"
 }

@@ -23,6 +23,13 @@ establishes:
   - { kind: section, file: ".github/workflows/release.yml", anchor: "jobs.build" }
   - { kind: section, file: ".github/workflows/release.yml", anchor: "jobs.publish" }
   - "scripts/bump_version.py"
+extends:
+  # FR-003 checks three version fields against each other, so the bump script
+  # writes `[workspace.package] version` in spec 001's root manifest and the
+  # version in spec 012's app package.json. The third file is 004's
+  # `tauri.conf.json`, already refined below.
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
+  - { spec: "012-overlay-ui", unit: "apps/desktop/package.json", nature: additive }
 refines:
   - { aspect: "bundling-and-updater", unit: "apps/desktop/src-tauri/tauri.conf.json" }
 references:

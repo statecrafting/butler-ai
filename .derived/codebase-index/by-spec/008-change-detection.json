@@ -34,8 +34,47 @@
     "dependsOn": [
       "009-pipeline-state-machine"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/lib.rs",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/Cargo.toml"
+        }
+      },
       {
         "locations": [],
         "ownership": true,
@@ -43,6 +82,19 @@
         "unit": {
           "kind": "file",
           "path": "crates/butler-core/src/delta.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/lib.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
         }
       },
       {
@@ -95,5 +147,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "f0f9dc5ed53c2f12b6a6a83c79220dd8a10fbddaa474abc5e9c9fbbcfa8b57cb"
+  "shardHash": "b2428820194399dbdba278649f97a48c4606929032bc0ebec4aed06304c189da"
 }

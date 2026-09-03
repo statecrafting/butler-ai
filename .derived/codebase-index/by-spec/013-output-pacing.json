@@ -31,6 +31,11 @@
       },
       {
         "code": "W-001",
+        "message": "spec '013-output-pacing' file unit 'apps/desktop/src/App.tsx' does not exist",
+        "path": "apps/desktop/src/App.tsx"
+      },
+      {
+        "code": "W-001",
         "message": "spec '013-output-pacing' file unit 'crates/butler-core/src/ipc.rs' does not exist",
         "path": "crates/butler-core/src/ipc.rs"
       }
@@ -45,6 +50,10 @@
     ],
     "implementingPaths": [
       {
+        "path": "crates/butler-core/src/lib.rs",
+        "source": "spec-edge"
+      },
+      {
         "path": "crates/butler-core/src/machine.rs",
         "source": "spec-edge"
       }
@@ -56,7 +65,29 @@
         "sourceField": "extends",
         "unit": {
           "kind": "file",
+          "path": "apps/desktop/src/App.tsx"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
           "path": "apps/desktop/src/components/PacedAnswer.tsx"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/lib.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
         }
       },
       {
@@ -131,5 +162,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "12897627f6470d4d75cb270bcb6a3f5d8060ca5d0a5e05d8ebdc57726b80e724"
+  "shardHash": "d57e2931cd7ec0e339e66bf0b0e5f6078b04757070d46d7b1c89b97be1200eea"
 }

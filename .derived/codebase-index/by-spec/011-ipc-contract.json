@@ -45,6 +45,16 @@
       },
       {
         "code": "W-001",
+        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/lib.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
+        "path": "apps/desktop/src-tauri/Cargo.toml"
+      },
+      {
+        "code": "W-001",
         "message": "spec '011-ipc-contract' file unit 'crates/butler-core/src/ipc.rs' does not exist",
         "path": "crates/butler-core/src/ipc.rs"
       }
@@ -55,7 +65,20 @@
       "009-pipeline-state-machine",
       "004-desktop-shell"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/lib.rs",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
       {
         "locations": [],
@@ -64,6 +87,28 @@
         "unit": {
           "kind": "file",
           "path": "apps/desktop/src/generated/bindings.ts"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
         }
       },
       {
@@ -99,7 +144,42 @@
         "sourceField": "extends",
         "unit": {
           "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
           "path": "crates/butler-core/src/ipc.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/lib.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
         }
       },
       {
@@ -152,5 +232,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "9adc9659e053c2010b0d33dbcb9604378ba6082c1fd40555cb49d2681b94609d"
+  "shardHash": "304a072f45f55e7611a729e348520c07ec4254bdb80ed1040674e3f16815fa7b"
 }

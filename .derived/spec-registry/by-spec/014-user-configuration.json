@@ -72,6 +72,54 @@
           "kind": "file",
           "path": "apps/desktop/src/components/SettingsPanel.tsx"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/App.tsx"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -110,6 +158,6 @@
     "summary": "One typed `Settings` struct in `butler-core` is the only configuration surface: capture (monitor, interval, region), detection (threshold, stability), assistant (provider, model, effort, answer style, budget caps, endpoint override), pacing (words per minute), shortcuts, privacy toggles (redaction on, allow degraded mode, diagnostics level), and window geometry. Defaults are in code, validation is pure, the file is TOML in the platform config directory written atomically, secrets are never in it (010), and every change flows through one `UpdateSettings` command that validates, persists, applies, and broadcasts. No environment variables configure the product.\n",
     "title": "User configuration: a typed settings model, an atomic on-disk store, and the settings panel"
   },
-  "shardHash": "43c11d35c755946219c8c7c5b4661829c3d8c4d51ec8e7dcab89efb939b465ec",
+  "shardHash": "63c8e2dfc2ea9530fa39170f67d520553e4fca64fe6157d259166e430dbe38d8",
   "specVersion": "1.1.0"
 }

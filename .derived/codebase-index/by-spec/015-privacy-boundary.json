@@ -67,11 +67,28 @@
     ],
     "implementingPaths": [
       {
+        "path": "crates/butler-core/src/lib.rs",
+        "source": "spec-edge"
+      },
+      {
         "path": "docs/threat-model.md",
         "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/lib.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
+        }
+      },
       {
         "locations": [],
         "ownership": true,
@@ -198,5 +215,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "e89e9dbddae30e60f4987acb10fe89a253c829dc6b8cb1521b88c176c9016e98"
+  "shardHash": "7fb269b9cfad05ae82385ce607ae4138b27ab7ec2859d8b377a74cd620681791"
 }
