@@ -24,6 +24,7 @@ establishes:
   - ".claude/rules/rust-crates.md"
   - ".claude/rules/overlay-frontend.md"
   - ".claude/rules/build-commands.md"
+  - "scripts/verify-spec.sh"
 co_authority:
   - { unit: { kind: section, file: "Makefile", anchor: "build" }, with_specs: ["001-workspace-layout"] }
   - { unit: { kind: section, file: "Makefile", anchor: "test" }, with_specs: ["001-workspace-layout"] }
@@ -204,3 +205,37 @@ default is the binary on `PATH`.
 - The three floor rules (spec 000).
 - CI workflows, CODEOWNERS, merge driver (spec 003).
 - Any product behavior. The harness is how butler-ai is built, not what it is.
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-06, kit adoption).** The skills under `.claude/skills/`
+  are the spec-spine kit's fifteen (spec-spine spec 048), taken byte for
+  byte, plus this repository's own `/burndown`. `/spec-new` retires in
+  favour of the kit's `/spec`, which derives the ordinal from
+  `spec-spine registry list --ids-only`, reads the taxonomy from
+  `spec-spine.toml`, and leaves the phase to spec 018 (the `make spec-new`
+  scaffold target stays for a hand-run). The three floor rules stay
+  spec 000's text: the kit's spec 047 wording (the typed-read rationale
+  that makes `make burndown`'s grep over `index render` output explicitly
+  legitimate, the two legitimate mid-build edits, the `extends` pointer,
+  "a waiver is a human instrument") refines guardrails 3 and 4 and is an
+  amendment for a human to file against spec 000, not an edit here. The kit
+  moved every project fact out of the skills into `AGENTS.md`, which gains
+  the "Working the backlog" section the skills sequence and an
+  orchestrator extracts verbatim. `scripts/verify-spec.sh` is the kit's
+  copy and is claimed here. §3.2's table now reads as the kit's fifteen
+  plus `/burndown`; that is a change to what this spec enumerates and is
+  recorded here rather than rewritten in place.
+- **D-2 (2026-09-06, pin bump).** `SPEC_SPINE_VERSION` moves from 0.11.0
+  to 0.14.0 (`Makefile`; CI reads it from there). The corpus was verified
+  byte-compatible first: 0.14.0's `compile --check` and `index check` both
+  report fresh against shards written by 0.11.0. What the bump buys:
+  `registry plan` (which `/next` wraps), `--json` verdicts on the gate
+  verbs, `layout.state_dir`, the `depends_on` cycle refusal, and the
+  lifecycle fixes this specify-first corpus lives inside.
+- **D-3 (2026-09-06, hooks).** §3.5's `SessionStart` recompiles and
+  `Stop` regenerates. The kit's hooks now read and never write
+  (spec-spine spec 046: a hook cannot commit what it writes, and a
+  writing `Stop` hook stalled an orchestrator for eleven hours on a tree
+  it had dirtied). Porting them changes what §3.5 requires and is an
+  amendment for a human to file; the hooks are unchanged until then.

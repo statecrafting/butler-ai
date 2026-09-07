@@ -52,12 +52,7 @@
     "dependsOn": [
       "001-workspace-layout"
     ],
-    "implementingPaths": [
-      {
-        "path": "docs/architecture.md",
-        "source": "spec-edge"
-      }
-    ],
+    "implementingPaths": [],
     "resolvedUnits": [
       {
         "locations": [],
@@ -167,5 +162,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "6aaff9a232a7e963652f8d74207c472860d3b6caf8f9527c7280f325cc3d94b0"
+  "shardHash": "a5c9d3e0ff51d5ff45f5282f49861cc2a94a5a12eef587b3718a7191b420fede"
 }

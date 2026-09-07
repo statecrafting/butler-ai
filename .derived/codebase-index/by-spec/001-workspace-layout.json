@@ -17,10 +17,6 @@
         "source": "spec-edge"
       },
       {
-        "path": "docs/architecture.md",
-        "source": "spec-edge"
-      },
-      {
         "path": "package.json",
         "source": "spec-edge"
       },
@@ -189,5 +185,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "5f965c6fae1205e4acb0f990559a66f7efcabfcb54a324bc1568a325661dbbbd"
+  "shardHash": "5c033230deae59549acc4b9e1903cc36cc4d57ce324cd7fce2ee0ae643fcff41"
 }

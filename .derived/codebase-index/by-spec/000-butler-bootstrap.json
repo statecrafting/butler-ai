@@ -14,15 +14,7 @@
         "source": "spec-edge"
       },
       {
-        "path": "docs/architecture.md",
-        "source": "spec-edge"
-      },
-      {
         "path": "spec-spine.toml",
-        "source": "spec-edge"
-      },
-      {
-        "path": "standards/spec/constitution.md",
         "source": "spec-edge"
       },
       {
@@ -144,5 +136,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "945d4f98b3fe415e8598cb141120271e239a9d005486615a384c6ac9f78c3ed5"
+  "shardHash": "a6a0cfe288a985508d1899f3f88873215d3d1e74d72a4ae80702f324bc65cbfa"
 }

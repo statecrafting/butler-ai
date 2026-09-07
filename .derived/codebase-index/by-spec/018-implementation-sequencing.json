@@ -3,12 +3,7 @@
     "dependsOn": [
       "000-butler-bootstrap"
     ],
-    "implementingPaths": [
-      {
-        "path": "docs/architecture.md",
-        "source": "spec-edge"
-      }
-    ],
+    "implementingPaths": [],
     "resolvedUnits": [
       {
         "locations": [
@@ -28,5 +23,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "fb6c58be1bc5bcfc2f79342a2e28f966b5c7b410cbe87a3d67dcee82c0efd1e6"
+  "shardHash": "5ba037477b71491eee584e07997e751e4a1dc82a6ec276f617e232f01ee97a12"
 }

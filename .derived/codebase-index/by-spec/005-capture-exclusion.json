@@ -50,12 +50,7 @@
       "004-desktop-shell",
       "006-screen-capture"
     ],
-    "implementingPaths": [
-      {
-        "path": "docs/threat-model.md",
-        "source": "spec-edge"
-      }
-    ],
+    "implementingPaths": [],
     "resolvedUnits": [
       {
         "locations": [],
@@ -156,5 +151,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "4c2a2a4357a782380a3d32eb820e93ff00fcae2c5fe16a4ef07e93a69ce93135"
+  "shardHash": "b6d1c8df005ec34d963da44c47ee60014a19dad72b8359c95aaef3e8d9f36504"
 }
