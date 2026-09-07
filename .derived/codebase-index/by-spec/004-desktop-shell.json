@@ -277,8 +277,8 @@
           {
             "file": "apps/desktop/src-tauri/src/window.rs",
             "span": {
-              "endLine": 152,
-              "startLine": 115
+              "endLine": 170,
+              "startLine": 133
             }
           }
         ],
@@ -364,5 +364,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "9d0216a7e5e2ed8b5f182e79e2ee6b174586495e8dbe1ccf3aafc8162fb87009"
+  "shardHash": "d05744dddd6fadb3431c3025c636835d91c5b43778beb0c37e9f5c526f128eec"
 }

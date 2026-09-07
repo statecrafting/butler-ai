@@ -8,7 +8,7 @@
 //! runtime state honestly, and the menu must be able to reach every action,
 //! including the ones whose shortcut failed to register (§3.3).
 
-use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
+use tauri::menu::{Menu, MenuEvent, MenuItem, PredefinedMenuItem, Submenu};
 use tauri::tray::TrayIconBuilder;
 use tauri::{AppHandle, Runtime};
 
@@ -80,7 +80,8 @@ pub fn build_tray<R: Runtime>(app: &AppHandle<R>, report: &ShortcutReport) -> Re
     let mut builder = TrayIconBuilder::with_id("butler-tray")
         .menu(&menu)
         .tooltip(TrayState::default().tooltip())
-        .show_menu_on_left_click(true);
+        .show_menu_on_left_click(true)
+        .on_menu_event(|app, event| on_menu_event(app, &event));
 
     if let Some(icon) = app.default_window_icon() {
         builder = builder.icon(icon.clone());
@@ -90,6 +91,44 @@ pub fn build_tray<R: Runtime>(app: &AppHandle<R>, report: &ShortcutReport) -> Re
         .build(app)
         .map(|_| ())
         .map_err(|e| AppError::Tray(e.to_string()))
+}
+
+/// Route a tray menu selection to its effect (§3.4).
+///
+/// Exactly one item is this spec's own. With no Dock tile (§3.2) and no
+/// taskbar button, this menu is the *only* chrome the app has, so a `Quit`
+/// that did nothing would leave a running process the user cannot end
+/// through any interface it offers. The rest belong to specs that do not
+/// exist yet and are matched by id and left visibly unhandled, for the same
+/// reason `on_shortcut` does it that way: folding them into the catch-all
+/// would let a future item be swallowed without anyone noticing.
+#[allow(
+    clippy::match_same_arms,
+    reason = "the four unhandled arms have the same empty body today but are \
+              four different decisions, owned by four different specs: 019 \
+              supplies the runtime, 005 is what makes showing the overlay \
+              legal under section 3.2, 014 owns the settings panel and 016 \
+              the diagnostics bundle. Collapsing them into the wildcard is \
+              what would let a future menu item be swallowed silently."
+)]
+fn on_menu_event<R: Runtime>(app: &AppHandle<R>, event: &MenuEvent) {
+    match event.id().as_ref() {
+        ids::QUIT => app.exit(0),
+
+        // Spec 019 supplies the runtime these two drive.
+        ids::ARM_DISARM | ids::ASK_NOW => {}
+
+        // §3.2 forbids showing the overlay before capture exclusion (spec
+        // 005) has been applied, so there is no state in which showing it
+        // from here would be correct today.
+        ids::TOGGLE_OVERLAY => {}
+
+        // Spec 014's settings panel, spec 005's self-test, spec 016's bundle.
+        ids::SETTINGS | ids::SELF_TEST | ids::DIAGNOSTICS => {}
+
+        // An id no build of this menu produces.
+        _ => {}
+    }
 }
 
 /// The menu §3.4 specifies, plus a disabled section naming any shortcut that

@@ -20,6 +20,20 @@ use crate::AppError;
 /// The window's label. Spec 004 §3.2: there is one, and this is its name.
 pub const OVERLAY_LABEL: &str = "overlay";
 
+/// The macOS activation policy spec 004 §3.2 requires.
+///
+/// §3.2's macOS bullet ends "and the app MUST be an accessory
+/// (`LSUIElement`, no Dock icon)". That is an *application* property, not a
+/// window one. `skip_taskbar` is the window flag that removes a taskbar
+/// button on Windows, and Tauri documents it as unsupported on macOS, so it
+/// does not remove the Dock tile, and nothing else in this crate would.
+///
+/// Extracted as a value for the reason D-4 gives for [`OverlayWindowConfig`]:
+/// applying it needs a running application, but *which* policy the spec asks
+/// for is testable without one.
+#[cfg(target_os = "macos")]
+pub const MACOS_ACTIVATION_POLICY: tauri::ActivationPolicy = tauri::ActivationPolicy::Accessory;
+
 /// Where the overlay sits on its monitor.
 ///
 /// Spec 014 will supply this from settings; until it lands, [`Self::default`]
@@ -65,7 +79,11 @@ pub struct OverlayWindowConfig {
     pub shadow: bool,
     /// Above ordinary windows at all times.
     pub always_on_top: bool,
-    /// No taskbar button (Windows) and no Dock tile (macOS).
+    /// No taskbar button on Windows.
+    ///
+    /// Tauri documents this flag as unsupported on macOS. The Dock tile is
+    /// removed by [`MACOS_ACTIVATION_POLICY`] instead, which is an
+    /// application property rather than a window one.
     pub skip_taskbar: bool,
     /// Present on every desktop/space, including over full-screen apps.
     pub visible_on_all_workspaces: bool,
@@ -293,6 +311,25 @@ mod tests {
         assert!(
             !c.visible,
             "§3.2: the window MUST never be shown before exclusion is applied"
+        );
+    }
+
+    /// Spec 004 §3.2 and FR-004: no Dock tile on macOS.
+    ///
+    /// Like `window_flags_match_spec` this checks the request, not the
+    /// result; whether the OS honoured it is FR-004's row on the manual
+    /// checklist. Before this constant existed the crate asked for nothing
+    /// at all, and `skip_taskbar` was carrying a meaning it does not have on
+    /// this platform.
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn macos_app_is_an_accessory() {
+        assert!(
+            matches!(
+                super::MACOS_ACTIVATION_POLICY,
+                tauri::ActivationPolicy::Accessory
+            ),
+            "§3.2: the app MUST be an accessory (LSUIElement, no Dock icon)"
         );
     }
 
