@@ -26,11 +26,6 @@
         "code": "W-001",
         "message": "spec '017-release-and-distribution' file unit 'scripts/bump_version.py' does not exist",
         "path": "scripts/bump_version.py"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '017-release-and-distribution' file unit 'apps/desktop/package.json' does not exist",
-        "path": "apps/desktop/package.json"
       }
     ]
   },
@@ -43,6 +38,10 @@
     "implementingPaths": [
       {
         "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/package.json",
         "source": "spec-edge"
       },
       {
@@ -114,7 +113,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/package.json"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {

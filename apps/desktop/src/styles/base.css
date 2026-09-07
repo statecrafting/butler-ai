@@ -1,0 +1,62 @@
+/* Spec: specs/012-overlay-ui/spec.md */
+
+@import "./tokens.css";
+
+/*
+ * Spec 012 §3.2, and FR-001 asserts it: the three roots are transparent. The
+ * window behind them is transparent too (spec 004 §3.2), so anything opaque
+ * here becomes a rectangle over the user's screen.
+ */
+html,
+body,
+#root {
+  background: transparent;
+  margin: 0;
+  overflow: hidden;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  font-family: var(--butler-font);
+  font-size: var(--butler-font-size);
+  color: var(--butler-ink);
+  /* §3.2: the surface is inert. A component opts itself in, and only while
+     the shell says the overlay is interactive. The shell's
+     `set_ignore_cursor_events` is authoritative; this is belt and braces. */
+  pointer-events: none;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--butler-gap);
+  padding: var(--butler-gap);
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+/*
+ * §3.2: the plate is sized to its content, never to the window. A
+ * full-window plate would defeat the transparency the whole product depends
+ * on.
+ */
+.plate {
+  align-self: flex-start;
+  max-width: 100%;
+  background: var(--butler-plate);
+  backdrop-filter: var(--butler-blur);
+  -webkit-backdrop-filter: var(--butler-blur);
+  border-radius: var(--butler-radius);
+  padding: 8px 12px;
+}
+
+.interactive {
+  pointer-events: auto;
+}
+
+.dim {
+  color: var(--butler-ink-dim);
+}

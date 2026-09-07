@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- Spec: specs/012-overlay-ui/spec.md -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Butler</title>
+    <!--
+      Spec 012 §3.2: nothing may paint a full-window background. The window
+      itself is transparent (spec 004 §3.2) and the compositor shows whatever
+      is behind it; a background here would fill that hole with a rectangle.
+    -->
+    <style>
+      html,
+      body,
+      #root {
+        background: transparent;
+        margin: 0;
+        overflow: hidden;
+      }
+      :root {
+        color-scheme: light dark;
+      }
+      /* §3.2: the surface is inert until a component opts in. */
+      body {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>

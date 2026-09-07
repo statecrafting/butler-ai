@@ -1,82 +1,130 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' crate unit '@butler-ai/desktop' does not match any discovered package"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' file unit 'apps/desktop/package.json' does not exist",
-        "path": "apps/desktop/package.json"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' file unit 'apps/desktop/index.html' does not exist",
-        "path": "apps/desktop/index.html"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' file unit 'apps/desktop/vite.config.ts' does not exist",
-        "path": "apps/desktop/vite.config.ts"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' file unit 'apps/desktop/tsconfig.json' does not exist",
-        "path": "apps/desktop/tsconfig.json"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' file unit 'apps/desktop/eslint.config.js' does not exist",
-        "path": "apps/desktop/eslint.config.js"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' file unit 'apps/desktop/src/index.tsx' does not exist",
-        "path": "apps/desktop/src/index.tsx"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' file unit 'apps/desktop/src/App.tsx' does not exist",
-        "path": "apps/desktop/src/App.tsx"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' file unit 'apps/desktop/src/ipc/client.ts' does not exist",
-        "path": "apps/desktop/src/ipc/client.ts"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' directory unit 'apps/desktop/src/state/' is not a directory",
-        "path": "apps/desktop/src/state/"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' directory unit 'apps/desktop/src/components/' is not a directory",
-        "path": "apps/desktop/src/components/"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' directory unit 'apps/desktop/src/styles/' is not a directory",
-        "path": "apps/desktop/src/styles/"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '012-overlay-ui' directory unit 'apps/desktop/src/test/' is not a directory",
-        "path": "apps/desktop/src/test/"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "001-workspace-layout",
       "011-ipc-contract"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "apps/desktop",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/eslint.config.js",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/index.html",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/package.json",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/App.tsx",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src/components/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/components/AnswerPanel.tsx",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/components/CredentialPanel.tsx",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/components/FatalPanel.tsx",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/components/NotePrompt.tsx",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/components/OnboardingPanel.tsx",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/components/Sentinel.tsx",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/components/StatusStrip.tsx",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/index.tsx",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src/ipc/client.ts",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src/state/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/state/ipc.ts",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/state/runtime.ts",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/styles/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/test/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/test/fixtures/forbidden-import.ts",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/test/fixtures/solid-reactivity.tsx",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/test/lint.test.ts",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/test/setup.ts",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/test/store.test.ts",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/src/test/transparency.test.ts",
+        "source": "comment-header"
+      },
+      {
+        "path": "apps/desktop/tsconfig.json",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/vite.config.ts",
+        "source": "multiple"
+      }
+    ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -85,7 +133,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/components/"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -94,7 +146,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/state/"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -103,7 +159,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/styles/"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -112,7 +172,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/test/"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -121,7 +185,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/eslint.config.js"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -130,7 +198,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/index.html"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -139,7 +211,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/package.json"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -148,7 +224,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/App.tsx"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -157,7 +237,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/index.tsx"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -166,7 +250,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/ipc/client.ts"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -175,7 +263,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/tsconfig.json"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -184,7 +276,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/vite.config.ts"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -210,5 +306,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "599d5fd4f51dac78ebae158627a551e2d58de273155912ba5736922a39104de2"
+  "shardHash": "1ad4c0ca92ad9917c43f5fd5ec557bf4ac9e5705555fa73bac565ece6ff2ad22"
 }
