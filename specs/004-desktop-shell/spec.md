@@ -128,8 +128,8 @@ exactly one window labelled `overlay` with:
   primary monitor.
 - **Click-through by default**: `set_ignore_cursor_events(true)` immediately
   after creation. The window becomes interactive only while the interaction
-  shortcut is held or toggled (§3.3), and MUST revert to click-through when it
-  is released.
+  shortcut's toggle is on (§3.3), and MUST revert to click-through when it is
+  toggled off.
 - macOS: the window level MUST be above the menu bar and full-screen apps
   (`NSScreenSaverWindowLevel` or the Tauri equivalent), `collectionBehavior`
   MUST include `canJoinAllSpaces`, `stationary`, `fullScreenAuxiliary`, and
@@ -152,10 +152,14 @@ Global shortcuts via `tauri-plugin-global-shortcut`, registered in
 | Action | Default (macOS / Windows) | Effect |
 |---|---|---|
 | Arm / disarm | `Cmd+Shift+B` / `Ctrl+Shift+B` | runtime `Event::Arm` / `Event::Disarm` (009) |
-| Interact (hold) | `Cmd+Option` / `Ctrl+Alt` | click-through off while held |
+| Interact (toggle) | `Cmd+Shift+Space` / `Ctrl+Shift+Space` | click-through off until pressed again |
 | Toggle overlay visibility | `Cmd+Shift+H` / `Ctrl+Shift+H` | hide/show the window without disarming |
 | Dismiss answer | `Esc` while interactive | clears the current answer (012) |
 | Ask now | `Cmd+Shift+Enter` / `Ctrl+Shift+Enter` | runtime `Event::ForceCapture` (bypasses change detection once) |
+
+The Interact toggle MUST act on key **press** only. A global shortcut reports
+both press and release, so acting on each would flip interactivity twice per
+keystroke and leave it where it started.
 
 Registration failure for any shortcut MUST be surfaced in the tray menu and
 logged; the app continues.
@@ -260,7 +264,7 @@ unless a spec adds it with a stated need (015 constrains this).
   check is what the operating system did with the request.** That half of
   FR-001 is in `apps/desktop/README.md`'s checklist, under AC-3.
 
-- **D-5 (2026-09-06, unresolved: needs a human).** §3.3 gives the Interact
+- **D-5 (2026-09-06, resolved 2026-09-07 by D-9).** §3.3 gave the Interact
   action the default `Cmd+Option` / `Ctrl+Alt`. That cannot be a global
   shortcut: the accelerator is a bare modifier combination, a global shortcut
   requires a non-modifier key, and the string does not parse. Implementing a
@@ -268,16 +272,15 @@ unless a spec adds it with a stated need (015 constrains this).
   requires Input Monitoring or Accessibility, and §3.5 states that
   Accessibility is not requested. §3.3 and §3.5 therefore disagree.
 
-  §3.2 already allows "held **or toggled**", so a registrable toggle is inside
-  the spec's envelope, but choosing its accelerator means inventing a
-  user-facing default this spec does not state. The action is therefore
-  **left unbound rather than guessed at**: `ShortcutBinding::defaults()`
-  returns the three registrable bindings, and a test asserts Interact's
-  absence with this reason, so the gap cannot be closed by accident.
+  §3.2 already allowed "held **or toggled**", so a registrable toggle was
+  inside the spec's envelope, but choosing its accelerator meant inventing a
+  user-facing default this spec did not state. The action was therefore left
+  unbound rather than guessed at, with a test asserting its absence, until a
+  human chose among three resolutions: give Interact a real key combination
+  and make it a toggle (amending §3.3's default); accept Input Monitoring and
+  amend §3.5; or make interaction a tray-menu action with no shortcut.
 
-  The resolutions are: give Interact a real key combination and make it a
-  toggle (amending §3.3's default); accept Input Monitoring and amend §3.5;
-  or make interaction a tray-menu action with no shortcut.
+  **Resolved 2026-09-07: the first.** See D-9.
 
 - **D-6 (2026-09-06, this spec stays `in-progress`).** What is built: the
   crate, the window with §3.2's flag set, the three registrable shortcuts,
@@ -297,7 +300,8 @@ unless a spec adds it with a stated need (015 constrains this).
      FR-005 egress test, which is also outstanding, and is better written once
      rather than twice.
 
-  D-5 is additionally open and blocks one of §3.3's five actions.
+  D-5 was additionally open at the time, and blocked one of §3.3's five
+  actions. It is resolved (D-9); the other three reasons stand.
 
 - **D-7 (2026-09-06, `macos-private-api`).** §3.2 requires `transparent:
   true`. Tauri implements macOS window transparency behind its
@@ -325,6 +329,34 @@ unless a spec adds it with a stated need (015 constrains this).
 
   Review trigger: remove the five when Tauri moves off `urlpattern` 0.3.
 
+- **D-9 (2026-09-07, Interact becomes a registrable toggle).** Resolves D-5,
+  by the maintainer's decision: of the three resolutions D-5 listed, take the
+  first. §3.3's Interact row is amended from the unregistrable
+  `Cmd+Option` / `Ctrl+Alt` hold to the toggle
+  `Cmd+Shift+Space` / `Ctrl+Shift+Space`, and §3.2's "held or toggled"
+  narrows to the toggle alone.
+
+  **§3.5 is untouched.** That is the point of the choice: a toggle is an
+  ordinary global shortcut, so the app still requests no Input Monitoring and
+  no Accessibility, and §3.3 and §3.5 no longer disagree.
+
+  **Why `Space` and not the mnemonic letter.** `Cmd+Shift+I` reads better, but
+  its Windows twin `Ctrl+Shift+I` is the browser developer-tools key, as are
+  `Ctrl+Shift+J` and `Ctrl+Shift+C`. A global hotkey on Windows goes through
+  `RegisterHotKey`, which intercepts the combination before the focused
+  application sees it, so shipping that default would take developer tools
+  away from every browser on the machine. `Space` keeps the
+  `Mod+Shift+<key>` shape the other three defaults already use, is not a
+  stock macOS binding, and is not a Windows system shortcut.
+
+  **Press only.** A global shortcut fires on both press and release. A toggle
+  that acted on each would flip twice per keystroke and appear dead, so §3.3
+  now states the press-only rule and a test holds it.
+
+  This also fits what spec 011 had already specified independently: its
+  `UiCommand::SetInteractive { on: bool }` is a two-state command, which is a
+  toggle's shape and not a hold's.
+
 ## 8. Verification
 
 The manual half is `apps/desktop/README.md` (AC-3). What a process can check:
@@ -345,6 +377,10 @@ sh -c '! grep -qE "https?://(?!ipc\.localhost)" apps/desktop/src-tauri/tauri.con
 sh -c 'test "$(grep -c . apps/desktop/src-tauri/src/main.rs)" -lt 12'
 # AC-3: the manual checklist exists and is not yet signed off.
 test -f apps/desktop/README.md
+# D-9: §3.3's Interact default is registrable, and the code binds the exact
+# accelerator the table states. A drift between the two fails here.
+grep -q 'Cmd+Shift+Space' apps/desktop/src-tauri/src/shortcuts.rs
+grep -q 'Ctrl+Shift+Space' apps/desktop/src-tauri/src/shortcuts.rs
 # D-8: the advisory ignores stay individually listed. Blanket-disabling the
 # `unmaintained` class would hide the next one.
 sh -c '! grep -qE "^\\s*unmaintained\\s*=" deny.toml'

@@ -12,14 +12,14 @@
 //! rather than an error, and the caller decides what to show.
 
 use tauri::{AppHandle, Runtime};
-use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 /// The five actions §3.3 defines.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ShortcutAction {
     /// Arm or disarm the capture pipeline (`Event::Arm` / `Event::Disarm`).
     ArmDisarm,
-    /// Hold to make the overlay interactive; release to go click-through.
+    /// Toggle the overlay between interactive and click-through.
     Interact,
     /// Hide or show the overlay without disarming.
     ToggleVisibility,
@@ -35,7 +35,7 @@ impl ShortcutAction {
     pub fn label(self) -> &'static str {
         match self {
             ShortcutAction::ArmDisarm => "Arm / disarm",
-            ShortcutAction::Interact => "Interact (hold)",
+            ShortcutAction::Interact => "Interact (toggle)",
             ShortcutAction::ToggleVisibility => "Toggle overlay visibility",
             ShortcutAction::DismissAnswer => "Dismiss answer",
             ShortcutAction::AskNow => "Ask now",
@@ -55,31 +55,43 @@ pub struct ShortcutBinding {
 impl ShortcutBinding {
     /// The globally registrable subset of spec 004 §3.3's table.
     ///
-    /// Two of the five actions are deliberately absent, for different reasons.
+    /// `DismissAnswer` is the one action deliberately absent: §3.3 binds `Esc`
+    /// *while interactive*, which is window-local. Registering `Esc` globally
+    /// would swallow it from every other application on the machine.
     ///
-    /// `DismissAnswer` is window-local: §3.3 binds `Esc` *while interactive*.
-    /// Registering `Esc` globally would swallow it from every other app.
-    ///
-    /// `Interact` is **unresolved, and left unbound rather than guessed**.
-    /// §3.3 gives it `Cmd+Option` / `Ctrl+Alt`, which is a bare modifier
-    /// combination. A global shortcut needs a non-modifier key, so that string
-    /// does not parse and cannot be registered. Implementing a genuinely
-    /// *held* modifier means monitoring global key events, which on macOS
-    /// requires Input Monitoring or Accessibility, and §3.5 says the app must
-    /// not request Accessibility. §3.2 does allow "held **or toggled**", so a
-    /// registrable toggle is within the spec, but choosing its accelerator is
-    /// picking a user-facing default the spec does not state. See spec 004 D-5.
+    /// `Interact` is a **toggle**, not a hold (spec 004 D-9). §3.3 originally
+    /// gave it `Cmd+Option` / `Ctrl+Alt`, a bare modifier combination that no
+    /// global shortcut can express, and a genuinely *held* modifier would need
+    /// the Input Monitoring permission §3.5 refuses to request. The toggle is
+    /// registrable, keeps the `Mod+Shift+<key>` shape of the other three, and
+    /// uses `Space` rather than the mnemonic `I`: on Windows `RegisterHotKey`
+    /// intercepts before the focused app, so `Ctrl+Shift+I` as a global
+    /// default would take developer tools away from every browser.
     #[must_use]
     pub fn defaults() -> Vec<ShortcutBinding> {
         #[cfg(target_os = "macos")]
-        let (arm, visibility, ask) = ("Cmd+Shift+B", "Cmd+Shift+H", "Cmd+Shift+Enter");
+        let (arm, interact, visibility, ask) = (
+            "Cmd+Shift+B",
+            "Cmd+Shift+Space",
+            "Cmd+Shift+H",
+            "Cmd+Shift+Enter",
+        );
         #[cfg(not(target_os = "macos"))]
-        let (arm, visibility, ask) = ("Ctrl+Shift+B", "Ctrl+Shift+H", "Ctrl+Shift+Enter");
+        let (arm, interact, visibility, ask) = (
+            "Ctrl+Shift+B",
+            "Ctrl+Shift+Space",
+            "Ctrl+Shift+H",
+            "Ctrl+Shift+Enter",
+        );
 
         vec![
             ShortcutBinding {
                 action: ShortcutAction::ArmDisarm,
                 accelerator: arm,
+            },
+            ShortcutBinding {
+                action: ShortcutAction::Interact,
+                accelerator: interact,
             },
             ShortcutBinding {
                 action: ShortcutAction::ToggleVisibility,
@@ -91,6 +103,36 @@ impl ShortcutBinding {
             },
         ]
     }
+}
+
+/// Which action, if any, a fired shortcut belongs to.
+///
+/// The plugin installs one handler for every shortcut, so something has to
+/// route the event. Routing compares parsed accelerators rather than strings:
+/// `Cmd+Shift+B` and `Shift+Cmd+B` are the same chord, and when spec 014 makes
+/// bindings user-editable the table changes without this lookup changing.
+#[must_use]
+pub fn action_for(fired: &Shortcut) -> Option<ShortcutAction> {
+    ShortcutBinding::defaults()
+        .into_iter()
+        .find(|b| {
+            b.accelerator
+                .parse::<Shortcut>()
+                .is_ok_and(|parsed| parsed == *fired)
+        })
+        .map(|b| b.action)
+}
+
+/// Whether a shortcut event is the edge that should act.
+///
+/// §3.3: the Interact toggle acts on **press** only. A global shortcut reports
+/// press *and* release, so acting on both would flip interactivity twice per
+/// keystroke and leave it exactly where it started; the shortcut would look
+/// dead while working perfectly. This is a function rather than an inline
+/// `matches!` so the rule is covered by a test.
+#[must_use]
+pub fn is_actionable(state: ShortcutState) -> bool {
+    matches!(state, ShortcutState::Pressed)
 }
 
 /// What happened to one binding.
@@ -166,7 +208,10 @@ pub fn register_shortcuts<R: Runtime>(app: &AppHandle<R>) -> ShortcutReport {
 
 #[cfg(test)]
 mod tests {
-    use super::{ShortcutAction, ShortcutBinding, ShortcutOutcome, ShortcutReport};
+    use super::{
+        ShortcutAction, ShortcutBinding, ShortcutOutcome, ShortcutReport, action_for, is_actionable,
+    };
+    use tauri_plugin_global_shortcut::{Shortcut, ShortcutState};
 
     #[test]
     fn defaults_cover_every_globally_bindable_action() {
@@ -175,6 +220,7 @@ mod tests {
 
         for expected in [
             ShortcutAction::ArmDisarm,
+            ShortcutAction::Interact,
             ShortcutAction::ToggleVisibility,
             ShortcutAction::AskNow,
         ] {
@@ -185,11 +231,85 @@ mod tests {
             "Esc is window-local while interactive; a global binding would \
              swallow it from every other app"
         );
-        assert!(
-            !actions.contains(&ShortcutAction::Interact),
-            "§3.3's Cmd+Option is a bare modifier and cannot be a global \
-             shortcut; left unbound pending spec 004 D-5, not guessed at"
+    }
+
+    /// Spec 004 D-9. The regression this guards is the one D-5 recorded: an
+    /// accelerator that is only modifiers cannot be a global shortcut, so a
+    /// future rebinding must not reintroduce one.
+    #[test]
+    fn interact_is_bound_to_a_registrable_toggle() {
+        let interact = ShortcutBinding::defaults()
+            .into_iter()
+            .find(|b| b.action == ShortcutAction::Interact)
+            .expect("§3.3 binds Interact as a toggle (D-9)");
+
+        assert_eq!(
+            interact.accelerator,
+            if cfg!(target_os = "macos") {
+                "Cmd+Shift+Space"
+            } else {
+                "Ctrl+Shift+Space"
+            },
+            "§3.3's table and this default are one decision (D-9)"
         );
+        assert!(
+            interact.accelerator.parse::<Shortcut>().is_ok(),
+            "a bare modifier combination does not parse; D-5's whole point"
+        );
+        assert_eq!(
+            interact.action.label(),
+            "Interact (toggle)",
+            "the tray says toggle, because §3.2 no longer allows a hold"
+        );
+    }
+
+    /// §3.3: the toggle acts on press only. Acting on release as well would
+    /// flip it twice per keystroke, so the shortcut would appear to do nothing.
+    #[test]
+    fn the_toggle_acts_on_press_only() {
+        assert!(is_actionable(ShortcutState::Pressed));
+        assert!(!is_actionable(ShortcutState::Released));
+    }
+
+    #[test]
+    fn every_default_routes_back_to_its_own_action() {
+        for b in ShortcutBinding::defaults() {
+            let parsed: Shortcut = b
+                .accelerator
+                .parse()
+                .expect("checked by every_default_accelerator_parses");
+            assert_eq!(
+                action_for(&parsed),
+                Some(b.action),
+                "the handler must route {} to {:?}",
+                b.accelerator,
+                b.action
+            );
+        }
+    }
+
+    #[test]
+    fn an_unregistered_chord_routes_nowhere() {
+        // The handler is global. A chord this app never bound must fall
+        // through rather than land on whichever action happens to be first.
+        let stray: Shortcut = "Ctrl+Alt+F19".parse().expect("parses as a chord");
+        assert_eq!(action_for(&stray), None);
+    }
+
+    #[test]
+    fn no_two_defaults_share_an_accelerator() {
+        // Two actions on one chord would make routing order-dependent, and
+        // the second registration would fail at runtime for no visible reason.
+        let mut seen: Vec<Shortcut> = Vec::new();
+        for b in ShortcutBinding::defaults() {
+            let parsed: Shortcut = b.accelerator.parse().expect("parses");
+            assert!(
+                !seen.contains(&parsed),
+                "{} is bound twice in §3.3's table",
+                b.accelerator
+            );
+            seen.push(parsed);
+        }
     }
 
     #[test]
