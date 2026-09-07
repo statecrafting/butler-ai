@@ -29,7 +29,8 @@ pub mod shortcuts;
 pub mod tray;
 pub mod window;
 
-use tauri::Manager;
+use tauri::{AppHandle, Manager, Runtime};
+use tauri_plugin_global_shortcut::{Shortcut, ShortcutState};
 
 pub use app_state::AppState;
 pub use window::{OVERLAY_LABEL, OverlayGeometry, OverlayWindowConfig, create_overlay_window};
@@ -53,6 +54,71 @@ pub enum AppError {
     Setup(String),
 }
 
+/// Route a fired global shortcut to its effect (§3.3).
+///
+/// The plugin installs one handler for every shortcut, so this is where the
+/// table in [`shortcuts`] turns into behaviour. Exactly one of the four
+/// registered actions is this spec's own: `Interact` flips this crate's window
+/// between click-through and interactive. The other three drive the pipeline,
+/// whose runtime (spec 019) and command layer (spec 011) do not exist yet, so
+/// they are matched by name and left visibly unhandled. A catch-all `_ => {}`
+/// here would let a future action be swallowed without anyone noticing.
+fn on_shortcut<R: Runtime>(app: &AppHandle<R>, fired: &Shortcut, state: ShortcutState) {
+    // §3.3: the toggle acts on press only. The plugin reports both edges, and
+    // acting on each would flip interactivity twice per keystroke.
+    if !shortcuts::is_actionable(state) {
+        return;
+    }
+    let Some(action) = shortcuts::action_for(fired) else {
+        return;
+    };
+
+    #[allow(
+        clippy::match_same_arms,
+        reason = "the three unhandled arms have the same empty body today but \
+                  are three different decisions, owned by three different \
+                  specs: 019 supplies the runtime events, 005 is what makes \
+                  showing the overlay legal under section 3.2, and 012 binds \
+                  Esc in the webview. Merging them into one arm, or into a \
+                  catch-all, is what would let a fifth action be swallowed \
+                  silently when it is added."
+    )]
+    match action {
+        shortcuts::ShortcutAction::Interact => toggle_interactive(app),
+
+        // Spec 019 (`Event::Arm` / `Event::Disarm`, `Event::ForceCapture`).
+        shortcuts::ShortcutAction::ArmDisarm | shortcuts::ShortcutAction::AskNow => {}
+
+        // §3.2 forbids showing the overlay before capture exclusion (spec 005)
+        // has been applied, and 005 has not landed, so there is no state in
+        // which showing it here would be correct. This arrives with 005.
+        shortcuts::ShortcutAction::ToggleVisibility => {}
+
+        // Window-local while interactive, never registered globally, so the
+        // handler cannot receive it. Spec 012 binds it in the webview.
+        shortcuts::ShortcutAction::DismissAnswer => {}
+    }
+}
+
+/// Flip the overlay between click-through and interactive (§3.2, §3.3).
+///
+/// The stored flag is updated only after the platform accepts the change: if
+/// `set_ignore_cursor_events` fails and we recorded the new value anyway, the
+/// next press would toggle away from a state the window was never in, and the
+/// overlay would be stuck eating clicks with no way back.
+fn toggle_interactive<R: Runtime>(app: &AppHandle<R>) {
+    let Some(overlay) = app.get_webview_window(OVERLAY_LABEL) else {
+        return;
+    };
+    let state = app.state::<AppState>();
+    let interactive = !state.is_interactive();
+
+    match window::set_click_through(&overlay, !interactive) {
+        Ok(()) => state.set_interactive(interactive),
+        Err(e) => eprintln!("interact toggle refused by the platform: {e}"),
+    }
+}
+
 /// Build and run the application.
 ///
 /// # Panics
@@ -61,7 +127,11 @@ pub enum AppError {
 /// is no UI in which to report it.
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, fired, event| on_shortcut(app, fired, event.state))
+                .build(),
+        )
         .manage(AppState::new())
         .setup(|app| {
             let handle = app.handle().clone();

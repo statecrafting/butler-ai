@@ -260,8 +260,8 @@
           {
             "file": "apps/desktop/src-tauri/src/shortcuts.rs",
             "span": {
-              "endLine": 165,
-              "startLine": 145
+              "endLine": 207,
+              "startLine": 187
             }
           }
         ],
@@ -364,5 +364,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "c68f47d99170a6b5ca40961cc6fa8f666c1e012628393546a9165729ea5e7a03"
+  "shardHash": "17b94b492e68d14b4f462409f11d854c2828e68db83f2b00983dfae928891c25"
 }
