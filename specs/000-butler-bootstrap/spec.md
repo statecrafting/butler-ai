@@ -240,3 +240,23 @@ This is a `constitutional-bootstrap` spec. Its `unamendable` anchors are
 frozen: no amendment may alter the authoring/derived boundary, the identity
 rule, the typed-authority-graph principle, the determinism requirement, the
 refusal rule, or the ownership ratchet. Amendments may add surface elsewhere.
+
+## 12. Verification
+
+The bootstrap spec's own claims are the compiler's contract: the authoring and
+derived boundary (§1), determinism (§6), and the guardrails (§7). Each is
+mechanically checkable from a clean checkout.
+
+```verify:cli
+# §1 + §5: the committed shards are exactly what the corpus compiles to.
+# `--check` compiles in memory and compares without writing, so a pass proves
+# the ledger is a pure function of the authored markdown (§6 determinism).
+spec-spine compile --check
+spec-spine index check
+# §3: every spec's frontmatter satisfies the grammar and the closed taxonomies.
+spec-spine lint --fail-on-warn
+# §7.5: the ownership ratchet, on since the first commit.
+spec-spine index coverage --fail-on-untraced
+# §1: authored truth is markdown only. No hand-authored JSON under specs/.
+sh -c '! find specs -name "*.json" | grep -q .'
+```

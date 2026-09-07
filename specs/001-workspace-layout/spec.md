@@ -212,3 +212,20 @@ skills call. Their content is this spec's; their existence and names are spec
   a populated workspace rather than on the presence of `Cargo.toml`. This spec
   is therefore complete when its five manifests exist and the gates are honest
   no-ops; FR-002 becomes checkable when 009 lands.
+
+## 7. Verification
+
+```verify:cli
+# AC-1: every discovered package has a floor spec and nothing is unclaimed.
+spec-spine index coverage --fail-on-untraced
+# AC-2: the language gates exit 0 (no-ops before the first crate, real after).
+make build
+make test
+make lint
+# AC-3: the pure core carries no `unsafe`.
+sh -c '! grep -rn "unsafe" crates/butler-core'
+# §3.1/§3.2: the pinned toolchains are declared where the spec says.
+grep -q 'channel = "1.92.0"' rust-toolchain.toml
+grep -q '"node": ">=22 <23"' package.json
+grep -q 'packages:' pnpm-workspace.yaml
+```

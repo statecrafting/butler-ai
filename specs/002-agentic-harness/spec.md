@@ -174,6 +174,26 @@ delete/archive`, and any `rm -rf` outside `target/`, `node_modules/`, `dist/`.
 `SPEC_SPINE` MAY be overridden (`make SPEC_SPINE=/path/to/binary ...`); the
 default is the binary on `PATH`.
 
+### 3.7 Verification blocks
+
+`scripts/verify-spec.sh <id>` is the kit's verify runner: it reads the spec's
+`## Verification` section, runs every non-comment line inside its `verify:cli`
+fences from the repository root in order, and stops at the first non-zero exit.
+It reports `passed`, `FAILED at N`, or `not-declared`. `not-declared` exits 0
+because it is an honest zero, not a pass, which means a spec with no block is
+indistinguishable from one whose checks all succeeded.
+
+- Every spec MUST carry a `## Verification` section with at least one
+  `verify:cli` command **before it flips to `implementation: complete`**. The
+  scaffold in `standards/spec/templates/spec-template.md` carries the section,
+  so specs created by `make spec-new` start with one.
+- Commands MUST be mechanical and host-independent: no absolute paths, no
+  interactive prompts, no network beyond what the gate already needs.
+- The commands prove the spec's own acceptance criteria. `make spine` alone is
+  the corpus-wide floor, not a substitute for a spec-specific check.
+- `verify:browser` fences are counted and skipped by the runner; only an
+  orchestrator with a browser stage drives those.
+
 ## 4. Functional requirements
 
 - **FR-001.** `/init` on a clean checkout emits the initialized block with
@@ -189,6 +209,9 @@ default is the binary on `PATH`.
   list --ids-only`, never from `ls`.
 - **FR-006.** `/burndown` derives its list from `spec-spine index render`
   output (the governed projection), never from the shard JSON.
+- **FR-007.** `scripts/verify-spec.sh <id>` exits 0 and reports `passed` for
+  every spec at `implementation: complete`, and reports `not-declared` for no
+  such spec.
 
 ## 5. Acceptance criteria
 
@@ -199,6 +222,8 @@ default is the binary on `PATH`.
 - **AC-3.** `make spine` exits 0 on `main`.
 - **AC-4.** Every skill file's `allowed-tools` list excludes destructive shell
   verbs; `/ship` and `/shepherd` are the only skills that push.
+- **AC-5.** For each `implementation: complete` spec, `scripts/verify-spec.sh
+  <id>` prints `passed` and exits 0; none prints `not-declared`.
 
 ## 6. Out of scope
 
@@ -239,3 +264,17 @@ default is the binary on `PATH`.
   writing `Stop` hook stalled an orchestrator for eleven hours on a tree
   it had dirtied). Porting them changes what §3.5 requires and is an
   amendment for a human to file; the hooks are unchanged until then.
+
+## 8. Verification
+
+```verify:cli
+# AC-3: the governance gate chain is green.
+make spine
+# AC-1: the governance slice is fresh (the harness files are hashed inputs).
+spec-spine index check --slice governance
+# §3.6: every Makefile target the contract names still exists.
+sh -c 'for t in setup spine ci pr-prep burndown coverage spec-new build test lint; do grep -qE "^${t}:" Makefile || { echo "missing target: ${t}"; exit 1; }; done'
+# §3.7 + AC-5: the verify runner works, and no complete spec is undeclared.
+test -x scripts/verify-spec.sh
+sh -c 'for s in 000-butler-bootstrap 001-workspace-layout 003-governance-ci 009-pipeline-state-machine; do ./scripts/verify-spec.sh "$s" >/dev/null 2>&1 || exit 1; done'
+```
