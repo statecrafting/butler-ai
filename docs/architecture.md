@@ -88,17 +88,25 @@ truth for this diagram; once the crate exists a test regenerates this section.
 
 ## 4. Data flow and the privacy boundary (spec 015)
 
+Spec 015 §3.1 is normative. The table below is copied from it verbatim
+(spec 015 AC-2); if the two ever differ, the spec wins and this is the bug.
+
 | Class | Type | Memory | Disk | Network | Logs |
 |---|---|---|---|---|---|
-| Pixels | `Frame` | until released, then zeroed | never | never | never |
-| Recognized text | `Recognized` | until next commit / disarm | never | never as-is | never |
-| Redacted text | `RedactedText` | inside one request | never | configured provider only | never |
-| Answer | `String` | until dismiss / disarm | never | only as `prior_answer` to the same provider | never |
-| Secret | `Secret` | during header construction | OS keychain only | provider header only | never |
+| Pixels | `Frame`, `FrameView` | until `ReleaseFrame`, then zeroed | never | never | never (not even dimensions with a timestamp) |
+| Recognized text | `Recognized` | until the next commit or disarm | never | never as-is | never |
+| Redacted text | `RedactedText` | inside one `InferenceRequest` | never | to the configured provider only | never |
+| Answer | `String` in the pacer and UI | until dismiss/disarm | never (v1) | never (except as `prior_answer` to the same provider) | never |
+| Secret | `Secret` | during header construction | keychain only | as a header to the provider only | never |
 | Settings | `Settings` | always | config dir, `0600` | never | field names only |
+| Diagnostics | `DiagnosticsBundle` (016) | on demand | user-chosen path, user-initiated | never | n/a |
 
 The types enforce most of this (`!Serialize`, private fields, single
 constructors, zeroize on drop); tests named in the specs enforce the rest.
+
+`redact` (spec 015 §3.2) is the only constructor of `RedactedText`, which is
+the only class in the table with a `Network` entry other than "never". That is
+the whole outbound surface for screen-derived data.
 
 ## 5. Capture exclusion is verified, not assumed (spec 005)
 
