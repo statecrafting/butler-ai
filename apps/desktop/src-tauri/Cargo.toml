@@ -32,7 +32,13 @@ tauri-specta = { workspace = true }
 specta = { workspace = true }
 specta-typescript = { workspace = true }
 serde = { workspace = true }
+# spec 014 §3.4: the exporter serializes `Settings::default()` into the
+# generated bindings so "Reset to defaults" has one source, in Rust.
+serde_json = { workspace = true }
 thiserror = { workspace = true }
+# spec 014: the on-disk settings format and where it lives.
+toml = { workspace = true }
+dirs = { workspace = true }
 
 # Spec 004 section 3.2: the macOS window level and collection behaviour have no
 # Tauri equivalent, so this crate does that one piece of FFI itself. Spec 001

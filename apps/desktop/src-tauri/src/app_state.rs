@@ -15,6 +15,8 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Mutex, PoisonError};
 
+use butler_core::settings::Settings;
+
 use crate::shortcuts::ShortcutReport;
 
 /// Shared, typed application state.
@@ -36,6 +38,12 @@ pub struct AppState {
     /// §3.3: a registration failure is surfaced in the tray menu and logged,
     /// and the app continues, so the outcome has to be readable later.
     shortcuts: Mutex<ShortcutReport>,
+    /// The current configuration (spec 014).
+    ///
+    /// The settings handle §3.1 names. One in-memory copy, replaced whole on
+    /// a successful `UpdateSettings`: every reader sees a configuration that
+    /// validated, never a half-applied one.
+    settings: Mutex<Settings>,
 }
 
 impl AppState {
@@ -73,6 +81,24 @@ impl AppState {
             .shortcuts
             .lock()
             .unwrap_or_else(PoisonError::into_inner) = report;
+    }
+
+    /// The current configuration, cloned (spec 014).
+    ///
+    /// A poisoned lock returns the inner value rather than panicking, as for
+    /// the shortcut report: this is read from command handlers, and a panic
+    /// there would take out the IPC seam.
+    #[must_use]
+    pub fn settings(&self) -> Settings {
+        self.settings
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone()
+    }
+
+    /// Replace the configuration with one that has already validated.
+    pub fn set_settings(&self, settings: Settings) {
+        *self.settings.lock().unwrap_or_else(PoisonError::into_inner) = settings;
     }
 
     /// The shortcut registration report, cloned.

@@ -134,6 +134,43 @@ async storeSecret(provider: string, secret: string) : Promise<Result<null, Error
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+/**
+ * Read the current configuration (spec 014 §3.3).
+ * 
+ * Serves from the in-memory copy rather than re-reading the file: the app is
+ * the only writer (spec 014 §3.2), so the file cannot be ahead of memory,
+ * and opening a settings panel should not touch the disk.
+ */
+async getSettings() : Promise<Settings> {
+    return await TAURI_INVOKE("get_settings");
+},
+/**
+ * Change the configuration (spec 014 §3.3).
+ * 
+ * Apply, validate, persist, broadcast. The order matters and the failure
+ * behaviour matters more: an invalid patch is rejected **whole**, so nothing
+ * is written and the in-memory copy is untouched. A half-applied
+ * configuration would be one the user never chose and cannot see.
+ * 
+ * Spec 019 will take a `SettingsChanged` event from here and spec 004 will
+ * re-register the shortcuts when they change. Neither exists yet, so this
+ * stops after the broadcast.
+ * 
+ * # Errors
+ * 
+ * [`ErrorKind::Internal`] if the patch does not validate, or if the file
+ * cannot be written. The typed field list is not on the wire: `ErrorKind` is
+ * a closed enum by spec 011 §3.1 and widening it is that spec's call
+ * (spec 014 D-4).
+ */
+async updateSettings(patch: SettingsPatch) : Promise<Result<Settings, ErrorKind>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("update_settings", { patch }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -147,6 +184,207 @@ async storeSecret(provider: string, secret: string) : Promise<Result<null, Error
 
 /** user-defined types **/
 
+/**
+ * Which corner the overlay sits in (spec 004 §3.2).
+ */
+export type Anchor = 
+/**
+ * Top left.
+ */
+"top-left" | 
+/**
+ * Top right. The default (spec 004 §3.2).
+ */
+"top-right" | 
+/**
+ * Bottom left.
+ */
+"bottom-left" | 
+/**
+ * Bottom right.
+ */
+"bottom-right"
+/**
+ * How much the answer should say (spec 010).
+ */
+export type AnswerStyle = 
+/**
+ * A sentence or two. The overlay is small and the user is busy.
+ */
+"short" | 
+/**
+ * A paragraph.
+ */
+"normal" | 
+/**
+ * As much as the token cap allows.
+ */
+"detailed"
+/**
+ * Assistant changes.
+ */
+export type AssistantPatch = { 
+/**
+ * Provider name.
+ */
+provider?: string | null; 
+/**
+ * Model id.
+ */
+model?: string | null; 
+/**
+ * Thinking effort.
+ */
+effort?: Effort | null; 
+/**
+ * Answer length.
+ */
+answer_style?: AnswerStyle | null; 
+/**
+ * Answer token cap.
+ */
+max_output_tokens?: number | null }
+/**
+ * Which assistant, and how it is asked (spec 010).
+ */
+export type AssistantSettings = { 
+/**
+ * The provider's configured name.
+ */
+provider: string; 
+/**
+ * The model id.
+ */
+model: string; 
+/**
+ * How hard to think.
+ */
+effort: Effort; 
+/**
+ * How much to say.
+ */
+answer_style: AnswerStyle; 
+/**
+ * Cap on the answer's length.
+ */
+max_output_tokens: number; 
+/**
+ * A self-hosted gateway, if the user runs one. MUST be `https://`
+ * (spec 015 §3.3), and the UI shows it as "custom endpoint".
+ */
+endpoint_override: string | null; 
+/**
+ * Spend caps.
+ */
+budget: BudgetSettings }
+/**
+ * Spend caps (spec 010's `SpendGuard` reads these).
+ */
+export type BudgetSettings = { 
+/**
+ * Hard cap per rolling day, in US dollars.
+ */
+daily_usd: number; 
+/**
+ * Hard cap per rolling month, in US dollars.
+ */
+monthly_usd: number; 
+/**
+ * Refuse a request whose input would exceed this many tokens.
+ */
+max_input_tokens: number }
+/**
+ * Capture changes (spec 014 §3.1).
+ */
+export type CapturePatch = { 
+/**
+ * Which monitor.
+ */
+monitor?: MonitorSelector | null; 
+/**
+ * Milliseconds between captures.
+ */
+interval_ms?: number | null }
+/**
+ * What to capture and how often (spec 006).
+ */
+export type CaptureSettings = { 
+/**
+ * Which monitor.
+ */
+monitor: MonitorSelector; 
+/**
+ * Milliseconds between capture attempts.
+ */
+interval_ms: number; 
+/**
+ * An optional sub-region of that monitor.
+ */
+region: RectPct | null }
+/**
+ * Detection changes.
+ */
+export type DetectionPatch = { 
+/**
+ * Similarity threshold.
+ */
+threshold?: number | null; 
+/**
+ * Consecutive frames a change must persist.
+ */
+stability_frames?: number | null; 
+/**
+ * Cap on compared text.
+ */
+max_compare_chars?: number | null }
+/**
+ * When the screen counts as having changed (spec 008).
+ */
+export type DetectionSettings = { 
+/**
+ * Similarity above which two screens are "the same".
+ */
+threshold: number; 
+/**
+ * Consecutive frames a change must persist before it counts.
+ */
+stability_frames: number; 
+/**
+ * Cap on the text compared, so a huge screen cannot stall the loop.
+ */
+max_compare_chars: number }
+/**
+ * How much the logs say (spec 016 §3.1).
+ */
+export type DiagnosticsLevel = 
+/**
+ * `warn` and above. The default: a privacy tool logs little.
+ */
+"minimal" | 
+/**
+ * `info`.
+ */
+"normal" | 
+/**
+ * `trace`, including every state transition by id.
+ */
+"verbose"
+/**
+ * How hard the model should think (spec 010).
+ */
+export type Effort = 
+/**
+ * Fastest, cheapest.
+ */
+"low" | 
+/**
+ * The default balance.
+ */
+"medium" | 
+/**
+ * Slowest, most thorough.
+ */
+"high"
 /**
  * The closed set of failure kinds the pipeline reports.
  * 
@@ -214,6 +452,43 @@ export type ExclusionSummary =
  */
 "unsupported"
 /**
+ * Which monitor to watch (spec 006).
+ */
+export type MonitorSelector = 
+/**
+ * Whichever monitor the OS calls primary.
+ */
+{ kind: "primary" } | 
+/**
+ * A zero-based index into the monitor list.
+ */
+{ kind: "index"; index: number } | 
+/**
+ * A monitor by the name the OS reports.
+ */
+{ kind: "named"; name: string }
+/**
+ * Pacing changes.
+ */
+export type PacingPatch = { 
+/**
+ * Reading pace.
+ */
+words_per_minute?: number | null }
+/**
+ * How fast the answer is revealed (spec 013).
+ * 
+ * Spec 014 §3.1 names the field's type as spec 013's `PacingPolicy`, which
+ * is phase 4 and does not exist. This carries the one value the summary
+ * names, "pacing (words per minute)", so the user-facing setting exists now
+ * and spec 013 decides how its policy reads it (D-2).
+ */
+export type PacingSettings = { 
+/**
+ * Reading pace, in words per minute.
+ */
+words_per_minute: number }
+/**
  * Which operating-system permission the app is waiting on.
  * 
  * One value, and deliberately so. Spec 004 §3.5 requests Screen Recording on
@@ -226,6 +501,217 @@ export type PermissionKind =
  * macOS Screen Recording (TCC).
  */
 "screen-recording"
+/**
+ * Privacy changes.
+ */
+export type PrivacyPatch = { 
+/**
+ * Redaction on or off.
+ */
+redaction_enabled?: boolean | null; 
+/**
+ * Personal-data redaction on or off.
+ */
+redact_pii?: boolean | null; 
+/**
+ * Degraded-mode consent.
+ */
+allow_degraded_mode?: boolean | null; 
+/**
+ * Log verbosity.
+ */
+diagnostics_level?: DiagnosticsLevel | null; 
+/**
+ * Region-only capture.
+ */
+region_only?: boolean | null }
+/**
+ * The privacy toggles (spec 015).
+ */
+export type PrivacySettings = { 
+/**
+ * Whether `redact` removes secret-shaped content before a prompt leaves
+ * the process. Defaults on; turning it off is an explicit, warned
+ * choice (spec 015 §3.2).
+ */
+redaction_enabled: boolean; 
+/**
+ * Whether personal data (e-mail, phone, IBAN) is redacted too. Opt-in,
+ * because it is lossy on ordinary prose.
+ */
+redact_pii: boolean; 
+/**
+ * Whether the pipeline may arm when capture exclusion is not verified.
+ * Defaults **off**: degraded mode is opt-in and bannered (spec 004
+ * §3.2, spec 009).
+ */
+allow_degraded_mode: boolean; 
+/**
+ * How much the logs say.
+ */
+diagnostics_level: DiagnosticsLevel; 
+/**
+ * Whether capture is restricted to `capture.region`.
+ */
+region_only: boolean }
+/**
+ * A sub-region of a monitor, in percentages of its bounds (spec 006).
+ * 
+ * Percentages rather than pixels so a region survives a resolution change
+ * and a scale-factor change, neither of which the user thinks of as
+ * "my region moved".
+ */
+export type RectPct = { 
+/**
+ * Left edge, 0.0 to 1.0.
+ */
+x: number; 
+/**
+ * Top edge, 0.0 to 1.0.
+ */
+y: number; 
+/**
+ * Width, 0.0 to 1.0.
+ */
+width: number; 
+/**
+ * Height, 0.0 to 1.0.
+ */
+height: number }
+/**
+ * The whole configuration (spec 014 §3.1).
+ * 
+ * `deny_unknown_fields` is FR-004: a key nobody recognizes is a settings
+ * file from a newer build, or a typo that would silently do nothing. Both
+ * are worth refusing loudly. `default` is what makes a *missing* key fine,
+ * so adding a field is not a breaking change to an existing file.
+ */
+export type Settings = { 
+/**
+ * The schema version this file was written by.
+ */
+schema: number; 
+/**
+ * What to capture and how often.
+ */
+capture: CaptureSettings; 
+/**
+ * When the screen counts as changed.
+ */
+detection: DetectionSettings; 
+/**
+ * Which assistant and how it is asked.
+ */
+assistant: AssistantSettings; 
+/**
+ * How fast the answer is revealed.
+ */
+pacing: PacingSettings; 
+/**
+ * The global accelerators.
+ */
+shortcuts: ShortcutSettings; 
+/**
+ * The privacy toggles.
+ */
+privacy: PrivacySettings; 
+/**
+ * The overlay's geometry.
+ */
+window: WindowSettings; 
+/**
+ * Presentation.
+ */
+ui: UiSettings }
+/**
+ * A partial update (spec 014 §3.1).
+ * 
+ * Every field is optional, recursively, so the settings panel sends only
+ * what the user touched. `skip_serializing_if` keeps an untouched patch to
+ * `{}` on the wire rather than a tree of nulls, which matters because this
+ * crosses the IPC boundary on every `UpdateSettings`.
+ * 
+ * Applied by [`Settings::apply`], which returns a *candidate*; the caller
+ * validates it and discards it whole if it fails (§3.1: no partial
+ * application).
+ */
+export type SettingsPatch = { 
+/**
+ * Capture changes.
+ */
+capture?: CapturePatch | null; 
+/**
+ * Detection changes.
+ */
+detection?: DetectionPatch | null; 
+/**
+ * Assistant changes.
+ */
+assistant?: AssistantPatch | null; 
+/**
+ * Pacing changes.
+ */
+pacing?: PacingPatch | null; 
+/**
+ * Shortcut changes.
+ */
+shortcuts?: ShortcutPatch | null; 
+/**
+ * Privacy changes.
+ */
+privacy?: PrivacyPatch | null; 
+/**
+ * Window changes.
+ */
+window?: WindowPatch | null; 
+/**
+ * Presentation changes.
+ */
+ui?: UiPatch | null }
+/**
+ * Shortcut changes.
+ */
+export type ShortcutPatch = { 
+/**
+ * Arm or disarm.
+ */
+arm_disarm?: string | null; 
+/**
+ * Interactivity toggle.
+ */
+interact?: string | null; 
+/**
+ * Visibility toggle.
+ */
+toggle_visibility?: string | null; 
+/**
+ * Ask now.
+ */
+ask_now?: string | null }
+/**
+ * The four global accelerators (spec 004 §3.3).
+ * 
+ * Strings in Tauri's parser syntax, because that is what
+ * `shortcuts::register_shortcuts` hands the OS. Validation checks they parse
+ * there, not here: this crate has no Tauri.
+ */
+export type ShortcutSettings = { 
+/**
+ * Arm or disarm.
+ */
+arm_disarm: string; 
+/**
+ * Toggle the overlay's interactivity.
+ */
+interact: string; 
+/**
+ * Hide or show the overlay.
+ */
+toggle_visibility: string; 
+/**
+ * Capture and ask immediately.
+ */
+ask_now: string }
 /**
  * Which state the machine is in, without the payload it carries.
  * 
@@ -272,7 +758,28 @@ export type StopSummary =
  */
 "other"
 /**
+ * Light, dark, or follow the system (spec 012).
+ */
+export type Theme = 
+/**
+ * Follow the OS.
+ */
+"system" | 
+/**
+ * Always light.
+ */
+"light" | 
+/**
+ * Always dark.
+ */
+"dark"
+/**
  * Rust to UI. One channel, one tagged payload (§3.2).
+ * 
+ * `PartialEq` but not `Eq`: spec 014's `Settings` reaches this enum through
+ * `SettingsUpdated` and carries `f64` fields (opacity, font scale, the
+ * similarity threshold), and floats have no total equality. Nothing needs
+ * `Eq` here; the tests compare with `assert_eq!`, which does not.
  */
 export type UiEvent = 
 /**
@@ -302,7 +809,79 @@ export type UiEvent =
 /**
  * The capture-exclusion self-test reported (spec 005).
  */
-{ type: "self-test-result"; verdict: ExclusionSummary }
+{ type: "self-test-result"; verdict: ExclusionSummary } | 
+/**
+ * The configuration changed and was persisted (spec 014 §3.3).
+ * 
+ * Broadcast after a successful `UpdateSettings`, and in reply to
+ * `GetSettings`, so every panel renders one value rather than each
+ * holding its own copy.
+ */
+{ type: "settings-updated"; settings: Settings }
+/**
+ * Presentation changes.
+ */
+export type UiPatch = { 
+/**
+ * Theme.
+ */
+theme?: Theme | null; 
+/**
+ * Font multiplier.
+ */
+font_scale?: number | null }
+/**
+ * Presentation (spec 012).
+ */
+export type UiSettings = { 
+/**
+ * Which theme.
+ */
+theme: Theme; 
+/**
+ * Multiplier on the 14 px base size.
+ */
+font_scale: number }
+/**
+ * Window changes.
+ */
+export type WindowPatch = { 
+/**
+ * Corner.
+ */
+anchor?: Anchor | null; 
+/**
+ * Width.
+ */
+width_px?: number | null; 
+/**
+ * Height cap.
+ */
+max_height_px?: number | null; 
+/**
+ * Plate opacity.
+ */
+opacity?: number | null }
+/**
+ * The overlay's geometry (spec 004 §3.2, spec 012).
+ */
+export type WindowSettings = { 
+/**
+ * Which corner.
+ */
+anchor: Anchor; 
+/**
+ * Width in logical pixels.
+ */
+width_px: number; 
+/**
+ * The tallest the overlay may grow before the answer scrolls.
+ */
+max_height_px: number; 
+/**
+ * Overall opacity of the plate.
+ */
+opacity: number }
 
 /** tauri-specta globals **/
 
@@ -364,7 +943,61 @@ function __makeEvents__<T extends Record<string, any>>(
 	);
 }
 
-/** contract constants (spec 011 §3.2, §3.4) **/
+/** contract constants (spec 011 §3.2, §3.4; spec 014 §3.4) **/
 
 export const EVENT_CHANNEL = "butler://event" as const;
 export const IPC_CONTRACT_VERSION = [1, 0] as const;
+export const DEFAULT_SETTINGS: Settings = {
+  "schema": 1,
+  "capture": {
+    "monitor": {
+      "kind": "primary"
+    },
+    "interval_ms": 2500,
+    "region": null
+  },
+  "detection": {
+    "threshold": 0.85,
+    "stability_frames": 2,
+    "max_compare_chars": 6000
+  },
+  "assistant": {
+    "provider": "anthropic",
+    "model": "claude-opus-5",
+    "effort": "medium",
+    "answer_style": "short",
+    "max_output_tokens": 1024,
+    "endpoint_override": null,
+    "budget": {
+      "daily_usd": 2.0,
+      "monthly_usd": 20.0,
+      "max_input_tokens": 8000
+    }
+  },
+  "pacing": {
+    "words_per_minute": 300
+  },
+  "shortcuts": {
+    "arm_disarm": "CmdOrCtrl+Shift+B",
+    "interact": "CmdOrCtrl+Shift+Space",
+    "toggle_visibility": "CmdOrCtrl+Shift+H",
+    "ask_now": "CmdOrCtrl+Shift+Enter"
+  },
+  "privacy": {
+    "redaction_enabled": true,
+    "redact_pii": false,
+    "allow_degraded_mode": false,
+    "diagnostics_level": "minimal",
+    "region_only": false
+  },
+  "window": {
+    "anchor": "top-right",
+    "width_px": 420,
+    "max_height_px": 600,
+    "opacity": 0.92
+  },
+  "ui": {
+    "theme": "system",
+    "font_scale": 1.0
+  }
+};

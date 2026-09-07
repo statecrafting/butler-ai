@@ -181,5 +181,44 @@ seconds and the runtime calls the detector off the UI thread.
 
 ## 8. Settings defaults (spec 014)
 
-Generated from `Settings::default()` by a test once the crate exists; until
-then the values in spec 014 §3.1 are the reference.
+Generated from `Settings::default()` by a test and diffed (spec 014 AC-2), the
+way §3's diagram is for spec 009. Never hand-edited: run
+`cargo test -p butler-core --test settings -- --ignored regenerate` after
+changing a default.
+
+<!-- generated: settings-defaults -->
+| Setting | Default |
+|---|---|
+| `assistant.answer_style` | `"short"` |
+| `assistant.budget.daily_usd` | `2.0` |
+| `assistant.budget.max_input_tokens` | `8000` |
+| `assistant.budget.monthly_usd` | `20.0` |
+| `assistant.effort` | `"medium"` |
+| `assistant.endpoint_override` | none |
+| `assistant.max_output_tokens` | `1024` |
+| `assistant.model` | `"claude-opus-5"` |
+| `assistant.provider` | `"anthropic"` |
+| `capture.interval_ms` | `2500` |
+| `capture.monitor.kind` | `"primary"` |
+| `capture.region` | none |
+| `detection.max_compare_chars` | `6000` |
+| `detection.stability_frames` | `2` |
+| `detection.threshold` | `0.85` |
+| `pacing.words_per_minute` | `300` |
+| `privacy.allow_degraded_mode` | `false` |
+| `privacy.diagnostics_level` | `"minimal"` |
+| `privacy.redact_pii` | `false` |
+| `privacy.redaction_enabled` | `true` |
+| `privacy.region_only` | `false` |
+| `schema` | `1` |
+| `shortcuts.arm_disarm` | `"CmdOrCtrl+Shift+B"` |
+| `shortcuts.ask_now` | `"CmdOrCtrl+Shift+Enter"` |
+| `shortcuts.interact` | `"CmdOrCtrl+Shift+Space"` |
+| `shortcuts.toggle_visibility` | `"CmdOrCtrl+Shift+H"` |
+| `ui.font_scale` | `1.0` |
+| `ui.theme` | `"system"` |
+| `window.anchor` | `"top-right"` |
+| `window.max_height_px` | `600` |
+| `window.opacity` | `0.92` |
+| `window.width_px` | `420` |
+<!-- generated: settings-defaults -->

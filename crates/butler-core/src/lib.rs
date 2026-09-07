@@ -25,10 +25,15 @@
 //!   defined here once and generated into the TypeScript the webview imports,
 //!   so the two halves of the boundary cannot drift (spec 011).
 //!
-//! The remaining modules arrive with their own specs and extend this crate:
-//! `pacing` (spec 013), `settings` (spec 014).
+//! - [`settings`]: the one configuration surface. Every tunable another spec
+//!   names lives here, with its default in code and its validation pure
+//!   (spec 014).
+//!
+//! The remaining module arrives with its own spec and extends this crate:
+//! `pacing` (spec 013).
 
 pub mod delta;
 pub mod ipc;
 pub mod machine;
 pub mod redaction;
+pub mod settings;

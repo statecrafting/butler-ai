@@ -19,6 +19,7 @@ import { FatalPanel } from "./components/FatalPanel";
 import { NotePrompt } from "./components/NotePrompt";
 import { OnboardingPanel } from "./components/OnboardingPanel";
 import { Sentinel } from "./components/Sentinel";
+import { SettingsPanel } from "./components/SettingsPanel";
 import { StatusStrip } from "./components/StatusStrip";
 import { contractMatches, IPC_CONTRACT_VERSION } from "./ipc/client";
 import { connect } from "./state/ipc";
@@ -64,6 +65,13 @@ export function App() {
       <CredentialPanel />
       <AnswerPanel />
       <NotePrompt />
+      {/*
+        Spec 014 §3.4. Opened from the tray's "Settings..." item, which spec
+        004's `on_menu_event` will route once there is an IPC path for it;
+        until then the panel is mounted and closed, so its bindings and its
+        typechecking are live rather than dead code.
+      */}
+      <SettingsPanel open={false} />
       <Sentinel />
     </Show>
   );

@@ -120,6 +120,62 @@
           "kind": "file",
           "path": "Cargo.toml"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/app_state.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "011-ipc-contract",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/commands.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "011-ipc-contract",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/bin/export-bindings.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "011-ipc-contract",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/generated/bindings.ts"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/state/runtime.ts"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/ipc/client.ts"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/test/store.test.ts"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -127,7 +183,7 @@
       "platforms": "all"
     },
     "id": "014-user-configuration",
-    "implementation": "pending",
+    "implementation": "complete",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "refines": [
@@ -151,13 +207,15 @@
       "3.4 Panel (`SettingsPanel.tsx`)",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions",
+      "8. Verification"
     ],
     "specPath": "specs/014-user-configuration/spec.md",
     "status": "approved",
     "summary": "One typed `Settings` struct in `butler-core` is the only configuration surface: capture (monitor, interval, region), detection (threshold, stability), assistant (provider, model, effort, answer style, budget caps, endpoint override), pacing (words per minute), shortcuts, privacy toggles (redaction on, allow degraded mode, diagnostics level), and window geometry. Defaults are in code, validation is pure, the file is TOML in the platform config directory written atomically, secrets are never in it (010), and every change flows through one `UpdateSettings` command that validates, persists, applies, and broadcasts. No environment variables configure the product.\n",
     "title": "User configuration: a typed settings model, an atomic on-disk store, and the settings panel"
   },
-  "shardHash": "63c8e2dfc2ea9530fa39170f67d520553e4fca64fe6157d259166e430dbe38d8",
+  "shardHash": "ad5c9e533bd57a722d7f5fd8f3793532c466495de5f9005406daa87d722c8c1e",
   "specVersion": "1.1.0"
 }
