@@ -10,6 +10,16 @@
       {
         "code": "W-001",
         "message": "spec '019-runtime-host' symbol unit 'butler_desktop::runtime::Runtime' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '019-runtime-host' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/lib.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '019-runtime-host' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
+        "path": "apps/desktop/src-tauri/Cargo.toml"
       }
     ]
   },
@@ -18,8 +28,44 @@
       "009-pipeline-state-machine",
       "004-desktop-shell"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
+        }
+      },
       {
         "locations": [],
         "ownership": true,
@@ -56,5 +102,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "75fa6cf0e96a0ec7523734795ed83ddb32748228cc7cde6f6366bb66295f5bc6"
+  "shardHash": "ddfb297e41dc20f92815a611b8535a91bf21c8c5fbfe1bb176418afe79139081"
 }

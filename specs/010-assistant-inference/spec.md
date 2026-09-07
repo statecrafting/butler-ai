@@ -37,6 +37,12 @@ establishes:
   - { kind: symbol, id: "butler_llm::anthropic::AnthropicAssistant" }
   - { kind: symbol, id: "butler_llm::secrets::SecretStore" }
   - { kind: symbol, id: "butler_llm::budget::SpendGuard" }
+extends:
+  # `crates/*` already globs this crate into the workspace, but the provider
+  # client's dependencies (reqwest, keyring, zeroize) are pinned once in spec
+  # 001's root manifest (001 FR-004) before this crate's manifest references
+  # them.
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 summary: >
   The `butler-llm` crate: an `Assistant` trait that streams `Chunk`s for an
   `InferenceRequest`, the Claude Messages API reference implementation over

@@ -19,6 +19,16 @@
       {
         "code": "W-001",
         "message": "spec '016-diagnostics-and-logging' symbol unit 'butler_desktop::diagnostics::DiagnosticsBundle' did not resolve"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '016-diagnostics-and-logging' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
+        "path": "apps/desktop/src-tauri/src/lib.rs"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '016-diagnostics-and-logging' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
+        "path": "apps/desktop/src-tauri/Cargo.toml"
       }
     ]
   },
@@ -27,8 +37,35 @@
       "004-desktop-shell",
       "015-privacy-boundary"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
       {
         "locations": [],
         "ownership": true,
@@ -36,6 +73,15 @@
         "unit": {
           "kind": "file",
           "path": "apps/desktop/src-tauri/src/diagnostics.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
         }
       },
       {
@@ -70,5 +116,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "2c75323bc4aafffa7425205c225c8af24302be9137c9f9358f48c6d834e5b59c"
+  "shardHash": "482f418a62356f8ebadf0d6ab09868e299b15ad58896e9cee23ba12470cd01ab"
 }

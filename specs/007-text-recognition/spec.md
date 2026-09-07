@@ -26,6 +26,11 @@ establishes:
   - { kind: symbol, id: "butler_ocr::recognizer::TextRecognizer" }
   - { kind: symbol, id: "butler_ocr::recognized::Recognized" }
   - { kind: symbol, id: "butler_ocr::normalize::normalize" }
+extends:
+  # `crates/*` already globs this crate into the workspace, but the OCR
+  # backends' bindings are pinned once in spec 001's root manifest
+  # (001 FR-004) before this crate's manifest references them.
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 summary: >
   The `butler-ocr` crate: a `TextRecognizer` trait that turns a `FrameView`
   into `Recognized` text with per-line geometry and confidence, backed by the

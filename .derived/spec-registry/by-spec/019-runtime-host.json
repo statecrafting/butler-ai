@@ -22,6 +22,30 @@
           "id": "butler_desktop::runtime::Runtime",
           "kind": "symbol"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -59,6 +83,6 @@
     "summary": "The impure half of the pipeline: `Runtime`, the effect executor that lives in spec 004's Tauri crate, owns the machine's `State`, holds the trait objects from 006, 007 and 010, and turns the `Effect` values that `reduce` returns into real capture, recognition, inference and IPC emission, feeding every result back as an ordered event. Spec 009 keeps the pure reducer and the `butler-core` crate; this spec keeps everything the reducer refuses to know about: tokio tasks, cancellation tokens, blocking pools, and the frame and text slots. The split is what lets 009 be phase 1 (no OS, no tauri, Linux CI) while its executor waits for the phase 2 crate that hosts it.\n",
     "title": "Runtime host: the effect executor that drives the pure reducer from inside the desktop crate"
   },
-  "shardHash": "888214ec00edddc1dad3b88b49a69208b57dfd6358bf09c946dcce2fb4db488f",
+  "shardHash": "453796c55bd54b704f3ace78a984be955b38df925edf763bfe2797bc42b76770",
   "specVersion": "1.1.0"
 }

@@ -18,6 +18,10 @@ extends:
   - { spec: "009-pipeline-state-machine", unit: { kind: module, id: "butler_core::redaction" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::redaction::redact" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::redaction::RedactedText" }, nature: additive }
+  # Host surface: `redaction` is only reachable once butler-core's `lib.rs`
+  # declares it. The module is a pure pass (section 3), so it adds no
+  # dependency and touches no manifest.
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/lib.rs", nature: additive }
 constrains:
   - flavor: invariant-freeze
     unit: "crates/butler-capture/src/frame.rs"

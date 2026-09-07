@@ -53,6 +53,30 @@
           "id": "butler_core::delta::Verdict",
           "kind": "symbol"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -82,6 +106,6 @@
     "summary": "The `delta` module of `butler-core`: a `ChangeDetector` trait and the v1 `LevenshteinDetector`, which compares the normalized text of the current frame with the text last sent to inference and returns `Unchanged` or `Changed` with a similarity ratio. A normalized edit-distance ratio, a configurable threshold, a stability window (a change must persist across consecutive frames so mid-scroll and mid-render frames are not sent), and an exclusion set (the overlay's own last answer, used only when exclusion is not verified) make the outline's \"only call the LLM when the Levenshtein distance exceeds a threshold\" precise, cheap and testable. Pure code: no OS, no clock, no I/O.\n",
     "title": "Change detection: fire inference only when the screen's text has meaningfully changed"
   },
-  "shardHash": "03b823997c7de1f0a80a1552016cc6f1b4fc6057039e1eee552ea1a23f27d3ee",
+  "shardHash": "248758a2a66af282b8b6d14abb92f524e48b8f25a9282a2d50c26431d0787bd6",
   "specVersion": "1.1.0"
 }

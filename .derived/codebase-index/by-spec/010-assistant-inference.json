@@ -95,7 +95,12 @@
       "015-privacy-boundary",
       "014-user-configuration"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
       {
         "locations": [],
@@ -258,11 +263,24 @@
           "id": "butler_llm::secrets::SecretStore",
           "kind": "symbol"
         }
+      },
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
       }
     ],
     "specId": "010-assistant-inference",
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "0c76669e7aaf4dbdc1945cf1c3890be00bcd6ca655ef1743e93ac923ee0b24bc"
+  "shardHash": "654fdc41fe3a1f0ee1470a9a29e47845f238cb376fe11bd8432315362cea89c5"
 }

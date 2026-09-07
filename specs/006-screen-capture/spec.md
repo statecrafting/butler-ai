@@ -31,6 +31,11 @@ establishes:
   - { kind: symbol, id: "butler_capture::source::ScreenSource" }
   - { kind: symbol, id: "butler_capture::frame::Frame" }
   - { kind: symbol, id: "butler_capture::monitor::MonitorId" }
+extends:
+  # `crates/*` already globs this crate into the workspace, but its
+  # dependencies (xcap, image, zeroize) are pinned once in spec 001's root
+  # manifest (001 FR-004) before this crate's manifest references them.
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 summary: >
   The `butler-capture` crate: a `ScreenSource` trait that yields one `Frame`
   of one monitor on demand, an `xcap`-backed implementation for Windows and

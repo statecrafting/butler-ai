@@ -38,6 +38,30 @@
           "id": "butler_desktop::diagnostics::DiagnosticsBundle",
           "kind": "symbol"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -65,6 +89,6 @@
     "summary": "Operational visibility without content: `tracing` with a rolling file appender in the platform log directory, level from settings (default `info`; `trace` records every state transition by id), structured fields restricted to a closed set of key names, and a diagnostics bundle (recent log, settings, versions, exclusion status, platform info) that the user builds from the tray and saves where they choose. The privacy boundary (015) constrains `logging.rs`; this spec makes the constraint operational with a field allowlist enforced at compile time.\n",
     "title": "Diagnostics and logging: structured, content-free tracing and a user-initiated diagnostics bundle"
   },
-  "shardHash": "998eff50807016ffeaa57b046a3cde38debd7fe6f675bce0bc6dc074076200d4",
+  "shardHash": "2287e8b5e56f45c92a51a1a605f3cdd8bb2dee57deeb6b2ac5e11089c5bf2818",
   "specVersion": "1.1.0"
 }

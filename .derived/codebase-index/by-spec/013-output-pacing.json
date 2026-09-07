@@ -31,8 +31,8 @@
       },
       {
         "code": "W-001",
-        "message": "spec '013-output-pacing' file unit 'crates/butler-core/src/machine.rs' does not exist",
-        "path": "crates/butler-core/src/machine.rs"
+        "message": "spec '013-output-pacing' file unit 'apps/desktop/src/App.tsx' does not exist",
+        "path": "apps/desktop/src/App.tsx"
       },
       {
         "code": "W-001",
@@ -48,7 +48,16 @@
       "011-ipc-contract",
       "012-overlay-ui"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "crates/butler-core/src/lib.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/machine.rs",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
       {
         "locations": [],
@@ -56,7 +65,29 @@
         "sourceField": "extends",
         "unit": {
           "kind": "file",
+          "path": "apps/desktop/src/App.tsx"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
           "path": "apps/desktop/src/components/PacedAnswer.tsx"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/lib.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
         }
       },
       {
@@ -114,7 +145,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "refines",
         "unit": {
@@ -127,5 +162,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "878643049de31600f487cf860650edd7e74241dba8173e64e783c858177fe761"
+  "shardHash": "ed82d2d304a2cc063fa843d6cc52d6d0c36a72415dbafb615f23bfe09e0c4280"
 }

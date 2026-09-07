@@ -24,6 +24,16 @@ extends:
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/settings_store.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: { kind: symbol, id: "butler_desktop::settings_store::SettingsStore" }, nature: additive }
   - { spec: "012-overlay-ui", unit: "apps/desktop/src/components/SettingsPanel.tsx", nature: additive }
+  # Host surfaces: `settings` and `settings_store` are only reachable once
+  # their crate roots declare them, `SettingsPanel` only renders once spec
+  # 012's `App.tsx` mounts it, and serde is pinned once in the root manifest
+  # (001 FR-004).
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/lib.rs", nature: additive }
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/Cargo.toml", nature: additive }
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/lib.rs", nature: additive }
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/Cargo.toml", nature: additive }
+  - { spec: "012-overlay-ui", unit: "apps/desktop/src/App.tsx", nature: additive }
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 refines:
   - { aspect: "settings-dtos", unit: "crates/butler-core/src/ipc.rs" }
 summary: >

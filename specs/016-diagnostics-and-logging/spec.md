@@ -18,6 +18,13 @@ extends:
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/diagnostics.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: { kind: symbol, id: "butler_desktop::logging::init" }, nature: additive }
   - { spec: "004-desktop-shell", unit: { kind: symbol, id: "butler_desktop::diagnostics::DiagnosticsBundle" }, nature: additive }
+  # Host surfaces in spec 004's crate: `logging` and `diagnostics` are only
+  # reachable once `lib.rs` declares them, and tracing/tracing-subscriber are
+  # pinned once in the root manifest (001 FR-004) before the app manifest
+  # references them.
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/lib.rs", nature: additive }
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/Cargo.toml", nature: additive }
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 summary: >
   Operational visibility without content: `tracing` with a rolling file
   appender in the platform log directory, level from settings (default

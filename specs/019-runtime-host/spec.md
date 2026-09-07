@@ -16,6 +16,13 @@ depends_on:
 extends:
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/runtime.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: { kind: symbol, id: "butler_desktop::runtime::Runtime" }, nature: additive }
+  # Host surfaces in spec 004's crate: `runtime` is only reachable once
+  # `lib.rs` declares it, and the executor's dependencies (tokio, plus the
+  # 006/007/010 crates it calls) are pinned once in the root manifest
+  # (001 FR-004) before the app manifest references them.
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/lib.rs", nature: additive }
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/Cargo.toml", nature: additive }
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 references:
   - { unit: { kind: file, path: "docs/architecture.md" }, role: "state diagram" }
 summary: >

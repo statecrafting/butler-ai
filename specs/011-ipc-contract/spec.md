@@ -24,6 +24,15 @@ extends:
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/commands.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/events.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/bin/export-bindings.rs", nature: additive }
+  # Host surfaces: `ipc` and the Tauri glue are only reachable once their
+  # crate roots declare them, and serde/specta/tauri-specta are pinned once
+  # in the root manifest (001 FR-004) before either crate manifest
+  # references them.
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/lib.rs", nature: additive }
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/Cargo.toml", nature: additive }
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/lib.rs", nature: additive }
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/Cargo.toml", nature: additive }
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 constrains:
   - flavor: invariant-freeze
     unit: "crates/butler-core/src/ipc.rs"

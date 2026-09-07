@@ -86,6 +86,46 @@
           "kind": "file",
           "path": "apps/desktop/src-tauri/src/bin/export-bindings.rs"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/lib.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -115,6 +155,6 @@
     "summary": "The typed seam between the Rust process and the webview. `UiEvent` (Rust → UI: runtime status, answer lifecycle, paced chunks, exclusion status, prompts for credentials or permissions) and `UiCommand` (UI → Rust: arm, disarm, ask now, dismiss, set interaction, read and update settings, store a secret, run the self-test) are defined once in `butler-core::ipc` as serde types, exposed as Tauri commands and events in the desktop crate, and exported to TypeScript with `tauri-specta` into a committed, generated bindings file whose regeneration CI verifies is a no-op. The contract is versioned and additive within a major.\n",
     "title": "IPC contract: typed commands and events between the Rust runtime and the overlay, with generated bindings"
   },
-  "shardHash": "429251b76b7f761ee2c3625d8e784ca76ea9c92f4411638b06059ae3ff07734c",
+  "shardHash": "c58dd22ec78db0a0d0daced5f86e56c837cef798ec600b2f2cd486c72d410d97",
   "specVersion": "1.1.0"
 }

@@ -32,6 +32,11 @@ repository = "https://github.com/bartekus/butler-ai"
 # requirements here and exact pins in Cargo.lock. The table fills as the
 # crate-owning specs land their dependencies.
 [workspace.dependencies]
+# spec 009: the property tests behind FR-001 (purity) and FR-002 (totality).
+# `fork` and `timeout` are off so the dev tree stays free of the process and
+# temp-file machinery those features pull in; spec 009 AC-3 wants nothing
+# platform-shaped anywhere near `butler-core`.
+proptest = { version = "1.9", default-features = false, features = ["std", "bit-set"] }
 
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,

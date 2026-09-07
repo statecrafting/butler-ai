@@ -65,8 +65,26 @@
     "dependsOn": [
       "009-pipeline-state-machine"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "crates/butler-core/src/lib.rs",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/lib.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
+        }
+      },
       {
         "locations": [],
         "ownership": true,
@@ -193,5 +211,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "9e9471c6633f031c48a3ae980117825cfe7554e2cc6fe5a394f9491230ae386c"
+  "shardHash": "8273c43a853eff81fc64c75cfa8fe84c5d29c08c37a8d8388696dee74d18fa79"
 }

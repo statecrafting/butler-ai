@@ -1,0 +1,31 @@
+# Spec: specs/009-pipeline-state-machine/spec.md
+#
+# The pure domain crate. Spec 009 owns the manifest floor and the `machine`
+# module; `delta` (008), `pacing` (013), `settings` (014), `redaction` (015)
+# and `ipc` (011) are added later by their own specs, each with an `extends`
+# edge into this crate.
+#
+# Dependency policy (spec 009 §2, AC-3): no platform crate, no `tokio`, no
+# `tauri`, no clock, no filesystem, no network. At phase 1 the crate has no
+# runtime dependencies at all; `proptest` is the only dev dependency, required
+# by FR-001 and FR-002. Every version is pinned once in the workspace manifest
+# (spec 001 FR-004) and referenced here as `{ workspace = true }`.
+
+[package]
+name = "butler-core"
+version = "0.1.0"
+description = "Pure domain logic for butler-ai: the pipeline state machine"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[package.metadata.butler]
+spec = "009-pipeline-state-machine"
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[lints]
+workspace = true

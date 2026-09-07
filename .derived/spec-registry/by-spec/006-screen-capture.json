@@ -55,6 +55,16 @@
         "kind": "symbol"
       }
     ],
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      }
+    ],
     "extraFrontmatter": {
       "phase": 3,
       "platforms": [
@@ -86,6 +96,6 @@
     "summary": "The `butler-capture` crate: a `ScreenSource` trait that yields one `Frame` of one monitor on demand, an `xcap`-backed implementation for Windows and macOS, monitor enumeration and selection, and the `Frame` type whose lifecycle rules (in-memory only, no `Serialize`, dropped after recognition) are the first link in the privacy chain. Snapshot polling at a configurable interval replaces continuous video capture: the pipeline asks for a frame when the state machine says so, never on a free-running loop. Cadence, scheduling and backoff are the state machine's (009); this crate only knows how to take one picture.\n",
     "title": "Screen capture: snapshot polling of one monitor through the compositor"
   },
-  "shardHash": "5358f585784a4cac33aef0f4540dd9cd6d14e7f73d42e0c3918c99c9cbfd45b6",
+  "shardHash": "c20526d8e10433634f6b3baf752b30eb35db7910fec92e2375a042e0e888bb81",
   "specVersion": "1.1.0"
 }

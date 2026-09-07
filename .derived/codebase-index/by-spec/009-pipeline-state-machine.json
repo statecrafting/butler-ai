@@ -1,61 +1,41 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' crate unit 'butler-core' does not match any discovered package"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/Cargo.toml' does not exist",
-        "path": "crates/butler-core/Cargo.toml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/src/lib.rs' does not exist",
-        "path": "crates/butler-core/src/lib.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/src/machine.rs' does not exist",
-        "path": "crates/butler-core/src/machine.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' file unit 'crates/butler-core/tests/machine.rs' does not exist",
-        "path": "crates/butler-core/tests/machine.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' module unit 'butler_core::machine' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::State' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::Event' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::Effect' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '009-pipeline-state-machine' symbol unit 'butler_core::machine::reduce' did not resolve"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "001-workspace-layout"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-core/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/lib.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-core/src/machine.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-core/tests/machine.rs",
+        "source": "multiple"
+      }
+    ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -64,7 +44,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/Cargo.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -73,7 +57,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/lib.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -82,7 +70,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -91,7 +83,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/tests/machine.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -100,7 +96,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -109,7 +109,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs",
+            "span": {
+              "endLine": 689,
+              "startLine": 634
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -118,7 +126,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs",
+            "span": {
+              "endLine": 629,
+              "startLine": 528
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -127,7 +143,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs",
+            "span": {
+              "endLine": 413,
+              "startLine": 381
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -136,12 +160,33 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs",
+            "span": {
+              "endLine": 754,
+              "startLine": 742
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
           "id": "butler_core::machine::reduce",
           "kind": "symbol"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
         }
       },
       {
@@ -162,5 +207,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "a5c9d3e0ff51d5ff45f5282f49861cc2a94a5a12eef587b3718a7191b420fede"
+  "shardHash": "d1bc87809012919739c1f74be818b9d3e2876cc25bf0569bafe845c24e5d4c5b"
 }

@@ -56,6 +56,22 @@
           "kind": "file",
           "path": "apps/desktop/src/components/PacedAnswer.tsx"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/lib.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/App.tsx"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -100,6 +116,6 @@
     "summary": "Model output arrives in bursts of tokens; the outline requires that the overlay present it at a natural reading pace in chunks rather than as a wall of text that appears at once. The pacing policy is a pure function in `butler-core` (`Pacer`), driven by the runtime's tick: it buffers provider chunks, releases them at a configurable words-per-minute rate with sentence and clause boundaries preferred, front-loads the first clause so the answer starts quickly, and never exceeds a burst cap. The machine's `Rendering` state (009) ends when the pacer drains. The UI (012) is a passive consumer of `AnswerChunk` events; it applies no timing of its own.\n",
     "title": "Output pacing: deliver the answer in chunks at a human reading rate"
   },
-  "shardHash": "dfd4a31063b342c83059a700bf23bc025df02299cace8806ff3980f6c8a48952",
+  "shardHash": "ca66d7433e3c6afd0a6169c43fca00b74d8bfdea3cab8dfcaddab5d038a94d9d",
   "specVersion": "1.1.0"
 }

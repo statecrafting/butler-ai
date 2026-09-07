@@ -83,6 +83,16 @@
         "kind": "symbol"
       }
     ],
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      }
+    ],
     "extraFrontmatter": {
       "phase": 4,
       "platforms": "all"
@@ -112,6 +122,6 @@
     "summary": "The `butler-llm` crate: an `Assistant` trait that streams `Chunk`s for an `InferenceRequest`, the Claude Messages API reference implementation over raw HTTPS (Rust has no official SDK; the wire contract is pinned by fixture tests), an SSE parser, the prompt contract (system prompt, context budget, trimming order, refusal and stop-reason handling), an OS-keychain-backed `SecretStore` so an API key is never in a file, and a `SpendGuard` that bounds requests per minute and tokens per day. The provider is selected by settings; exactly one endpoint is ever contacted (spec 015).\n",
     "title": "Assistant inference: a provider-agnostic streaming client, the Claude reference provider, prompt contract, secrets, and spend guard"
   },
-  "shardHash": "2029892cbe590905fc9627439daa97f09591343680fc4cd03b9d7a2f2b5584b7",
+  "shardHash": "bd8626a6e2bf24544d687da8c798dd9f9ce5f5a55e3b4df15a087be4443e324e",
   "specVersion": "1.1.0"
 }

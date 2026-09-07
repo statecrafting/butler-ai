@@ -63,7 +63,12 @@
       "016-diagnostics-and-logging",
       "019-runtime-host"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Cargo.toml",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
       {
         "locations": [],
@@ -163,11 +168,24 @@
           "id": "butler_capture::source::ScreenSource",
           "kind": "symbol"
         }
+      },
+      {
+        "locations": [
+          {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
       }
     ],
     "specId": "006-screen-capture",
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "7598b15d50f550a7cc9b79ecffc0bc59965a75cf0edb6cf68e3e2ae580e1d36b"
+  "shardHash": "d4c4f07ae6f3c0b21670930378662916dd62157f8a41c01860e84138df9e41ce"
 }

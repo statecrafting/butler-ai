@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-01"
-implementation: pending
+implementation: complete
 owner: "butler-ai maintainers"
 risk: high
 platforms: "all"
@@ -23,6 +23,13 @@ establishes:
   - { kind: symbol, id: "butler_core::machine::Event" }
   - { kind: symbol, id: "butler_core::machine::Effect" }
   - { kind: symbol, id: "butler_core::machine::reduce" }
+extends:
+  # Spec 001 section 3.1 requires every third-party crate to be pinned in the
+  # root [workspace.dependencies], and that table's own comment says it fills
+  # as the crate-owning specs land their dependencies. This is that landing
+  # for spec 009's proptest pin (FR-001, FR-002): an additive edit to a unit
+  # 001 owns, declared by the spec making it rather than waived at PR time.
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 references:
   - { unit: { kind: file, path: "docs/architecture.md" }, role: "state diagram" }
 summary: >

@@ -21,6 +21,12 @@ extends:
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::delta::ChangeDetector" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::delta::LevenshteinDetector" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::delta::Verdict" }, nature: additive }
+  # Host surfaces in spec 009's crate: `delta` is only reachable once
+  # `lib.rs` declares it, and `strsim` (section 2) is pinned once in the root
+  # manifest (001 FR-004) before butler-core's manifest references it.
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/lib.rs", nature: additive }
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/Cargo.toml", nature: additive }
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
 summary: >
   The `delta` module of `butler-core`: a `ChangeDetector` trait and the v1
   `LevenshteinDetector`, which compares the normalized text of the current

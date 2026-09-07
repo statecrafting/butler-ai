@@ -22,6 +22,11 @@ extends:
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::pacing::PacingPolicy" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::pacing::Pacer" }, nature: additive }
   - { spec: "012-overlay-ui", unit: "apps/desktop/src/components/PacedAnswer.tsx", nature: additive }
+  # Host surfaces: `pacing` is only reachable once butler-core's `lib.rs`
+  # declares it, and `PacedAnswer` only renders once spec 012's `App.tsx`
+  # mounts it. The module is pure, so it adds no dependency.
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/lib.rs", nature: additive }
+  - { spec: "012-overlay-ui", unit: "apps/desktop/src/App.tsx", nature: additive }
 refines:
   - { aspect: "rendering-state", unit: "crates/butler-core/src/machine.rs" }
   - { aspect: "answer-chunk-event", unit: "crates/butler-core/src/ipc.rs" }
