@@ -47,10 +47,6 @@
       {
         "path": "Makefile",
         "source": "spec-edge"
-      },
-      {
-        "path": "scripts/verify-spec.sh",
-        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
@@ -200,23 +196,10 @@
       {
         "locations": [
           {
-            "file": "scripts/verify-spec.sh"
-          }
-        ],
-        "ownership": true,
-        "sourceField": "establishes",
-        "unit": {
-          "kind": "file",
-          "path": "scripts/verify-spec.sh"
-        }
-      },
-      {
-        "locations": [
-          {
             "file": "Makefile",
             "span": {
-              "endLine": 83,
-              "startLine": 83
+              "endLine": 91,
+              "startLine": 91
             }
           }
         ],
@@ -233,8 +216,8 @@
           {
             "file": "Makefile",
             "span": {
-              "endLine": 104,
-              "startLine": 104
+              "endLine": 112,
+              "startLine": 112
             }
           }
         ],
@@ -251,8 +234,8 @@
           {
             "file": "Makefile",
             "span": {
-              "endLine": 95,
-              "startLine": 95
+              "endLine": 103,
+              "startLine": 103
             }
           }
         ],
@@ -308,5 +291,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "20c8263196ede1e871e5b16f984b6418df497f7b738548c6f3ad66b2e4f00829"
+  "shardHash": "64519277d8e34811eea8a4e6cfb82cca55f528179b9344cfcb833bfc6d49514c"
 }

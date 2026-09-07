@@ -72,7 +72,8 @@
       "9. Territory of this spec",
       "10. Bootstrap order",
       "11. Status",
-      "12. Verification"
+      "12. Resolved decisions",
+      "13. Verification"
     ],
     "specPath": "specs/000-butler-bootstrap/spec.md",
     "status": "approved",
@@ -88,6 +89,6 @@
       "ownership-ratchet"
     ]
   },
-  "shardHash": "2bf67031159504e0da92453d5d3467d0e14c5aae3ba28f669553499f36baa389",
+  "shardHash": "a1fd9da64aebc414ac9ac71e60c8eb448bf37d29a4adbce9b03545f18f95ea25",
   "specVersion": "1.1.0"
 }

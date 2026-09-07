@@ -81,10 +81,6 @@
       {
         "kind": "file",
         "path": ".claude/rules/build-commands.md"
-      },
-      {
-        "kind": "file",
-        "path": "scripts/verify-spec.sh"
       }
     ],
     "extraFrontmatter": {
@@ -142,6 +138,6 @@
     "summary": "The governed-development loop for agents working in this repository: the cross-agent session protocol (AGENTS.md), the Claude Code skills (`/init`, `/setup`, `/spec-new`, `/burndown`, `/implement-plan`, `/validate-and-fix`, `/code-review`, `/commit`, `/ship`, `/shepherd`, `/cleanup`, `/research`, `/refactor-claude-md`), the pipeline agents plus two domain specialists (`spec-author`, `tauri-expert`), the paths-scoped context rules, the deterministic hooks in `.claude/settings.json`, and the Makefile targets the skills call. Adapted from the spec-spine kit (spec-spine spec 029) and specialized to butler-ai's stack and its specify-first workflow. Owns the harness surface; the three floor rules stay with spec 000.\n",
     "title": "Agentic engineering harness: skills, agents, rules, hooks, and the session protocol"
   },
-  "shardHash": "5a9652ba9ccdf40649ad7ce9bc1bb9ba83981c2291ff2bd245b131869b5419f2",
+  "shardHash": "1240a7551cf9ff1d2cedf9c65d22af9b411fe493cb7eb1f5983d49b774b33ebc",
   "specVersion": "1.1.0"
 }

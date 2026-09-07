@@ -10,7 +10,7 @@ SHELL := /bin/sh
 
 # The spec-spine version CI installs (spec 003 §3.1) and `make setup` installs.
 # Bump both here; the workflow reads this file.
-SPEC_SPINE_VERSION ?= 0.14.0
+SPEC_SPINE_VERSION ?= 0.15.0
 SPEC_SPINE ?= $(shell command -v spec-spine 2>/dev/null || echo "$(HOME)/.cargo/bin/spec-spine")
 BASE ?= origin/main
 
@@ -59,8 +59,16 @@ pr-prep:
 
 burndown:
 	@"$(SPEC_SPINE)" index check >/dev/null 2>&1 || echo "[burndown] index is STALE; run: spec-spine index"
-	@"$(SPEC_SPINE)" index render | grep 'W-001' | sed 's/^- W-001 \[warning\] //' | sort
-	@echo "total unresolved: $$("$(SPEC_SPINE)" index render | grep -c 'W-001')"
+	@"$(SPEC_SPINE)" index diagnostics
+	@if command -v jq >/dev/null 2>&1; then \
+	  echo "--- unresolved owning units (W-001) per spec ---"; \
+	  "$(SPEC_SPINE)" index diagnostics --json \
+	    | jq -r '[.[] | select(.code == "W-001")] | group_by(.specId)[] | "\(length)\t\(.[0].specId)"' \
+	    | sort -rn | sed 's/^/  /'; \
+	  echo "total unresolved (W-001): $$("$(SPEC_SPINE)" index diagnostics --json | jq '[.[] | select(.code == "W-001")] | length')"; \
+	else \
+	  echo "total diagnostics (all codes): $$("$(SPEC_SPINE)" index diagnostics | wc -l | tr -d ' '); install jq for the W-001 breakdown"; \
+	fi
 
 coverage:
 	"$(SPEC_SPINE)" index coverage
