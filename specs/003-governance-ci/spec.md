@@ -17,11 +17,12 @@ establishes:
   - { kind: section, file: ".github/workflows/spec-spine.yml", anchor: "on" }
   - { kind: section, file: ".github/workflows/spec-spine.yml", anchor: "permissions" }
   - { kind: section, file: ".github/workflows/spec-spine.yml", anchor: "jobs.govern" }
-  - { kind: section, file: ".github/workflows/spec-spine.yml", anchor: "jobs.gate" }
   - { kind: section, file: ".github/workflows/ci.yml", anchor: "on" }
   - { kind: section, file: ".github/workflows/ci.yml", anchor: "permissions" }
   - { kind: section, file: ".github/workflows/ci.yml", anchor: "jobs.rust" }
   - { kind: section, file: ".github/workflows/ci.yml", anchor: "jobs.web" }
+  - { kind: section, file: ".github/workflows/ci.yml", anchor: "jobs.govern" }
+  - { kind: section, file: ".github/workflows/ci.yml", anchor: "jobs.ci-gate" }
   - ".github/dependabot.yml"
   - "CODEOWNERS"
   - ".gitattributes"
@@ -32,7 +33,7 @@ summary: >
   `index coverage --fail-on-untraced`, `couple` against the PR's frozen base
   and head SHAs with the PR-body waiver) on every pull request; a `ci` workflow
   for the language gates that activates itself when the workspace lands; a
-  single `gate` status check for branch protection; CODEOWNERS for the
+  single `ci-gate` status check for branch protection; CODEOWNERS for the
   load-bearing paths; LF normalization and the opt-in merge driver for the
   committed shard trees; Dependabot for actions, cargo and npm. Owns the
   security-relevant workflow keys (`on`, `permissions`, the jobs) as section
@@ -65,10 +66,13 @@ pre-commit staleness check).
 
 ## 3. Behavior
 
-### 3.1 `spec-spine.yml` (the governance gate)
+### 3.1 `spec-spine.yml` (the governance gate, a reusable workflow)
 
-- Triggers on `pull_request` and `push` to `main`, plus `merge_group` (inert
-  until a merge queue is enabled).
+- `on: workflow_call` only. This workflow declares no event triggers of its
+  own: `ci.yml` calls it, so its result folds into the one `ci-gate` check
+  rather than publishing a second status check. The `github` context inside a
+  called workflow is the caller's, so the coupling step below still reads the
+  real `pull_request` event.
 - `permissions: contents: read` at the workflow level. Nothing in this workflow
   needs write access.
 - `jobs.govern` MUST, in order, on `ubuntu-latest` with `fetch-depth: 0`:
@@ -84,13 +88,14 @@ pre-commit staleness check).
      endpoints are the event's frozen SHAs, never the merge ref.
   Nothing in the job writes to `.derived/`; a writing `compile` before
   `--check` would make the check pass unconditionally.
-- `jobs.gate` is the single aggregate status (`needs: [govern]` here; the
-  `ci.yml` jobs are aggregated in their own workflow) that branch protection
-  requires. A skipped job counts as a pass; a failed or cancelled job fails it.
+  This workflow publishes no aggregate status of its own; `ci.yml`'s
+  `jobs.ci-gate` is the only required check (§3.2).
 
-### 3.2 `ci.yml` (the language gates)
+### 3.2 `ci.yml` (the single CI entry point)
 
-- Same triggers and read-only permissions.
+- Triggers on `pull_request` and `push` to `main`, plus `merge_group` (inert
+  until a merge queue is enabled), with read-only permissions. This is the only
+  workflow in the repository with event triggers.
 - `jobs.rust` runs on a matrix of `windows-latest` and `macos-latest`: `cargo
   build --workspace --locked`, `cargo test --workspace --locked`, `cargo clippy
   --workspace --all-targets --locked -- -D warnings`, `cargo fmt --all --check`,
@@ -103,7 +108,14 @@ pre-commit staleness check).
 - `jobs.web` runs on `ubuntu-latest`: `pnpm install --frozen-lockfile`, `pnpm
   -r typecheck`, `pnpm -r lint`, `pnpm -r test`, `pnpm -r build`, guarded by
   `hashFiles('pnpm-workspace.yaml') != ''`.
-- A `gate` job aggregates both, as in §3.1.
+- `jobs.govern` calls `spec-spine.yml` as a reusable workflow, so the
+  governance chain reports through this workflow.
+- `jobs.ci-gate` (`needs: [rust, web, govern]`, `if: always()`) is the **single**
+  required status check for branch protection and the merge queue. It fails when
+  any dependency reports `failure` or `cancelled`; a `skipped` job counts as a
+  pass. Requiring one aggregate name rather than an enumerated list keeps branch
+  protection from drifting as jobs are added, and a new job is covered the moment
+  it joins `needs`.
 
 ### 3.3 Repository hygiene
 
@@ -136,10 +148,12 @@ pre-commit staleness check).
 
 ## 5. Acceptance criteria
 
-- **AC-1.** `spec-spine index render` lists this spec with eight resolved
+- **AC-1.** `spec-spine index render` lists this spec with nine resolved
   section units and four resolved file/directory units.
-- **AC-2.** Branch protection on `main` requires exactly two checks: `gate`
-  from each workflow.
+- **AC-2.** Branch protection on `main` requires exactly one check, `ci-gate`,
+  and additionally sets: signed commits required, linear history required,
+  enforcement for administrators, force pushes and deletions refused. Verified
+  with `gh api repos/statecrafting/butler-ai/branches/main/protection`.
 - **AC-3.** After `./.githooks/enable-merge-driver.sh`, `git check-attr merge
   .derived/spec-registry/by-spec/000-butler-bootstrap.json` prints
   `spec-spine-derived-regen`.
@@ -164,3 +178,14 @@ pre-commit staleness check).
   `taiki-e/install-action@v2`. The matrix is unchanged and no requirement moved:
   this brings `jobs.rust` to what §3.2 already specified. A container action is
   not usable anywhere in `jobs.rust` while the matrix excludes Linux.
+
+- **D-2 (2026-09-06).** The repository published **two** status checks both
+  literally named `gate`, one per workflow, so AC-2's "exactly two checks:
+  `gate` from each workflow" was unsatisfiable: a required-context list cannot
+  distinguish two identical names, and both files described themselves as "the
+  single required status check". Branch protection was consequently never
+  configured at all, leaving the whole gate chain advisory. `spec-spine.yml` is
+  now a reusable workflow with no triggers of its own, `ci.yml` is the single
+  entry point, and `jobs.ci-gate` is the one aggregate check, matching how
+  spec-spine composes its own CI. AC-2 now names that single context and the
+  four repository settings that make the gate binding rather than advisory.
