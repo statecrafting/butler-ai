@@ -160,8 +160,12 @@ skills call. Their content is this spec's; their existence and names are spec
   guarded so the target is a no-op until there is something to build: the
   cargo half by a *populated* workspace (`Cargo.toml` present and
   `crates/*/Cargo.toml` matching at least one manifest; the root manifest
-  alone is not loadable, §3.1), the pnpm half by `pnpm-workspace.yaml`. Spec
-  003 §3.2 guards the CI jobs on the same two predicates.
+  alone is not loadable, §3.1), the pnpm half by `pnpm-workspace.yaml`. These
+  guards are the *Makefile's*, so a target stays a no-op on a tree that has not
+  reached phase 1. CI no longer mirrors them: both predicates have been
+  satisfied since phase 1, so spec 003 §3.4 R-1 asserts them there instead,
+  because a guard that can no longer close turns a regression into a silent
+  skip.
 - `test`: `cargo test --workspace --locked` and `pnpm -r test`.
 - `lint`: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets
   --locked -- -D warnings`, `cargo deny check`, `pnpm -r lint`, `pnpm -r

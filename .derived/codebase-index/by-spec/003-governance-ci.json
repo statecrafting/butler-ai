@@ -28,6 +28,10 @@
       {
         "path": "CODEOWNERS",
         "source": "spec-edge"
+      },
+      {
+        "path": "scripts/check-action-runners.sh",
+        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
@@ -86,10 +90,23 @@
       {
         "locations": [
           {
+            "file": "scripts/check-action-runners.sh"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "scripts/check-action-runners.sh"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 147,
-              "startLine": 133
+              "endLine": 181,
+              "startLine": 167
             }
           }
         ],
@@ -106,8 +123,8 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 128,
-              "startLine": 126
+              "endLine": 162,
+              "startLine": 160
             }
           }
         ],
@@ -124,8 +141,26 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 90,
-              "startLine": 29
+              "endLine": 40,
+              "startLine": 33
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.preflight",
+          "file": ".github/workflows/ci.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/ci.yml",
+            "span": {
+              "endLine": 108,
+              "startLine": 41
             }
           }
         ],
@@ -142,8 +177,8 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 124,
-              "startLine": 91
+              "endLine": 159,
+              "startLine": 109
             }
           }
         ],
@@ -250,5 +285,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "7e2a8e4a3cc7e145f057f089a619293297e7de0dc32a90f6eec1e49dda14bdb6"
+  "shardHash": "b54fb0ac63d1e102ec4841ce4311b623b5d9e86983c7b1b8761890c284c8bf6c"
 }

@@ -33,6 +33,11 @@
         "kind": "section"
       },
       {
+        "anchor": "jobs.preflight",
+        "file": ".github/workflows/ci.yml",
+        "kind": "section"
+      },
+      {
         "anchor": "jobs.rust",
         "file": ".github/workflows/ci.yml",
         "kind": "section"
@@ -51,6 +56,10 @@
         "anchor": "jobs.ci-gate",
         "file": ".github/workflows/ci.yml",
         "kind": "section"
+      },
+      {
+        "kind": "file",
+        "path": "scripts/check-action-runners.sh"
       },
       {
         "kind": "file",
@@ -86,6 +95,7 @@
       "3.1 `spec-spine.yml` (the governance gate, a reusable workflow)",
       "3.2 `ci.yml` (the single CI entry point)",
       "3.3 Repository hygiene",
+      "3.4 Unexercised gates",
       "4. Functional requirements",
       "5. Acceptance criteria",
       "6. Out of scope",
@@ -97,6 +107,6 @@
     "summary": "Makes the governance model enforceable: a `spec-spine` workflow that runs the full gate chain (`compile --check`, `index check`, `lint --fail-on-warn`, `index coverage --fail-on-untraced`, `couple` against the PR's frozen base and head SHAs with the PR-body waiver) on every pull request; a `ci` workflow for the language gates that activates itself when the workspace lands; a single `ci-gate` status check for branch protection; CODEOWNERS for the load-bearing paths; LF normalization and the opt-in merge driver for the committed shard trees; Dependabot for actions, cargo and npm. Owns the security-relevant workflow keys (`on`, `permissions`, the jobs) as section units so a token-scope or trigger change forces this spec's review.\n",
     "title": "Governance CI: the gate chain on every PR, code ownership, and derived-artifact merge hygiene"
   },
-  "shardHash": "d30129b786fc7a78c953a62b7825e57ca21ae986e47604cf0e376b47e6baf90c",
+  "shardHash": "2573c6ddfadad2df21c20c788d466afa2cbfce73e2c0bd187513ed2f8b181d6a",
   "specVersion": "1.1.0"
 }
