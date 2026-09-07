@@ -42,11 +42,6 @@
         "code": "W-001",
         "message": "spec '014-user-configuration' file unit 'apps/desktop/src/App.tsx' does not exist",
         "path": "apps/desktop/src/App.tsx"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '014-user-configuration' file unit 'crates/butler-core/src/ipc.rs' does not exist",
-        "path": "crates/butler-core/src/ipc.rs"
       }
     ]
   },
@@ -72,6 +67,10 @@
       },
       {
         "path": "crates/butler-core/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/ipc.rs",
         "source": "spec-edge"
       },
       {
@@ -227,7 +226,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/ipc.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "refines",
         "unit": {

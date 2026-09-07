@@ -443,6 +443,28 @@ unless a spec adds it with a stated need (015 constrains this).
   Both controls were run before it landed: it exits 0 on the file as it stands,
   and exits 1 when a remote URL is injected into it.
 
+- **D-13 (2026-09-07, the sixth advisory D-8 was waiting for).** D-8 pinned §8
+  at `grep -c RUSTSEC- deny.toml -eq 5` and said what the pin was for: "The
+  `unmaintained` class is **not** blanket-disabled: a sixth advisory still
+  fails the gate and gets read." Spec 011 added `specta`, `specta` builds with
+  the `paste` proc-macro, and `paste` carries RUSTSEC-2024-0436,
+  `unmaintained`. The gate failed, as designed.
+
+  Read: `paste` is a **proc-macro**, so it runs at build time and is never
+  linked into the shipped binary, and the advisory records no vulnerability.
+  Spec 001 §3.1 sets the deny bar at `vulnerability`, so refusing it would be
+  the configuration being stricter than the spec, which is the same reasoning
+  D-8 applied to the `unic-*` five. It is listed individually in `deny.toml`
+  with its reason and its path, and the count here moves to six.
+
+  **Nothing about the mechanism changes.** `unmaintained` is still not
+  blanket-disabled (§8's other check still forbids the key outright), the
+  ignores are still individually listed, and a seventh advisory still fails
+  the gate and gets read. This edit was made on spec 011's branch rather than
+  its own, because the count and the dependency that moves it have to land in
+  the same commit: split across two pull requests, `main` is red in between.
+  That is a deliberate, stated exception to 018 R-003.
+
 ## 8. Verification
 
 The manual half is `apps/desktop/README.md` (AC-3). What a process can check:
@@ -478,7 +500,7 @@ grep -q 'Ctrl+Shift+Space' apps/desktop/src-tauri/src/shortcuts.rs
 # D-8: the advisory ignores stay individually listed. Blanket-disabling the
 # `unmaintained` class would hide the next one.
 sh -c '! grep -qE "^\\s*unmaintained\\s*=" deny.toml'
-sh -c 'test "$(grep -c RUSTSEC- deny.toml)" -eq 5'
+sh -c 'test "$(grep -c RUSTSEC- deny.toml)" -eq 6'
 # Territory: every unit this spec claims resolves.
 sh -c 'spec-spine index render | grep "W-001" | grep -q "004-desktop-shell" && exit 1 || exit 0'
 ```

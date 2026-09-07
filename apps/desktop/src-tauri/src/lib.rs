@@ -24,6 +24,8 @@
 //! possible block with a `// SAFETY:` note.
 
 pub mod app_state;
+pub mod commands;
+pub mod events;
 pub mod permissions;
 pub mod shortcuts;
 pub mod tray;
@@ -52,6 +54,9 @@ pub enum AppError {
     /// The setup hook failed before the app could run.
     #[error("setup: {0}")]
     Setup(String),
+    /// An IPC payload could not be delivered to the overlay (spec 011).
+    #[error("ipc: {0}")]
+    Ipc(String),
 }
 
 /// Route a fired global shortcut to its effect (§3.3).
@@ -126,7 +131,14 @@ fn toggle_interactive<R: Runtime>(app: &AppHandle<R>) {
 /// Panics only if Tauri itself cannot start, which is not recoverable: there
 /// is no UI in which to report it.
 pub fn run() {
+    // Spec 011 §3.2: one builder is the source of both the command handler
+    // installed here and the TypeScript the overlay imports. The exporter
+    // binary calls the same function, so the two cannot describe different
+    // contracts.
+    let ipc = commands::builder();
+
     tauri::Builder::default()
+        .invoke_handler(ipc.invoke_handler())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(|app, fired, event| on_shortcut(app, fired, event.state))

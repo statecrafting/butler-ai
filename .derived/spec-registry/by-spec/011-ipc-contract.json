@@ -105,6 +105,22 @@
       },
       {
         "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/machine.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/machine.rs"
+        }
+      },
+      {
+        "nature": "additive",
         "spec": "004-desktop-shell",
         "unit": {
           "kind": "file",
@@ -126,6 +142,14 @@
           "kind": "file",
           "path": "Cargo.toml"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "001-workspace-layout",
+        "unit": {
+          "kind": "file",
+          "path": "deny.toml"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -133,7 +157,7 @@
       "platforms": "all"
     },
     "id": "011-ipc-contract",
-    "implementation": "pending",
+    "implementation": "complete",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "risk": "medium",
@@ -148,13 +172,15 @@
       "3.4 Versioning",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions",
+      "8. Verification"
     ],
     "specPath": "specs/011-ipc-contract/spec.md",
     "status": "approved",
     "summary": "The typed seam between the Rust process and the webview. `UiEvent` (Rust → UI: runtime status, answer lifecycle, paced chunks, exclusion status, prompts for credentials or permissions) and `UiCommand` (UI → Rust: arm, disarm, ask now, dismiss, set interaction, read and update settings, store a secret, run the self-test) are defined once in `butler-core::ipc` as serde types, exposed as Tauri commands and events in the desktop crate, and exported to TypeScript with `tauri-specta` into a committed, generated bindings file whose regeneration CI verifies is a no-op. The contract is versioned and additive within a major.\n",
     "title": "IPC contract: typed commands and events between the Rust runtime and the overlay, with generated bindings"
   },
-  "shardHash": "c58dd22ec78db0a0d0daced5f86e56c837cef798ec600b2f2cd486c72d410d97",
+  "shardHash": "85399a5b477312731656be2d1df4f1afe9a9e7c0015726cfae1cb24a61b38c01",
   "specVersion": "1.1.0"
 }

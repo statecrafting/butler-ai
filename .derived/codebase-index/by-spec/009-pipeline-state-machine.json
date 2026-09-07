@@ -113,8 +113,8 @@
           {
             "file": "crates/butler-core/src/machine.rs",
             "span": {
-              "endLine": 689,
-              "startLine": 634
+              "endLine": 704,
+              "startLine": 649
             }
           }
         ],
@@ -130,8 +130,8 @@
           {
             "file": "crates/butler-core/src/machine.rs",
             "span": {
-              "endLine": 629,
-              "startLine": 528
+              "endLine": 644,
+              "startLine": 543
             }
           }
         ],
@@ -147,8 +147,8 @@
           {
             "file": "crates/butler-core/src/machine.rs",
             "span": {
-              "endLine": 413,
-              "startLine": 381
+              "endLine": 428,
+              "startLine": 396
             }
           }
         ],
@@ -164,8 +164,8 @@
           {
             "file": "crates/butler-core/src/machine.rs",
             "span": {
-              "endLine": 754,
-              "startLine": 742
+              "endLine": 769,
+              "startLine": 757
             }
           }
         ],
@@ -207,5 +207,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "6a25a215bb16050ac8583193fe224d91271cd5290cb22638beb8c3522ffb7424"
+  "shardHash": "b9b9f93bb7c74db1eb82638d2c4e21339283be0e77b86d8eeb5c88412b7ff2f1"
 }
