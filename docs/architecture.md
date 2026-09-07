@@ -136,6 +136,41 @@ To be fixed in phase 3: one Apple Silicon laptop (M-series, 16 GB) and one
 Windows laptop (recent x86-64, integrated GPU, 16 GB), named here by model
 when chosen. Performance numbers in specs 006, 007, 008 are measured on them.
 
+### 7.1 Change detection (spec 008 AC-2)
+
+`cargo bench -p butler-core --bench delta`, criterion, `bench` profile
+(optimized), Apple M1 Max, macOS 26.5.1. Two 6000-character inputs, which is
+the worst case `max_compare_chars` admits:
+
+| Benchmark | p50 |
+|---|---|
+| `evaluate_6000_vs_6000_dissimilar` | **35.5 ms** |
+| `evaluate_6000_identical` | **35.3 ms** |
+
+Identical and dissimilar inputs cost the same: the Levenshtein DP fills the
+whole `n x m` matrix either way, so the ratio it computes does not affect the
+work done to compute it.
+
+**This contradicts spec 008 §3.2**, which estimates "single-digit
+milliseconds" for the same 6000 x 6000 comparison. The estimate treated the
+36 M matrix cells as byte operations; a DP cell is a comparison plus a
+three-way minimum over `usize`, so ~1 ns per cell is the honest figure and
+~36 ms is the result. The gap is arithmetic in the estimate, not a defect in
+the implementation. Recorded here rather than resolved: amending §3.2 is a
+human decision (see spec 008 D-2).
+
+Two consequences worth carrying forward:
+
+- A single `evaluate` can run the DP **twice** (once against the committed
+  base, once against the previous candidate for the stability check), so the
+  worst case per call is ~70 ms.
+- Cost is quadratic in `max_compare_chars`, so halving the window quarters the
+  cost. Reaching single-digit milliseconds by that route needs a window near
+  3000 characters, which is a spec 014 default, not an implementation choice.
+
+None of this threatens the pipeline: spec 009 evaluates on a capture cycle of
+seconds and the runtime calls the detector off the UI thread.
+
 ## 8. Settings defaults (spec 014)
 
 Generated from `Settings::default()` by a test once the crate exists; until

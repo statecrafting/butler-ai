@@ -1,35 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '008-change-detection' file unit 'crates/butler-core/src/delta.rs' does not exist",
-        "path": "crates/butler-core/src/delta.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '008-change-detection' file unit 'crates/butler-core/tests/delta.rs' does not exist",
-        "path": "crates/butler-core/tests/delta.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '008-change-detection' module unit 'butler_core::delta' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '008-change-detection' symbol unit 'butler_core::delta::ChangeDetector' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '008-change-detection' symbol unit 'butler_core::delta::LevenshteinDetector' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '008-change-detection' symbol unit 'butler_core::delta::Verdict' did not resolve"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "009-pipeline-state-machine"
@@ -44,8 +13,20 @@
         "source": "spec-edge"
       },
       {
+        "path": "crates/butler-core/benches/delta.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-core/src/delta.rs",
+        "source": "multiple"
+      },
+      {
         "path": "crates/butler-core/src/lib.rs",
         "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/tests/delta.rs",
+        "source": "multiple"
       }
     ],
     "resolvedUnits": [
@@ -76,7 +57,24 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/benches/delta.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/benches/delta.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/delta.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -98,7 +96,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/tests/delta.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -107,7 +109,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/delta.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -116,7 +122,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/delta.rs",
+            "span": {
+              "endLine": 54,
+              "startLine": 39
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -125,7 +139,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/delta.rs",
+            "span": {
+              "endLine": 141,
+              "startLine": 131
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -134,7 +156,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/delta.rs",
+            "span": {
+              "endLine": 92,
+              "startLine": 74
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -147,5 +177,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "e835798bec224b317a36e747cb7771860e1c93bb472df3f0c18d475640424961"
+  "shardHash": "7d1235ced91efa0ed5119e0d1479548d60e0feb6c851c4f389aa2a33545ce60c"
 }

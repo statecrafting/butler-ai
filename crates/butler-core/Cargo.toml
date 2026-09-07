@@ -8,8 +8,11 @@
 # Dependency policy (spec 009 §2, AC-3): no platform crate, no `tokio`, no
 # `tauri`, no clock, no filesystem, no network. At phase 1 the crate has no
 # runtime dependencies at all; `proptest` is the only dev dependency, required
-# by FR-001 and FR-002. Every version is pinned once in the workspace manifest
-# (spec 001 FR-004) and referenced here as `{ workspace = true }`.
+# by FR-001 and FR-002. Spec 008 adds `strsim`, the crate's first runtime
+# dependency: a pure-Rust edit distance with no transitive dependencies, which
+# leaves AC-3's "no platform crate, no tokio, no tauri" intact. Every version is
+# pinned once in the workspace manifest (spec 001 FR-004) and referenced here as
+# `{ workspace = true }`.
 
 [package]
 name = "butler-core"
@@ -24,8 +27,18 @@ publish = false
 [package.metadata.butler]
 spec = "009-pipeline-state-machine"
 
+[dependencies]
+# spec 008 §2: the only dependency the change detector needs.
+strsim = { workspace = true }
+
 [dev-dependencies]
+criterion = { workspace = true }
 proptest = { workspace = true }
+
+# spec 008 AC-2: not gated in CI; run with `cargo bench -p butler-core`.
+[[bench]]
+name = "delta"
+harness = false
 
 [lints]
 workspace = true

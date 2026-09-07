@@ -37,6 +37,14 @@ repository = "https://github.com/bartekus/butler-ai"
 # temp-file machinery those features pull in; spec 009 AC-3 wants nothing
 # platform-shaped anywhere near `butler-core`.
 proptest = { version = "1.9", default-features = false, features = ["std", "bit-set"] }
+# spec 008: the edit distance behind the change detector's similarity ratio.
+# `default-features = false` drops the `ndarray`-backed extras; the crate then
+# carries no dependencies at all, which keeps spec 009 AC-3's tree clean.
+strsim = { version = "0.11", default-features = false }
+# spec 008 AC-2: the change detector's benchmark. A dev dependency of the
+# benchmark target only, never of the library, so spec 009 AC-3's constraint on
+# `butler-core`'s own tree is untouched.
+criterion = { version = "0.8", default-features = false, features = ["cargo_bench_support"] }
 
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,
