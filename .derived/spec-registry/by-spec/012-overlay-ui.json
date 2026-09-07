@@ -65,7 +65,7 @@
       "platforms": "all"
     },
     "id": "012-overlay-ui",
-    "implementation": "pending",
+    "implementation": "complete",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "references": [
@@ -90,13 +90,15 @@
       "3.5 Accessibility",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions",
+      "8. Verification"
     ],
     "specPath": "specs/012-overlay-ui/spec.md",
     "status": "approved",
     "summary": "The overlay's DOM: a SolidJS application built with Vite whose root is fully transparent (`rgba(0,0,0,0)` everywhere, no body background, no scrollbars), which renders exactly what the runtime tells it through the IPC contract: a status strip (disarmed, armed, inferencing, degraded with the visible-to-screen-sharing banner), the answer panel that receives paced chunks, the onboarding and credential panels, the settings panel, and the exclusion self-test sentinel. Pointer events are off unless the interaction modifier is held. SolidJS is chosen because the overlay is a passive mirror of one external store fed by one event stream, which is Solid's native primitive, and because its synchronous DOM commits keep the exclusion self-test's \"is the sentinel painted\" question answerable in one step (docs/architecture.md D2).\n",
     "title": "Overlay UI: a transparent SolidJS surface that renders runtime state and answers"
   },
-  "shardHash": "e1a997b2eec03dbc01af6d51d7fd177ea27c388134217b6871219740b6b7a7a4",
+  "shardHash": "3b13db3811bf8c09868f57d42c2e968bcdbc5d9fcc5bb89f87d791a2f3ccdaf9",
   "specVersion": "1.1.0"
 }

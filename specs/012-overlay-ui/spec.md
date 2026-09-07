@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "ui"
 created: "2026-09-01"
-implementation: pending
+implementation: complete
 owner: "butler-ai maintainers"
 risk: medium
 platforms: "all"
@@ -179,3 +179,121 @@ announced. Contrast on the plate meets WCAG AA for the system font at 14 px.
 
 - Pacing (013), settings semantics (014), window management (004).
 - Theming beyond the light/dark token pair.
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-07, AC-2 is deferred whole, to 005).** AC-2 asks for a visual
+  checklist signed off before completion: dark and light wallpapers, a
+  full-screen app on macOS, 125% and 200% scaling on Windows. **Not one row of
+  it can be observed today.** The overlay window is created `visible: false`
+  and nothing in `butler-desktop` shows it, because spec 004 §3.2 forbids
+  showing it before capture exclusion has been applied, and that is spec 005
+  in phase 3.
+
+  018 **R-010** is the mechanism, and this is the case it was written for: the
+  rows are marked deferred in `apps/desktop/README.md`, each naming 005, and
+  they are signed in the phase that makes them observable. Nothing is dropped.
+
+  What survives as an automated check is the half a screenshot would not have
+  caught anyway: FR-001 asserts the computed background of `html`, `body` and
+  `#root` is `rgba(0, 0, 0, 0)`, and FR-002 asserts the surface is inert by
+  default. Those are the properties the product actually rests on. Legibility
+  needs an eye, and it gets one in phase 3.
+
+- **D-2 (2026-09-07, promoting "every" Solid rule promoted the disabled ones
+  too).** §3.1 says `eslint-plugin-solid`'s recommended config runs "at
+  `error`", and the first implementation read that as mapping every key in the
+  plugin's rule table to `error`. That turned on `solid/no-proxy-apis`, which
+  the plugin ships **off** on purpose: it exists for environments without
+  `Proxy`, and it forbids `createStore`, which §3.4 requires.
+
+  The lint failed on `state/runtime.ts`, which is the file §3.4 mandates. The
+  fix distinguishes the two cases: a rule the plugin *enables* is promoted to
+  `error`, and a rule it explicitly disables stays disabled. "Recommended at
+  error" is about severity, not about the rule set.
+
+- **D-3 (2026-09-07, what the fixtures under `src/test/` are for).** FR-004
+  and FR-006 both say `pnpm -r lint` must *fail* on something. A rule that is
+  configured but never reached is worse than no rule, because it reads as
+  protection, and neither requirement is met by the config file containing the
+  right words.
+
+  So `src/test/fixtures/` holds two files that violate the rules on purpose,
+  `eslint.config.js` ignores that directory so the ordinary lint run stays
+  green, and `src/test/lint.test.ts` runs ESLint over them programmatically
+  and asserts the violations are reported **by rule id and at severity 2**. A
+  third test asserts the other half: that the ordinary run really does ignore
+  them, so the two facts cannot drift apart.
+
+  One finding from writing it: the destructured-props fixture is reported as
+  `solid/reactivity`, not `solid/no-destructure`. The assertion names what the
+  plugin actually emits rather than what the rule list suggests it would.
+
+- **D-4 (2026-09-07, `process.cwd()` and Vite's `/@fs/` rewriting).**
+  `lint.test.ts` first derived the package root from `import.meta.url`. Under
+  Vitest that resolves to `/@fs/Users/...`, Vite's internal form, which ESLint
+  cannot resolve, and every fixture lookup failed with "No files matching".
+  Vitest runs with the package directory as the working directory, so
+  `process.cwd()` is both correct and shorter. Recorded because the symptom
+  ("file not found" for a file that plainly exists) points nowhere near the
+  cause.
+
+- **D-5 (2026-09-07, what this spec does not render yet).** Three things §3.3
+  lists are absent, each owned by a spec that has not landed, and each named
+  in §2 as arriving by `extends`:
+
+  | Absent | Owner |
+  |---|---|
+  | `PacedAnswer` inside `AnswerPanel` | 013 |
+  | `SettingsPanel` | 014 |
+  | The `SettingsUpdated` case in the store | 014 |
+
+  `AnswerPanel` renders the buffer directly meanwhile, and the buffer stays
+  empty: `AnswerChunk` is not in the contract yet (spec 011 D-3), so there is
+  nothing to append. The lifecycle around it (`AnswerStarted`, `AnswerDone`,
+  `AnswerFailed`) **is** in the contract and is rendered, including the
+  `refusal` case §3.3 fixes as "declined".
+
+  `state/runtime.ts`'s `switch` has no `default` arm and returns `void`, so
+  each of those variants will fail to typecheck until its spec handles it.
+  That is deliberate: the generated union is the reason to generate it.
+
+## 8. Verification
+
+```verify:cli
+# AC-1. Typecheck, the DOM tests behind FR-001 to FR-003, and the lint tests
+# behind FR-004 and FR-006.
+pnpm --filter @butler-ai/desktop typecheck
+pnpm --filter @butler-ai/desktop test
+# FR-004 and FR-006: the ordinary lint run is clean, which is only meaningful
+# alongside the fixture tests above proving the rules fire at all.
+pnpm --filter @butler-ai/desktop lint
+# FR-005: the build carries no external network reference. Built first,
+# because `dist/` is gitignored and may not exist.
+pnpm --filter @butler-ai/desktop build
+sh -c '! grep -rIqE "https?://" apps/desktop/dist/'
+# Section 3.2: nothing paints a full-window background, in the one file that
+# renders before the bundle loads.
+grep -q "background: transparent" apps/desktop/index.html
+# Section 3.4: exactly one file in the product *imports* the Tauri API.
+# Matching `from "@tauri-apps/api` rather than the bare name, and excluding
+# generated/ and test/: a Vitest `vi.mock("@tauri-apps/api/event")` and a doc
+# comment naming the rule are not imports, and counting them made this check
+# fail on correct code. ESLint enforces the real rule; this is the second
+# opinion, and it has to be about the same property.
+sh -c 'test "$(grep -rlE "from \"@tauri-apps/api" apps/desktop/src --include="*.ts" --include="*.tsx" | grep -v "^apps/desktop/src/generated/" | grep -v "^apps/desktop/src/test/" | wc -l | tr -d " ")" -eq 1'
+grep -q 'from "@tauri-apps/api' apps/desktop/src/ipc/client.ts
+# D-2: `solid/no-proxy-apis` must stay disabled, or `createStore` is forbidden
+# and section 3.4 becomes unimplementable. The real check is the lint run
+# above: it passes over this file, which uses `createStore`. Asserting the use
+# is what makes that run meaningful, rather than green because the construct
+# was quietly dropped. Grepping the config for the rule name would only match
+# the comment that explains why it is off.
+grep -q "createStore" apps/desktop/src/state/runtime.ts
+sh -c '! grep -qE "\"solid/no-proxy-apis\"[[:space:]]*:" apps/desktop/eslint.config.js'
+# AC-2, read through 018 R-010: the visual rows are marked deferred, naming
+# the spec that makes them observable.
+grep -q "spec 012 AC-2" apps/desktop/README.md
+# Territory: every unit this spec claims resolves.
+sh -c 'spec-spine index render | grep "W-001" | grep -q "012-overlay-ui" && exit 1 || exit 0'
+```

@@ -1,0 +1,11 @@
+{
+  "package": {
+    "kind": "npm-package",
+    "name": "@butler-ai/desktop",
+    "path": "apps/desktop",
+    "specRef": "012-overlay-ui",
+    "version": "0.1.0"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "1edb20b5dd60d9f2faa169c4d10cfcbc6f98ba643042c70f9d48fdb9fc712f8a"
+}

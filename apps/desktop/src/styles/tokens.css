@@ -1,0 +1,37 @@
+/* Spec: specs/012-overlay-ui/spec.md */
+
+/*
+ * Spec 012 §3.1: a small token sheet, no CSS framework, no web fonts. The
+ * font stack is the system's, because §3.3 of spec 015 gives the webview no
+ * network and a downloaded face would be one.
+ *
+ * §3.2 fixes the two plate colours. They are translucent so the wallpaper
+ * still reads through, and dark enough that 14 px system text on them meets
+ * WCAG AA (§3.5).
+ */
+:root {
+  --butler-font:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --butler-font-size: 14px;
+  --butler-radius: 10px;
+  --butler-gap: 8px;
+  --butler-plate: rgba(250, 250, 250, 0.85);
+  --butler-ink: rgba(17, 17, 17, 0.96);
+  --butler-ink-dim: rgba(17, 17, 17, 0.62);
+  --butler-danger: #a3111d;
+  --butler-danger-ink: #ffffff;
+  --butler-blur: blur(8px);
+  /* §3.2: nothing animates for longer than this, and nothing loops. */
+  --butler-transition: 150ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --butler-plate: rgba(20, 20, 20, 0.72);
+    --butler-ink: rgba(245, 245, 245, 0.96);
+    --butler-ink-dim: rgba(245, 245, 245, 0.66);
+    --butler-danger: #ff5c68;
+    --butler-danger-ink: #1a0003;
+  }
+}

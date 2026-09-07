@@ -28,11 +28,6 @@
         "code": "W-001",
         "message": "spec '013-output-pacing' file unit 'apps/desktop/src/components/PacedAnswer.tsx' does not exist",
         "path": "apps/desktop/src/components/PacedAnswer.tsx"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '013-output-pacing' file unit 'apps/desktop/src/App.tsx' does not exist",
-        "path": "apps/desktop/src/App.tsx"
       }
     ]
   },
@@ -44,6 +39,10 @@
       "012-overlay-ui"
     ],
     "implementingPaths": [
+      {
+        "path": "apps/desktop/src/App.tsx",
+        "source": "spec-edge"
+      },
       {
         "path": "crates/butler-core/src/ipc.rs",
         "source": "spec-edge"
@@ -59,7 +58,11 @@
     ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/App.tsx"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {

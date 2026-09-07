@@ -37,11 +37,6 @@
         "code": "W-001",
         "message": "spec '014-user-configuration' file unit 'apps/desktop/src/components/SettingsPanel.tsx' does not exist",
         "path": "apps/desktop/src/components/SettingsPanel.tsx"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '014-user-configuration' file unit 'apps/desktop/src/App.tsx' does not exist",
-        "path": "apps/desktop/src/App.tsx"
       }
     ]
   },
@@ -63,6 +58,10 @@
       },
       {
         "path": "apps/desktop/src-tauri/src/lib.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/App.tsx",
         "source": "spec-edge"
       },
       {
@@ -128,7 +127,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/App.tsx"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {

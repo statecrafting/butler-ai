@@ -91,11 +91,35 @@ spec that ships a Windows artifact.
   accepted the bindings, which is all that is observable today. `Quit` in the
   tray menu is wired and does end the process.
 
+## Overlay appearance (spec 012 AC-2)
+
+A second checklist, with the same `When` semantics as the tables above
+(018 R-010). **Every row here is deferred to spec 005**, and for the reason
+that governs this whole file: the overlay is created `visible: false` and
+nothing shows it, so there is no way to look at it. These rows are what a
+tester should look at on the first run where there *is* something to see.
+
+| # | Requirement | What to look for | When | Pass |
+|---|---|---|---|---|
+| §3.2 | Dark wallpaper | The plate is legible; the wallpaper reads through it; nothing paints a full-window rectangle | deferred to 005 | [ ] |
+| §3.2 | Light wallpaper | The same, with the light plate | deferred to 005 | [ ] |
+| §3.2 | Over a full-screen app (macOS) | The overlay floats above a full-screen window and follows across spaces | deferred to 005 | [ ] |
+| §3.5 | Contrast | Status and answer text meet WCAG AA at 14 px against the plate, on both wallpapers | deferred to 005 | [ ] |
+| §3.2 | 125% scaling (Windows) | Text and plate scale; nothing clips | deferred to 005 | [ ] |
+| §3.2 | 200% scaling (Windows) | The same at 200% | deferred to 005 | [ ] |
+| §3.2 | Idle repaint | Nothing animates while idle. A capture tool's CPU graph stays flat | deferred to 005 | [ ] |
+
+What *is* checked today, without a window, is in `pnpm -r test`: FR-001
+asserts the computed background of `html`, `body` and `#root` is fully
+transparent, and FR-002 asserts the surface is inert by default. Those are
+the properties a screenshot would be checking anyway; what the list above
+adds is a human eye on legibility, which no assertion covers.
+
 ## Sign-off
 
 | Platform | Scope | OS version | Date | Tester | Signed |
 |---|---|---|---|---|---|
 | macOS | phase 2 rows | macOS 15 (Darwin 25.5.0, arm64) | 2026-09-07 | automated probe, see Evidence | [x] |
-| macOS | rows deferred to 005 / 019 | | | | [ ] |
+| macOS | rows deferred to 005 / 019, including every spec 012 AC-2 row | | | | [ ] |
 | Windows | phase 2 rows (no host available, 004 D-10) | | | | [ ] |
 | Windows | rows deferred to 005 / 019 | | | | [ ] |
