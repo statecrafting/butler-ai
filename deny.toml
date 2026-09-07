@@ -22,10 +22,16 @@ all-features = false
 yanked = "deny"
 # Ignored advisories carry an id and a reason, one per line.
 #
-# The five below are the `unic-*` family, all flagged `unmaintained` and none
-# carrying a known vulnerability. They reach the tree through exactly one path,
-# `tauri-utils -> urlpattern v0.3.0 -> unic-ucd-ident`, so they are Tauri's
-# transitive choice rather than ours (spec 004 D-8).
+# Two groups, both flagged `unmaintained` and neither carrying a known
+# vulnerability, and both arriving through a dependency's choice rather than
+# ours.
+#
+# The `unic-*` five reach the tree through exactly one path,
+# `tauri-utils -> urlpattern v0.3.0 -> unic-ucd-ident` (spec 004 D-8).
+#
+# `paste` is a proc-macro, so it runs at build time and is never linked into
+# the shipped binary. It arrives through `specta`, which spec 011 needs for the
+# IPC bindings (spec 011 D-7).
 #
 # Spec 001 section 3.1 requires denying advisories at `vulnerability`; an
 # unmaintained crate with no CVE is below that bar, so ignoring these keeps the
@@ -41,6 +47,7 @@ ignore = [
   "RUSTSEC-2025-0081", # unic-char-property: unmaintained, no vulnerability
   "RUSTSEC-2025-0098", # unic-ucd-version: unmaintained, no vulnerability
   "RUSTSEC-2025-0100", # unic-ucd-ident: unmaintained, no vulnerability
+  "RUSTSEC-2024-0436", # paste: unmaintained, no vulnerability; build-time proc-macro via specta
 ]
 
 [licenses]

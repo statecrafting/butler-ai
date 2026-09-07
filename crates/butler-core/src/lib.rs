@@ -21,9 +21,14 @@
 //!   the runtime host in the desktop crate (spec 019) executes them and feeds
 //!   every result back as an event.
 //!
+//! - [`ipc`]: the typed seam to the overlay. `UiEvent` and `UiCommand` are
+//!   defined here once and generated into the TypeScript the webview imports,
+//!   so the two halves of the boundary cannot drift (spec 011).
+//!
 //! The remaining modules arrive with their own specs and extend this crate:
-//! `ipc` (spec 011), `pacing` (spec 013), `settings` (spec 014).
+//! `pacing` (spec 013), `settings` (spec 014).
 
 pub mod delta;
+pub mod ipc;
 pub mod machine;
 pub mod redaction;

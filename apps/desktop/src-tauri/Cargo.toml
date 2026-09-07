@@ -19,8 +19,19 @@ crate-type = ["lib"]
 tauri-build = { workspace = true }
 
 [dependencies]
+# spec 011: the IPC types are defined once, in the pure core, and this crate
+# is the only place they meet Tauri.
+# The version is carried alongside the path because `cargo deny` reads a
+# path dependency without one as a wildcard requirement, and spec 001 FR-004
+# bans those (`[bans] wildcards = "deny"`). Neither crate is published, so the
+# number is only ever read by that check.
+butler-core = { path = "../../../crates/butler-core", version = "0.1.0" }
 tauri = { workspace = true }
 tauri-plugin-global-shortcut = { workspace = true }
+tauri-specta = { workspace = true }
+specta = { workspace = true }
+specta-typescript = { workspace = true }
+serde = { workspace = true }
 thiserror = { workspace = true }
 
 # Spec 004 section 3.2: the macOS window level and collection behaviour have no

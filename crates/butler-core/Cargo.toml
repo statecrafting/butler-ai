@@ -30,10 +30,19 @@ spec = "009-pipeline-state-machine"
 [dependencies]
 # spec 008 §2: the only dependency the change detector needs.
 strsim = { workspace = true }
+# spec 011: the IPC contract's wire format and its TypeScript description.
+# `serde` is in spec 009 §2's budget already ("for the IPC DTOs"); `specta`
+# arrives with spec 011's additive `extends` edge onto this manifest, which
+# names it. Both are pure Rust with no platform crate underneath, so spec 009
+# AC-3's tree stays clean. See spec 011 D-1.
+serde = { workspace = true }
+specta = { workspace = true }
 
 [dev-dependencies]
 criterion = { workspace = true }
 proptest = { workspace = true }
+# spec 011 FR-001: the wire format the round-trip test round-trips through.
+serde_json = { workspace = true }
 
 # spec 008 AC-2: not gated in CI; run with `cargo bench -p butler-core`.
 [[bench]]

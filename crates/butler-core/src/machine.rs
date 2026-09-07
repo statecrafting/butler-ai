@@ -143,8 +143,23 @@ impl DegradedReason {
 ///
 /// A kind, never a message: an error string built from screen content would
 /// carry the user's data across the privacy boundary (spec 015). Spec 011's
-/// IPC contract re-exports this enum as the wire `ErrorKind`.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// IPC contract re-exports this enum as the wire `ErrorKind`, which is why it
+/// carries the serde and specta derives the rest of this module does not: it
+/// is the one reducer type that is also a wire type (spec 011 D-1).
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    specta::Type,
+)]
+#[serde(rename_all = "kebab-case")]
 pub enum ErrorKind {
     /// The display could not be captured.
     Capture,

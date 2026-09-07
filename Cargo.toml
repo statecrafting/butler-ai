@@ -60,6 +60,31 @@ objc2 = { version = "0.6" }
 objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSWindow", "NSResponder", "NSApplication"] }
 objc2-foundation = { version = "0.3", default-features = false, features = ["std"] }
 
+# spec 011: the IPC contract. `serde` carries the wire format for the DTOs in
+# `butler_core::ipc` (spec 009 section 2 already budgets it there); `specta`
+# describes those same types to the TypeScript exporter, and `tauri-specta`
+# turns them into the committed `bindings.ts` and registers the commands.
+#
+# specta 2 and tauri-specta 2 are published only as release candidates. That is
+# what the Tauri v2 ecosystem ships: the v1 lines resolve against Tauri v1 and
+# cannot be used here.
+#
+# The three are pinned exactly, and they have to move together: tauri-specta
+# requires `specta` with `=`, and specta-typescript does too, so any bump is a
+# simultaneous bump of all three. This trio is the newest that compiles on the
+# toolchain spec 001 pins (1.92.0): specta rc.24 and rc.25 use
+# `fmt::from_fn`, still unstable there, and fail with E0658. Raising the
+# toolchain is spec 001's decision, not this spec's.
+# Review trigger: move to the stable 2.0 line, or to rc.25 with a toolchain
+# bump, whichever comes first. See spec 011 D-2.
+serde = { version = "1", default-features = false, features = ["std", "derive"] }
+# spec 011 FR-001: the round-trip needs a concrete format. Dev-only in
+# butler-core, where it is the test's format and never the library's.
+serde_json = { version = "1" }
+specta = { version = "=2.0.0-rc.22", default-features = false, features = ["derive"] }
+specta-typescript = { version = "=0.0.9" }
+tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
+
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,
 # butler-desktop) carry FFI under `#[allow(unsafe_code)]` with a `// SAFETY:`

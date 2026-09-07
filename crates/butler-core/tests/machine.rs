@@ -1477,8 +1477,18 @@ mod machine {
     const CRATE_MANIFEST: &str = include_str!("../Cargo.toml");
     /// Spec 009 §2 names the crate's whole dependency budget.
     /// `criterion` is dev-only, for spec 008 AC-2's benchmark target (009 D-2).
-    const ALLOWED_DEPENDENCIES: [&str; 5] =
-        ["serde", "strsim", "thiserror", "proptest", "criterion"];
+    /// `specta` arrives with spec 011: it describes the IPC DTOs to the
+    /// TypeScript exporter. Pure Rust, no platform crate underneath, so
+    /// AC-3's real constraint is untouched; this list is the hygiene half.
+    const ALLOWED_DEPENDENCIES: [&str; 7] = [
+        "serde",
+        "serde_json",
+        "specta",
+        "strsim",
+        "thiserror",
+        "proptest",
+        "criterion",
+    ];
     /// Spec 009 AC-3 names what may never appear in the tree.
     const BANNED_DEPENDENCIES: [&str; 5] = ["tokio", "tauri", "windows", "objc2", "xcap"];
 

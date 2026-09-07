@@ -1,55 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src/generated/bindings.ts' does not exist",
-        "path": "apps/desktop/src/generated/bindings.ts"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' file unit 'crates/butler-core/src/ipc.rs' does not exist",
-        "path": "crates/butler-core/src/ipc.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' module unit 'butler_core::ipc' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' symbol unit 'butler_core::ipc::UiEvent' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' symbol unit 'butler_core::ipc::UiCommand' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' symbol unit 'butler_core::ipc::IPC_CONTRACT_VERSION' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/src/commands.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/commands.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/src/events.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/events.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/src/bin/export-bindings.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/bin/export-bindings.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' file unit 'crates/butler-core/src/ipc.rs' does not exist",
-        "path": "crates/butler-core/src/ipc.rs"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "009-pipeline-state-machine",
@@ -65,7 +14,23 @@
         "source": "spec-edge"
       },
       {
+        "path": "apps/desktop/src-tauri/src/bin/export-bindings.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/commands.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/events.rs",
+        "source": "multiple"
+      },
+      {
         "path": "apps/desktop/src-tauri/src/lib.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/generated/bindings.ts",
         "source": "spec-edge"
       },
       {
@@ -73,13 +38,33 @@
         "source": "spec-edge"
       },
       {
+        "path": "crates/butler-core/src/ipc.rs",
+        "source": "multiple"
+      },
+      {
         "path": "crates/butler-core/src/lib.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/machine.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/tests/machine.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "deny.toml",
         "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/generated/bindings.ts"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -114,7 +99,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/bin/export-bindings.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -123,7 +112,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/commands.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -132,7 +125,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/events.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -167,7 +164,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/ipc.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -189,7 +190,50 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/machine.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/machine.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/tests/machine.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/machine.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "deny.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "deny.toml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/ipc.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -198,7 +242,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/ipc.rs",
+            "span": {
+              "endLine": 60,
+              "startLine": 60
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -207,7 +259,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/ipc.rs",
+            "span": {
+              "endLine": 252,
+              "startLine": 226
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -216,7 +276,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/ipc.rs",
+            "span": {
+              "endLine": 217,
+              "startLine": 167
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -225,7 +293,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/ipc.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "constrains",
         "unit": {
@@ -238,5 +310,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "df3f9f8b1b99e18fb9301dfa6b05b3879a2955682a17b5120d12264278176871"
+  "shardHash": "c70fbfafb9424479b4784c2ac9636f7cbe2e3b368080656834fa544a0ace5ccc"
 }
