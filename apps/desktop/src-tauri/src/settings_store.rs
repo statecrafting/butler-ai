@@ -213,6 +213,14 @@ fn set_owner_only(path: &Path) -> Result<(), StoreError> {
 /// Windows inherits the user's ACL from the directory, which is what §3.2
 /// asks for. Setting a mode here would be a no-op that read as protection.
 #[cfg(not(unix))]
+#[allow(
+    clippy::unnecessary_wraps,
+    reason = "the `Result` matches the Unix counterpart, where the call can \
+              genuinely fail, so the one call site in `save` is written once \
+              rather than behind a `cfg`. Narrowing this to `()` would move \
+              the platform difference from here, where it is explained, into \
+              the middle of the write path."
+)]
 fn set_owner_only(_path: &Path) -> Result<(), StoreError> {
     Ok(())
 }
