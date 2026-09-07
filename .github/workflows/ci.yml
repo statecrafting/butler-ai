@@ -28,7 +28,7 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Detect workspace
         id: ws
         shell: bash
@@ -40,7 +40,7 @@ jobs:
         run: rustc --version && cargo --version
       - name: Cache cargo
         if: steps.ws.outputs.present == 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -78,13 +78,13 @@ jobs:
     name: web
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Detect workspace
         id: ws
         run: echo "present=$([ -f pnpm-workspace.yaml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         if: steps.ws.outputs.present == 'true'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.ws.outputs.present == 'true'
         with:
           node-version: 22

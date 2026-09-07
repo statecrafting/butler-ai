@@ -21,7 +21,7 @@ jobs:
     name: govern (compile --check · index check · lint · coverage · couple)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # Full history so the coupling gate can diff against the merge base.
           fetch-depth: 0
