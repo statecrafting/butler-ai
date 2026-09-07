@@ -1,0 +1,36 @@
+# Spec: specs/004-desktop-shell/spec.md
+[package]
+name = "butler-desktop"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[package.metadata.butler]
+spec = "004-desktop-shell"
+
+[lib]
+name = "butler_desktop"
+crate-type = ["lib"]
+
+[build-dependencies]
+tauri-build = { workspace = true }
+
+[dependencies]
+tauri = { workspace = true }
+tauri-plugin-global-shortcut = { workspace = true }
+thiserror = { workspace = true }
+
+# Spec 004 section 3.2: the macOS window level and collection behaviour have no
+# Tauri equivalent, so this crate does that one piece of FFI itself. Spec 001
+# FR-005 allows it here (a platform crate) under `#[allow(unsafe_code)]` with a
+# `// SAFETY:` note on the smallest possible block.
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = { workspace = true }
+objc2-app-kit = { workspace = true }
+objc2-foundation = { workspace = true }
+
+[lints]
+workspace = true

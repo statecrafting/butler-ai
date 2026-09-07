@@ -19,16 +19,6 @@
       {
         "code": "W-001",
         "message": "spec '016-diagnostics-and-logging' symbol unit 'butler_desktop::diagnostics::DiagnosticsBundle' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '016-diagnostics-and-logging' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/lib.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '016-diagnostics-and-logging' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
-        "path": "apps/desktop/src-tauri/Cargo.toml"
       }
     ]
   },
@@ -39,6 +29,14 @@
     "implementingPaths": [
       {
         "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/lib.rs",
         "source": "spec-edge"
       }
     ],
@@ -57,7 +55,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/Cargo.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -75,7 +77,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/lib.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -115,5 +121,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "fab1d52754a5212c118f8278c0e277d188f9512f7c1fc4ff6863be184b2e689f"
+  "shardHash": "e1ce56976d5530c95841827a81fea979ada19c994febf94edaa420ba5ca78eeb"
 }

@@ -37,21 +37,6 @@
       {
         "code": "W-001",
         "message": "spec '005-capture-exclusion' symbol unit 'butler_desktop::exclusion::ExclusionStatus' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/lib.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
-        "path": "apps/desktop/src-tauri/Cargo.toml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/window.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/window.rs"
       }
     ]
   },
@@ -63,6 +48,18 @@
     "implementingPaths": [
       {
         "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/lib.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/window.rs",
         "source": "spec-edge"
       }
     ],
@@ -81,7 +78,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/Cargo.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -126,7 +127,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/lib.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -171,7 +176,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/window.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "refines",
         "unit": {
@@ -197,5 +206,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "dabad61201d52094280ba4a051d22f955876c7e8ea27f0a5aad051e6b82f4ec7"
+  "shardHash": "d8df1da1b4c47b2a4ccc17bc8b8942a71d774c50802b39a898267b79a05f4638"
 }

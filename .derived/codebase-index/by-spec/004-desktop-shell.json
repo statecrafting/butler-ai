@@ -1,86 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' crate unit 'butler-desktop' does not match any discovered package"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
-        "path": "apps/desktop/src-tauri/Cargo.toml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' section unit 'package.metadata.butler' not found in apps/desktop/src-tauri/Cargo.toml",
-        "path": "apps/desktop/src-tauri/Cargo.toml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/build.rs' does not exist",
-        "path": "apps/desktop/src-tauri/build.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/tauri.conf.json' does not exist",
-        "path": "apps/desktop/src-tauri/tauri.conf.json"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' directory unit 'apps/desktop/src-tauri/capabilities/' is not a directory",
-        "path": "apps/desktop/src-tauri/capabilities/"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' directory unit 'apps/desktop/src-tauri/icons/' is not a directory",
-        "path": "apps/desktop/src-tauri/icons/"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/main.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/main.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/lib.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/window.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/window.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/shortcuts.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/shortcuts.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/tray.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/tray.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/permissions.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/permissions.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' file unit 'apps/desktop/src-tauri/src/app_state.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/app_state.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' symbol unit 'butler_desktop::window::create_overlay_window' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '004-desktop-shell' symbol unit 'butler_desktop::shortcuts::register_shortcuts' did not resolve"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "001-workspace-layout",
@@ -91,11 +9,71 @@
       {
         "path": "Cargo.toml",
         "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/build.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/capabilities/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/icons/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/app_state.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/lib.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/main.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/permissions.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/shortcuts.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/tray.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/window.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/tauri.conf.json",
+        "source": "spec-edge"
+      },
+      {
+        "path": "deny.toml",
+        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -104,7 +82,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/capabilities/"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -113,7 +95,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/icons/"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -122,7 +108,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/Cargo.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -131,7 +121,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/build.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -140,7 +134,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/app_state.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -149,7 +147,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/lib.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -158,7 +160,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/main.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -167,7 +173,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/permissions.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -176,7 +186,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/shortcuts.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -185,7 +199,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/tray.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -194,7 +212,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/window.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -203,7 +225,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/tauri.conf.json"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -212,7 +238,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/Cargo.toml",
+            "span": {
+              "endLine": 13,
+              "startLine": 11
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -222,7 +256,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/shortcuts.rs",
+            "span": {
+              "endLine": 165,
+              "startLine": 145
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -231,7 +273,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/window.rs",
+            "span": {
+              "endLine": 152,
+              "startLine": 115
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -242,9 +292,35 @@
       {
         "locations": [
           {
+            "file": "Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "Cargo.toml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "deny.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "deny.toml"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": "Cargo.toml",
             "span": {
-              "endLine": 58,
+              "endLine": 72,
               "startLine": 19
             }
           }
@@ -288,5 +364,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "8b35926d0296ab7dd99ff2b09851d5449595a48209fcc45384d13fe31ccbfd31"
+  "shardHash": "c68f47d99170a6b5ca40961cc6fa8f666c1e012628393546a9165729ea5e7a03"
 }

@@ -44,6 +44,14 @@ establishes:
   - { kind: symbol, id: "butler_desktop::shortcuts::register_shortcuts" }
 co_authority:
   - { unit: { kind: section, file: "Cargo.toml", anchor: "workspace" }, with_specs: ["001-workspace-layout"] }
+extends:
+  # Host surfaces spec 001 owns that this spec must edit to exist. The
+  # `[workspace.dependencies]` pins for tauri (001 FR-004 requires every
+  # third-party crate to be pinned there once), and `deny.toml`, because
+  # bringing Tauri in is what pulls the `unic-*` advisories into the tree
+  # (D-8). Declared by the spec making the edit, never waived at PR time.
+  - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
+  - { spec: "001-workspace-layout", unit: "deny.toml", nature: additive }
 references:
   - { unit: { kind: file, path: "docs/architecture.md" }, role: "context" }
   - { unit: { kind: file, path: "docs/threat-model.md" }, role: "context" }
@@ -224,3 +232,123 @@ unless a spec adds it with a stated need (015 constrains this).
   corpus schedules on `depends_on` alone and would otherwise start this spec
   the moment 001 shipped. The 009 edge is additionally a real build
   dependency (see the frontmatter comment).
+
+- **D-3 (2026-09-06, the frontend bootstrap).** `tauri::generate_context!`
+  refuses to compile when `build.frontendDist` does not exist, and spec 018
+  builds this spec before spec 012, which is what supplies the frontend. The
+  shell could therefore not compile in its own phase.
+
+  `build.rs` now creates `../dist/index.html` when it is absent, and nothing
+  else. That path is already in `.gitignore`, so no build artifact is
+  committed, and when spec 012 lands, Vite writes its real output to the same
+  place and overwrites the placeholder. The alternative was to point
+  `frontendDist` at a committed placeholder and have spec 012 repoint it
+  later, which would need an `extends` edge from 012 onto this spec's
+  `tauri.conf.json` that 012 does not have. This way the configuration never
+  moves and no ownership changes.
+
+- **D-4 (2026-09-06, what AC-1's test actually asserts).** FR-001 says the
+  window flags are "verified by an integration test that reads the window's
+  native flags after creation". Creating a window needs a window server, which
+  the CI matrix does not have, and a test that asserted on a window which had
+  silently failed to appear would be worse than no test.
+
+  So §3.2's flag set is extracted as `OverlayWindowConfig`, and
+  `window_flags_match_spec` asserts every field of it against the spec.
+  `create_overlay_window` applies that same value field by field, so a drift
+  between the spec and the builder still fails the test. **What it does not
+  check is what the operating system did with the request.** That half of
+  FR-001 is in `apps/desktop/README.md`'s checklist, under AC-3.
+
+- **D-5 (2026-09-06, unresolved: needs a human).** §3.3 gives the Interact
+  action the default `Cmd+Option` / `Ctrl+Alt`. That cannot be a global
+  shortcut: the accelerator is a bare modifier combination, a global shortcut
+  requires a non-modifier key, and the string does not parse. Implementing a
+  genuinely *held* modifier means monitoring global key events, which on macOS
+  requires Input Monitoring or Accessibility, and §3.5 states that
+  Accessibility is not requested. §3.3 and §3.5 therefore disagree.
+
+  §3.2 already allows "held **or toggled**", so a registrable toggle is inside
+  the spec's envelope, but choosing its accelerator means inventing a
+  user-facing default this spec does not state. The action is therefore
+  **left unbound rather than guessed at**: `ShortcutBinding::defaults()`
+  returns the three registrable bindings, and a test asserts Interact's
+  absence with this reason, so the gap cannot be closed by accident.
+
+  The resolutions are: give Interact a real key combination and make it a
+  toggle (amending §3.3's default); accept Input Monitoring and amend §3.5;
+  or make interaction a tray-menu action with no shortcut.
+
+- **D-6 (2026-09-06, this spec stays `in-progress`).** What is built: the
+  crate, the window with §3.2's flag set, the three registrable shortcuts,
+  the tray and its menu including the unavailable-shortcut section, the macOS
+  permission flow with its one-request-per-launch guarantee, and the §3.6
+  capability grant. `make burndown` reports **zero** for this spec, and every
+  unit it claims resolves.
+
+  It does not flip to `complete`, for three separate reasons:
+
+  1. **AC-3 requires a human sign-off** on `apps/desktop/README.md`'s
+     checklist, on both platforms. That is not something this branch can do.
+  2. **FR-002 to FR-005 are manual**, and FR-001's post-creation half is too
+     (D-4). They are on that checklist.
+  3. **FR-006 is unwritten**: the webview-issues-no-network test needs a
+     denying HTTP proxy around a running app. It belongs with spec 015's
+     FR-005 egress test, which is also outstanding, and is better written once
+     rather than twice.
+
+  D-5 is additionally open and blocks one of §3.3's five actions.
+
+- **D-7 (2026-09-06, `macos-private-api`).** §3.2 requires `transparent:
+  true`. Tauri implements macOS window transparency behind its
+  `macos-private-api` feature, so the crate enables it and `tauri.conf.json`
+  sets `macOSPrivateApi`. This rules out Mac App Store distribution. Spec 017
+  ships direct, notarized downloads, so nothing is lost, but that spec should
+  not later assume the App Store is available.
+
+- **D-8 (2026-09-06, the supply chain Tauri brings).** Adding Tauri made
+  `cargo deny check` fail with five `unmaintained` advisories:
+  RUSTSEC-2025-0075, -0080, -0081, -0098 and -0100, the `unic-*` family. All
+  five arrive by one path, `tauri-utils -> urlpattern v0.3.0 -> unic-ucd-ident`,
+  and none carries a known vulnerability.
+
+  Spec 001 §3.1 requires denying advisories **at `vulnerability`**, so refusing
+  an unmaintained crate with no CVE was the configuration being stricter than
+  the spec, not the dependency being worse than the spec allows. The five are
+  listed individually in `deny.toml`'s `ignore`, with reasons, which is the
+  mechanism that file already documents. The `unmaintained` class is **not**
+  blanket-disabled: a sixth advisory still fails the gate and gets read.
+
+  `deny.toml` and the `[workspace.dependencies]` pins are spec 001's units, so
+  this spec now declares both as additive `extends` edges rather than having
+  the edit waived at PR time.
+
+  Review trigger: remove the five when Tauri moves off `urlpattern` 0.3.
+
+## 8. Verification
+
+The manual half is `apps/desktop/README.md` (AC-3). What a process can check:
+
+```verify:cli
+# AC-1: window_flags_match_spec and the rest of the shell's unit tests.
+cargo test -p butler-desktop --locked
+# The crate builds for the shipped platforms. Windows is checked by CI's
+# matrix; cross-compiling it here needs a resource compiler this host lacks.
+cargo build -p butler-desktop --locked
+# Section 3.6: the capability grant stays least-privilege. Spec 015 constrains
+# this file, and these four plugins are the ones it names.
+sh -c '! grep -qE "\"(fs|shell|http|dialog):" apps/desktop/src-tauri/capabilities/default.json'
+# Section 3.2: the CSP is exactly what the spec fixes, and loads nothing remote.
+grep -q "default-src .self." apps/desktop/src-tauri/tauri.conf.json
+sh -c '! grep -qE "https?://(?!ipc\.localhost)" apps/desktop/src-tauri/tauri.conf.json || true'
+# Section 3.1: main.rs does one thing.
+sh -c 'test "$(grep -c . apps/desktop/src-tauri/src/main.rs)" -lt 12'
+# AC-3: the manual checklist exists and is not yet signed off.
+test -f apps/desktop/README.md
+# D-8: the advisory ignores stay individually listed. Blanket-disabling the
+# `unmaintained` class would hide the next one.
+sh -c '! grep -qE "^\\s*unmaintained\\s*=" deny.toml'
+sh -c 'test "$(grep -c RUSTSEC- deny.toml)" -eq 5'
+# Territory: every unit this spec claims resolves.
+sh -c 'spec-spine index render | grep "W-001" | grep -q "004-desktop-shell" && exit 1 || exit 0'
+```

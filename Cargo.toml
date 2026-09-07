@@ -18,7 +18,7 @@
 
 [workspace]
 resolver = "3"
-members = ["crates/*"]
+members = ["crates/*", "apps/desktop/src-tauri"]
 
 # Inherited by every member with `<field>.workspace = true`.
 [workspace.package]
@@ -45,6 +45,20 @@ strsim = { version = "0.11", default-features = false }
 # benchmark target only, never of the library, so spec 009 AC-3's constraint on
 # `butler-core`'s own tree is untouched.
 criterion = { version = "0.8", default-features = false, features = ["cargo_bench_support"] }
+# spec 004: the desktop shell. These reach `butler-desktop` only; spec 009 AC-3
+# keeps them out of `butler-core`, and its test enforces the budget there.
+# `macos-private-api` is what Tauri requires for a transparent window on
+# macOS, which spec 004 section 3.2 mandates. It rules out Mac App Store
+# distribution; spec 017 ships direct, notarized downloads, so nothing is lost.
+tauri = { version = "2", features = ["tray-icon", "image-png", "macos-private-api"] }
+tauri-build = { version = "2" }
+tauri-plugin-global-shortcut = { version = "2" }
+thiserror = { version = "2" }
+# macOS window level and collection behaviour (spec 004 section 3.2). The only
+# FFI this crate does; spec 005 owns the exclusion FFI separately.
+objc2 = { version = "0.6" }
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSWindow", "NSResponder", "NSApplication"] }
+objc2-foundation = { version = "0.3", default-features = false, features = ["std"] }
 
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,

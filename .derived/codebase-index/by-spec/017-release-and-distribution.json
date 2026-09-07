@@ -31,11 +31,6 @@
         "code": "W-001",
         "message": "spec '017-release-and-distribution' file unit 'apps/desktop/package.json' does not exist",
         "path": "apps/desktop/package.json"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '017-release-and-distribution' file unit 'apps/desktop/src-tauri/tauri.conf.json' does not exist",
-        "path": "apps/desktop/src-tauri/tauri.conf.json"
       }
     ]
   },
@@ -48,6 +43,10 @@
     "implementingPaths": [
       {
         "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/tauri.conf.json",
         "source": "spec-edge"
       }
     ],
@@ -124,7 +123,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/tauri.conf.json"
+          }
+        ],
         "ownership": true,
         "sourceField": "refines",
         "unit": {
@@ -150,5 +153,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "bf9bca23e046b0592bb2ebd58aa4f454cf710b50a2ef6c268e44ec89233f74b7"
+  "shardHash": "111b2e5f530913d5d466d898acb18abe64ee657d0509ad071d07e1ab0b27f0e6"
 }

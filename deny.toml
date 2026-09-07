@@ -20,8 +20,28 @@ all-features = false
 # error; there is no lower level to set. Yanked releases are refused too: a
 # pinned lockfile that names one is a signal, not an inconvenience.
 yanked = "deny"
-# Ignored advisories carry an id and a reason, one per line. None at bootstrap.
-ignore = []
+# Ignored advisories carry an id and a reason, one per line.
+#
+# The five below are the `unic-*` family, all flagged `unmaintained` and none
+# carrying a known vulnerability. They reach the tree through exactly one path,
+# `tauri-utils -> urlpattern v0.3.0 -> unic-ucd-ident`, so they are Tauri's
+# transitive choice rather than ours (spec 004 D-8).
+#
+# Spec 001 section 3.1 requires denying advisories at `vulnerability`; an
+# unmaintained crate with no CVE is below that bar, so ignoring these keeps the
+# configuration at the level the spec sets rather than above it. They are listed
+# individually, never by blanket-disabling the `unmaintained` class, so a sixth
+# one fails the gate and gets read by a human.
+#
+# Review trigger: drop these when Tauri moves off `urlpattern` 0.3, and re-run
+# `cargo deny check advisories` to confirm the list is empty again.
+ignore = [
+  "RUSTSEC-2025-0075", # unic-char-range: unmaintained, no vulnerability
+  "RUSTSEC-2025-0080", # unic-common: unmaintained, no vulnerability
+  "RUSTSEC-2025-0081", # unic-char-property: unmaintained, no vulnerability
+  "RUSTSEC-2025-0098", # unic-ucd-version: unmaintained, no vulnerability
+  "RUSTSEC-2025-0100", # unic-ucd-ident: unmaintained, no vulnerability
+]
 
 [licenses]
 # The allowlist from spec 001 §3.1. AGPL-3.0-only is our own crates
