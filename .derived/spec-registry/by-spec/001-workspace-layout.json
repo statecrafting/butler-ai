@@ -100,13 +100,14 @@
       "4. Functional requirements",
       "5. Acceptance criteria",
       "6. Out of scope",
-      "7. Resolved decisions"
+      "7. Resolved decisions",
+      "7. Verification"
     ],
     "specPath": "specs/001-workspace-layout/spec.md",
     "status": "approved",
     "summary": "Fixes the physical shape of the repository so every later spec can name its territory unambiguously: a single root Cargo workspace (`crates/*` plus the Tauri app crate under `apps/desktop/src-tauri`), a single pnpm workspace (`apps/*`), pinned Rust and Node toolchains, edition 2024, a supply-chain policy (`deny.toml`), and the manifest metadata every package must carry so spec-spine discovers it and maps it to its owning spec. Owns the root manifests and co-owns the Makefile's build/test/lint targets with the harness spec. Establishes no product code.\n",
     "title": "Workspace layout: one Cargo workspace, one pnpm workspace, pinned toolchains"
   },
-  "shardHash": "96088a4b9809c7d7c7245494328722c7f94ba6f78a894d678daa3b2d101a45c2",
+  "shardHash": "06ed89a3b941d7766541c0eaa9f7b1af4c23ddbf42b468ca48022c2a46ff2c06",
   "specVersion": "1.1.0"
 }

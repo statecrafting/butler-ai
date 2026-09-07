@@ -189,3 +189,26 @@ pre-commit staleness check).
   entry point, and `jobs.ci-gate` is the one aggregate check, matching how
   spec-spine composes its own CI. AC-2 now names that single context and the
   four repository settings that make the gate binding rather than advisory.
+
+## 8. Verification
+
+AC-2 asserts repository settings, which are not a property of a checkout; the
+orchestrator checks those with `gh api
+repos/statecrafting/butler-ai/branches/main/protection`. What is checkable here
+is the workflow composition that makes a single required context possible.
+
+```verify:cli
+# §3.1/§3.2: exactly one aggregate gate, named ci-gate, and no job named `gate`.
+grep -q '^  ci-gate:' .github/workflows/ci.yml
+sh -c '! grep -rn "^  gate:" .github/workflows/'
+# §3.1: the governance workflow is reusable only (no triggers of its own).
+grep -q 'workflow_call' .github/workflows/spec-spine.yml
+sh -c '! grep -qE "^  (push|pull_request):" .github/workflows/spec-spine.yml'
+# §3.2: ci.yml is the single triggered entry point, and calls the governance chain.
+grep -q 'uses: ./.github/workflows/spec-spine.yml' .github/workflows/ci.yml
+# AC-1: every unit this spec claims resolves (no W-001 against 003).
+sh -c 'spec-spine index render | grep "W-001" | grep -q "003-governance-ci" && exit 1 || exit 0'
+# §3.3: LF normalization and the derived merge-driver attribute are declared.
+grep -q 'text eol=lf' .gitattributes
+sh -c 'git check-attr merge .derived/spec-registry/by-spec/000-butler-bootstrap.json | grep -q spec-spine-derived-regen'
+```

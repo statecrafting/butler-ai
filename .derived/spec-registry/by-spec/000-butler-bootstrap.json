@@ -71,7 +71,8 @@
       "8. Lifecycle in a specify-first corpus",
       "9. Territory of this spec",
       "10. Bootstrap order",
-      "11. Status"
+      "11. Status",
+      "12. Verification"
     ],
     "specPath": "specs/000-butler-bootstrap/spec.md",
     "status": "approved",
@@ -87,6 +88,6 @@
       "ownership-ratchet"
     ]
   },
-  "shardHash": "e9993891aa4f79ee4a7c58d3a0940a5bbc0669c6547e3d1ae9e90438e4a0adfe",
+  "shardHash": "2bf67031159504e0da92453d5d3467d0e14c5aae3ba28f669553499f36baa389",
   "specVersion": "1.1.0"
 }

@@ -212,3 +212,15 @@ returns the same state with `[Log(Warn, "ignored")]`, never a panic.
   builds. What remains here is exactly what the phase 1 entry condition
   claims, a crate with no OS, no `tokio` and no `tauri` in its tree (AC-3),
   buildable and testable on Linux CI before any desktop code exists.
+
+## 8. Verification
+
+```verify:cli
+# AC-1: the reducer's transition table passes on this host.
+cargo test -p butler-core --locked machine::
+# AC-3: the pure core pulls in no OS, async or UI dependency.
+sh -c '! cargo tree -p butler-core --locked | grep -Eq "tokio|tauri|windows|objc2|xcap"'
+# §Territory: butler-core is claimed end to end, and the spec is at zero.
+spec-spine index coverage --fail-on-untraced
+sh -c 'spec-spine index render | grep "W-001" | grep -q "009-pipeline-state-machine" && exit 1 || exit 0'
+```
