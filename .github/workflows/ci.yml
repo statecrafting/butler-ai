@@ -26,6 +26,18 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  # Spec 003 §3.4: static checks that catch a CI defect on the day it is
+  # written rather than on the day a guard opens. D-1 (a Docker container
+  # action on a Windows/macOS matrix) sat unexercised from phase 0 to phase 1
+  # and `actionlint` does not catch it, so this check is ours.
+  preflight:
+    name: preflight
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: No container action on a non-Linux runner
+        run: ./scripts/check-action-runners.sh
+
   rust:
     name: rust (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -41,11 +53,19 @@ jobs:
         # Cargo refuses to load a workspace whose member entries match nothing
         # (spec 001 §3.1), so the root manifest alone does not activate the gates.
         run: echo "present=$([ -f Cargo.toml ] && ls crates/*/Cargo.toml >/dev/null 2>&1 && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      # Spec 003 D-3: from phase 1 onward a crate always exists, so a closed
+      # guard here is a regression, not a no-op. Fail loudly instead of
+      # skipping every gate below and reporting green.
+      - name: Require a populated workspace
+        shell: bash
+        run: |
+          if [ "${{ steps.ws.outputs.present }}" != "true" ]; then
+            echo "::error::the Rust gates must be active from phase 1 onward, but no crates/*/Cargo.toml was found"
+            exit 1
+          fi
       - name: Toolchain
-        if: steps.ws.outputs.present == 'true'
         run: rustc --version && cargo --version
       - name: Cache cargo
-        if: steps.ws.outputs.present == 'true'
         uses: actions/cache@v6
         with:
           path: |
@@ -54,39 +74,37 @@ jobs:
             target
           key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
-        if: steps.ws.outputs.present == 'true'
         run: cargo build --workspace --locked
       - name: Test
-        if: steps.ws.outputs.present == 'true'
         run: cargo test --workspace --locked
       - name: Clippy
-        if: steps.ws.outputs.present == 'true'
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Format
-        if: steps.ws.outputs.present == 'true'
         run: cargo fmt --all --check
       # cargo-deny runs as a command, not as EmbarkStudios/cargo-deny-action,
       # which is a Docker container action and so is Linux-only; this matrix is
       # Windows and macOS (spec 003 D-1).
       - name: Install cargo-deny
-        if: steps.ws.outputs.present == 'true'
         uses: taiki-e/install-action@v2
         with:
           tool: cargo-deny
       - name: cargo-deny
-        if: steps.ws.outputs.present == 'true'
         run: cargo deny check
       # Spec 011: the committed TypeScript bindings must be what the Rust
       # contract generates.
+      # Legitimately conditional until spec 011 lands the generator. Spec 003
+      # §3.4: an inactive gate MUST say so, so a skip is never mistaken for a
+      # pass and a mistyped guard path cannot hide forever.
       - name: IPC bindings are fresh
-        if: steps.ws.outputs.present == 'true' && hashFiles('apps/desktop/src-tauri/src/bin/export-bindings.rs') != ''
+        if: hashFiles('apps/desktop/src-tauri/src/bin/export-bindings.rs') != ''
         shell: bash
         run: |
           cargo run -p butler-desktop --bin export-bindings --locked
           git diff --exit-code -- apps/desktop/src/generated
-      - name: No populated workspace yet
-        if: steps.ws.outputs.present == 'false'
-        run: echo "No Cargo workspace member yet; the Rust gates activate when spec 009 lands the first crate (phase 1)."
+      - name: IPC bindings gate is INACTIVE
+        if: hashFiles('apps/desktop/src-tauri/src/bin/export-bindings.rs') == ''
+        run: |
+          echo "::notice::IPC bindings gate inactive: export-bindings.rs absent (spec 011, phase 2)"
 
   web:
     name: web
@@ -95,34 +113,50 @@ jobs:
       - uses: actions/checkout@v7
       - name: Detect workspace
         id: ws
-        run: echo "present=$([ -f pnpm-workspace.yaml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+        shell: bash
+        run: |
+          # spec 001 landed pnpm-workspace.yaml in phase 1, so this is a
+          # regression check, not a no-op guard (spec 003 D-3).
+          if [ ! -f pnpm-workspace.yaml ]; then
+            echo "::error::pnpm-workspace.yaml is required from phase 1 onward"
+            exit 1
+          fi
+          # A package that pnpm does not discover would make every gate below
+          # pass vacuously. Report how many it sees so the state is explicit.
+          echo "packages=$(find apps -mindepth 2 -maxdepth 2 -name package.json 2>/dev/null | wc -l | tr -d ' ')" >> "$GITHUB_OUTPUT"
       - uses: pnpm/action-setup@v6
-        if: steps.ws.outputs.present == 'true'
       - uses: actions/setup-node@v7
-        if: steps.ws.outputs.present == 'true'
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: pnpm
       - name: Install
-        if: steps.ws.outputs.present == 'true'
         run: pnpm install --frozen-lockfile
+      # Spec 003 §3.4: the web gates run `pnpm -r`, which exits 0 when it
+      # matches no project. Until a package exists that is correct; once one
+      # does, a zero match means the workspace globs missed it and every gate
+      # below is vacuous. Refuse that rather than report green.
+      - name: Workspace packages are discovered
+        shell: bash
+        run: |
+          declared="${{ steps.ws.outputs.packages }}"
+          found="$(pnpm -r list --depth -1 --json 2>/dev/null | grep -c '"name"' || true)"
+          echo "apps/*/package.json on disk: $declared; pnpm discovers: $found"
+          if [ "$declared" -gt 0 ] && [ "$found" -eq 0 ]; then
+            echo "::error::$declared package(s) on disk but pnpm discovers none; check pnpm-workspace.yaml globs"
+            exit 1
+          fi
+          if [ "$declared" -eq 0 ]; then
+            echo "::notice::web gates are vacuous: no apps/*/package.json yet (spec 012, phase 2)"
+          fi
       - name: Typecheck
-        if: steps.ws.outputs.present == 'true'
         run: pnpm -r typecheck
       - name: Lint
-        if: steps.ws.outputs.present == 'true'
         run: pnpm -r lint
       - name: Test
-        if: steps.ws.outputs.present == 'true'
         run: pnpm -r test
       - name: Build
-        if: steps.ws.outputs.present == 'true'
         run: pnpm -r build
-      - name: No workspace yet
-        if: steps.ws.outputs.present == 'false'
-        run: echo "pnpm-workspace.yaml absent; the web gates activate when spec 001 lands (phase 1)."
 
-  # The governance chain, as a reusable workflow so its result reaches ci-gate.
   govern:
     uses: ./.github/workflows/spec-spine.yml
 
@@ -133,15 +167,15 @@ jobs:
   ci-gate:
     name: ci-gate
     if: ${{ always() }}
-    needs: [rust, web, govern]
+    needs: [preflight, rust, web, govern]
     runs-on: ubuntu-latest
     steps:
       - name: Require all CI jobs to have passed
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: |
           echo "A required CI job failed or was cancelled:"
-          echo "  rust=${{ needs.rust.result }} web=${{ needs.web.result }} govern=${{ needs.govern.result }}"
+          echo "  preflight=${{ needs.preflight.result }} rust=${{ needs.rust.result }} web=${{ needs.web.result }} govern=${{ needs.govern.result }}"
           exit 1
       - name: All required CI jobs passed
         run: |
-          echo "ci-gate passed: rust, web and govern are all green or skipped"
+          echo "ci-gate passed: preflight, rust, web and govern are all green or skipped"
