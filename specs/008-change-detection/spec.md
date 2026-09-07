@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-01"
-implementation: pending
+implementation: complete
 owner: "butler-ai maintainers"
 risk: medium
 platforms: "all"
@@ -17,6 +17,9 @@ depends_on:
 extends:
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/delta.rs", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/tests/delta.rs", nature: additive }
+  # AC-2's benchmark. Declared here because AC-2 requires the file to exist and
+  # no spec claimed it; `require_ownership` refuses an unclaimed source file.
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/benches/delta.rs", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: module, id: "butler_core::delta" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::delta::ChangeDetector" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::delta::LevenshteinDetector" }, nature: additive }
@@ -147,3 +150,41 @@ that a time bound.
   `butler_ocr` type, and this spec's own summary calls it pure code with no
   OS. Keeping the edge put a phase 1 spec behind a phase 3 spec and made 018's
   phase 1 unreachable in the graph the orchestrator actually schedules on.
+
+- **D-2 (2026-09-06, unresolved: needs a human).** §3.2's "Bounded cost"
+  paragraph estimates single-digit milliseconds for a 6000 x 6000 comparison.
+  Measured on an M1 Max in the optimized `bench` profile, AC-2's benchmark
+  reports a **p50 of 35.5 ms** (`docs/architecture.md` §7.1). The estimate
+  counted the 36 M matrix cells as byte operations; a Levenshtein DP cell is a
+  comparison plus a three-way minimum over `usize`, so ~1 ns per cell and
+  ~36 ms is the honest figure.
+
+  This is an error in the estimate, not in the implementation, and it is not
+  load-bearing: no FR or AC depends on the number, AC-2 requires only that the
+  measured p50 be recorded and quoted, and spec 009 evaluates on a capture
+  cycle of seconds with the call made off the UI thread. §3.2's sentence is
+  therefore left **as written and known wrong** rather than edited to match
+  what the code happened to measure, which the coherence guard forbids.
+
+  Two facts for whoever resolves it: one `evaluate` can run the DP twice (base
+  and stability candidate), so the per-call worst case is ~70 ms; and cost is
+  quadratic in `max_compare_chars`, so a ~3000-character window would land in
+  single digits. Both point at spec 014's defaults rather than at this module.
+
+## 8. Verification
+
+```verify:cli
+# AC-1: FR-001 to FR-006.
+cargo test -p butler-core --locked delta::
+# §2/§3.3: the module stays pure. No clock, filesystem or network.
+sh -c '! grep -nE "std::(time|fs|net)" crates/butler-core/src/delta.rs'
+# §2: strsim is the only dependency the module needs. The runtime graph stays
+# clean on the Windows target too, which is where criterion's dev-only
+# `windows-sys` edge would show up if it ever became a runtime one (009 D-2).
+sh -c '! cargo tree -p butler-core --locked --edges normal --target x86_64-pc-windows-msvc | grep -Eq "tokio|tauri|windows|objc2|xcap"'
+# AC-2: the benchmark exists and compiles; the p50 is quoted in the docs.
+cargo build -p butler-core --benches --locked
+grep -q "35.5 ms" docs/architecture.md
+# Territory: every unit this spec claims resolves.
+sh -c 'spec-spine index render | grep "W-001" | grep -q "008-change-detection" && exit 1 || exit 0'
+```

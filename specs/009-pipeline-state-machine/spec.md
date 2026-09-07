@@ -71,8 +71,17 @@ is spec 019's territory, not this spec's: it lives inside the crate spec 004
 establishes, and 018 puts that crate a phase later (019 D-1).
 
 `butler-core` MUST depend on no platform crate, no `tokio`, no `tauri`. Its
-only dependencies are `serde` (for the IPC DTOs), `strsim`, `thiserror`, and
-`proptest` (dev).
+only runtime dependencies are `serde` (for the IPC DTOs), `strsim` and
+`thiserror`; its only dev dependencies are `proptest` and `criterion` (the
+latter for spec 008 AC-2's benchmark target alone).
+
+The budget is stated in two halves because they defend different things. The
+*runtime* half is the product guarantee: what the shipped library links is what
+runs on the user's machine, and nothing platform-shaped may be in it. The *dev*
+half is a hygiene budget: a benchmark harness never ships, so a transitive
+platform crate underneath one is not a breach of the guarantee, but the direct
+dependency list stays closed so the crate cannot accumulate a test-time
+dependency tree nobody chose. See D-2.
 
 ## 3. Behavior
 
@@ -192,8 +201,10 @@ returns the same state with `[Log(Warn, "ignored")]`, never a panic.
   matches the table (a test renders the table to the same Mermaid source and
   diffs it against the doc; the doc is regenerated, never hand-edited, for
   that section).
-- **AC-3.** `cargo tree -p butler-core` contains no `tokio`, `tauri`,
-  `windows`, `objc2`, or `xcap`.
+- **AC-3.** `cargo tree -p butler-core --edges normal` (the runtime graph, on
+  every target in the matrix) contains no `tokio`, `tauri`, `windows`, `objc2`,
+  or `xcap`, and no *direct* dependency of the crate, runtime or dev, is a
+  platform crate. Dev-only transitive edges are out of scope: see D-2.
 
 ## 6. Out of scope
 
@@ -218,9 +229,33 @@ returns the same state with `[Log(Warn, "ignored")]`, never a panic.
 ```verify:cli
 # AC-1: the reducer's transition table passes on this host.
 cargo test -p butler-core --locked machine::
-# AC-3: the pure core pulls in no OS, async or UI dependency.
-sh -c '! cargo tree -p butler-core --locked | grep -Eq "tokio|tauri|windows|objc2|xcap"'
+# AC-3: the shipped library pulls in no OS, async or UI dependency, on the
+# Windows target too (D-2 narrowed this to the runtime graph; a dev-only
+# benchmark harness does not ship).
+sh -c '! cargo tree -p butler-core --locked --edges normal | grep -Eq "tokio|tauri|windows|objc2|xcap"'
+sh -c '! cargo tree -p butler-core --locked --edges normal --target x86_64-pc-windows-msvc | grep -Eq "tokio|tauri|windows|objc2|xcap"'
 # §Territory: butler-core is claimed end to end, and the spec is at zero.
 spec-spine index coverage --fail-on-untraced
 sh -c 'spec-spine index render | grep "W-001" | grep -q "009-pipeline-state-machine" && exit 1 || exit 0'
 ```
+
+- **D-2 (2026-09-06, amendment, approved by the maintainer in session).**
+  Spec 008 AC-2 requires a criterion benchmark inside this crate. Adding it
+  broke two of this spec's claims at once: §2's closed dependency list, and
+  AC-3, because on `x86_64-pc-windows-msvc` the chain `criterion -> walkdir ->
+  same-file -> winapi-util -> windows-sys v0.61.2` puts a `windows` crate in
+  `cargo tree`. This spec's own test `ac_003_no_platform_dependencies` caught
+  it, which is the governance working rather than failing.
+
+  Two approved specs genuinely contradicted each other, so the resolution was a
+  human decision, not an implementation choice. It was taken as an amendment
+  here rather than by weakening spec 008, and rather than by editing the test
+  to pass: AC-3's purpose is that *the shipped library* has no operating system
+  in it, and a benchmark harness does not ship. AC-3 therefore now reads the
+  runtime graph (`--edges normal`) and additionally forbids any direct
+  dependency, runtime or dev, from being a platform crate. The guarantee the
+  criterion was written to defend is unchanged; what changed is that it no
+  longer also catches dev-only transitive edges it was never aimed at.
+
+  `criterion` joins §2's dev half and `ALLOWED_DEPENDENCIES` in
+  `tests/machine.rs`. Nothing else about the crate moved.
