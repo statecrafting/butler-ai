@@ -40,16 +40,6 @@
       },
       {
         "code": "W-001",
-        "message": "spec '014-user-configuration' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/lib.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '014-user-configuration' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
-        "path": "apps/desktop/src-tauri/Cargo.toml"
-      },
-      {
-        "code": "W-001",
         "message": "spec '014-user-configuration' file unit 'apps/desktop/src/App.tsx' does not exist",
         "path": "apps/desktop/src/App.tsx"
       },
@@ -70,6 +60,14 @@
     "implementingPaths": [
       {
         "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/lib.rs",
         "source": "spec-edge"
       },
       {
@@ -96,7 +94,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/Cargo.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -105,7 +107,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/lib.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -234,5 +240,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "98ec02d43710cd61ba3905695f1b0d9cc8967f7456dc65bceab15622a30132a4"
+  "shardHash": "880b611a9feeab7346fe9e25e0072ffa95277de65ac85be0417f53ad667f5586"
 }

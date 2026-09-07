@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Spec 004 section 3.6: the least-privilege grant for the one overlay window. Spec 015 constrains this file: no fs, shell, http or dialog permission may be added without a spec that amends it.",
+  "windows": ["overlay"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-ignore-cursor-events",
+    "core:window:allow-hide",
+    "core:window:allow-show",
+    "core:window:allow-set-position",
+    "core:window:allow-set-size",
+    "global-shortcut:default"
+  ]
+}

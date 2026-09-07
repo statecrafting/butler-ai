@@ -1,0 +1,11 @@
+{
+  "package": {
+    "kind": "rust-lib-bin",
+    "name": "butler-desktop",
+    "path": "apps/desktop/src-tauri",
+    "specRef": "004-desktop-shell",
+    "version": "0.1.0"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "3873931047ffa91c9e0067ebf89b0c8ef159aeb3100323952ced8dbf6bc2ecc0"
+}

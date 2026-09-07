@@ -26,16 +26,6 @@
         "code": "W-001",
         "message": "spec '015-privacy-boundary' file unit 'apps/desktop/src-tauri/src/logging.rs' does not exist",
         "path": "apps/desktop/src-tauri/src/logging.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' file unit 'apps/desktop/src-tauri/tauri.conf.json' does not exist",
-        "path": "apps/desktop/src-tauri/tauri.conf.json"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' directory unit 'apps/desktop/src-tauri/capabilities/' is not a directory",
-        "path": "apps/desktop/src-tauri/capabilities/"
       }
     ]
   },
@@ -44,6 +34,14 @@
       "009-pipeline-state-machine"
     ],
     "implementingPaths": [
+      {
+        "path": "apps/desktop/src-tauri/capabilities/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/tauri.conf.json",
+        "source": "spec-edge"
+      },
       {
         "path": "crates/butler-core/src/lib.rs",
         "source": "spec-edge"
@@ -162,7 +160,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/capabilities/"
+          }
+        ],
         "ownership": true,
         "sourceField": "constrains",
         "unit": {
@@ -180,7 +182,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/tauri.conf.json"
+          }
+        ],
         "ownership": true,
         "sourceField": "constrains",
         "unit": {
@@ -242,5 +248,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "b3b451ad87e844689eec802077cc6796d4bd192a924006f3fc41545a6cf82fd8"
+  "shardHash": "2e0dc30f00b287f2e48474efd59ef1d557f9dd5e06c2b07e2621993559a46d86"
 }

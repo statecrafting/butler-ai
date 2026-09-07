@@ -45,16 +45,6 @@
       },
       {
         "code": "W-001",
-        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/src/lib.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/lib.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '011-ipc-contract' file unit 'apps/desktop/src-tauri/Cargo.toml' does not exist",
-        "path": "apps/desktop/src-tauri/Cargo.toml"
-      },
-      {
-        "code": "W-001",
         "message": "spec '011-ipc-contract' file unit 'crates/butler-core/src/ipc.rs' does not exist",
         "path": "crates/butler-core/src/ipc.rs"
       }
@@ -68,6 +58,14 @@
     "implementingPaths": [
       {
         "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/lib.rs",
         "source": "spec-edge"
       },
       {
@@ -103,7 +101,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/Cargo.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -139,7 +141,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/lib.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -232,5 +238,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "25c57141f5b7d17383ff3251b4b687b9c0934897e577943ae15b4cf287eae290"
+  "shardHash": "727acb56bb0e9264fbb145cea0c5ecbd735d1b472814fb7c481497bf274a72f7"
 }
