@@ -185,7 +185,11 @@ impl LevenshteinDetector {
     /// This runs only when exclusion is unverified, where the alternative is
     /// asking the model about its own previous answer.
     fn subtract_answer(text: &str, answer: &str) -> String {
-        let drop: Vec<&str> = answer.lines().map(str::trim).filter(|l| !l.is_empty()).collect();
+        let drop: Vec<&str> = answer
+            .lines()
+            .map(str::trim)
+            .filter(|l| !l.is_empty())
+            .collect();
         let kept: Vec<&str> = text
             .lines()
             .filter(|l| {
@@ -251,7 +255,11 @@ impl ChangeDetector for LevenshteinDetector {
             .candidate
             .as_ref()
             .is_some_and(|prev| Self::similarity(prev, &compared) >= self.threshold);
-        self.seen = if continues { self.seen.saturating_add(1) } else { 1 };
+        self.seen = if continues {
+            self.seen.saturating_add(1)
+        } else {
+            1
+        };
         self.candidate = Some(compared);
 
         if self.seen >= self.stability_frames {

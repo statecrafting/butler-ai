@@ -14,6 +14,7 @@ mod delta {
     use butler_core::machine;
     use proptest::prelude::{ProptestConfig, any, prop_assert, proptest};
     use proptest::test_runner::FileFailurePersistence;
+    use std::fmt::Write as _;
 
     // ----------------------------------------------------------------- setup
 
@@ -59,7 +60,10 @@ mod delta {
 
         let v = d.evaluate(&text, &plain());
 
-        assert!(is_unchanged(v), "identical text must be Unchanged, got {v:?}");
+        assert!(
+            is_unchanged(v),
+            "identical text must be Unchanged, got {v:?}"
+        );
         assert!(
             (v.similarity() - 1.0).abs() < f32::EPSILON,
             "identical text must score exactly 1.0, got {}",
@@ -71,7 +75,10 @@ mod delta {
     fn fr_001_empty_against_empty_is_unchanged_not_a_division_by_zero() {
         let mut d = detector();
         let v = d.evaluate("", &plain());
-        assert!(is_unchanged(v), "empty vs empty must be Unchanged, got {v:?}");
+        assert!(
+            is_unchanged(v),
+            "empty vs empty must be Unchanged, got {v:?}"
+        );
         assert!((v.similarity() - 1.0).abs() < f32::EPSILON);
     }
 
@@ -101,7 +108,10 @@ mod delta {
         // After committing, the same text is the baseline and settles.
         d.commit(&other);
         let v = d.evaluate(&other, &plain());
-        assert!(is_unchanged(v), "after commit the text must settle, got {v:?}");
+        assert!(
+            is_unchanged(v),
+            "after commit the text must settle, got {v:?}"
+        );
     }
 
     #[test]
@@ -138,7 +148,8 @@ mod delta {
         let mut current = base.clone();
         let mut verdicts = Vec::new();
         for i in 0..40 {
-            current.push_str(&format!("\nappended line {i}: something new on screen"));
+            write!(current, "\nappended line {i}: something new on screen")
+                .expect("writing to a String cannot fail");
             verdicts.push(d.evaluate(&current, &plain()));
         }
 
@@ -156,7 +167,9 @@ mod delta {
         // good, it does not drift back, because the base never moved.
         let first_non_unchanged = verdicts.iter().position(|v| !is_unchanged(*v)).unwrap();
         assert!(
-            verdicts[first_non_unchanged..].iter().all(|v| !is_unchanged(*v)),
+            verdicts[first_non_unchanged..]
+                .iter()
+                .all(|v| !is_unchanged(*v)),
             "similarity to a fixed base must not recover as more text is appended"
         );
     }
@@ -293,7 +306,10 @@ mod delta {
         assert_eq!(d.base(), "", "reset must clear the baseline");
         // With an empty base, an empty frame is the identical case again.
         let v = d.evaluate("", &plain());
-        assert!(is_unchanged(v), "after reset, empty vs empty is Unchanged, got {v:?}");
+        assert!(
+            is_unchanged(v),
+            "after reset, empty vs empty is Unchanged, got {v:?}"
+        );
     }
 
     #[test]
