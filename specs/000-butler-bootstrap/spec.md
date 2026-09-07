@@ -241,7 +241,28 @@ frozen: no amendment may alter the authoring/derived boundary, the identity
 rule, the typed-authority-graph principle, the determinism requirement, the
 refusal rule, or the ownership ratchet. Amendments may add surface elsewhere.
 
-## 12. Verification
+## 12. Resolved decisions
+
+- **D-1 (2026-09-07, the floor rules gain their carve-outs).** The three rules
+  this spec establishes are unchanged in force and clearer in scope, ported
+  from the spec-spine kit at its spec 047. `governed-artifact-reads.md`
+  forbade ad-hoc parsing of the derived JSON without saying that parsing a
+  `spec-spine` verb's own `--json` output is a typed read; read literally it
+  outlawed `registry plan --json`, which the `## New Sessions` protocol in
+  `AGENTS.md` has always run, and `make burndown` now runs too (spec 002
+  FR-006). `adversarial-prompt-refusal.md` said never to edit the owning spec
+  to clear the gate, but under §7.5's ratchet adding a created file to
+  `establishes` *is* that edit, so the rule as written was unimplementable and
+  left agents to guess; it now names the two edits that are always legitimate
+  and states that a waiver is a human instrument an agent never writes on its
+  own authority. `orchestrator-rules.md` requires the regenerated shards to be
+  committed with the change that made them stale, not merely recomputed.
+  Guardrails 3 and 4 are untouched and no `unamendable` anchor is affected:
+  this narrows ambiguity, it does not move the boundary.
+  `standards/spec/templates/spec-template.md` changes in the same pass, from
+  `scripts/verify-spec.sh <id>` to `spec-spine verify <id>` (spec 002 D-6).
+
+## 13. Verification
 
 The bootstrap spec's own claims are the compiler's contract: the authoring and
 derived boundary (§1), determinism (§6), and the guardrails (§7). Each is

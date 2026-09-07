@@ -24,7 +24,6 @@ establishes:
   - ".claude/rules/rust-crates.md"
   - ".claude/rules/overlay-frontend.md"
   - ".claude/rules/build-commands.md"
-  - "scripts/verify-spec.sh"
 co_authority:
   - { unit: { kind: section, file: "Makefile", anchor: "build" }, with_specs: ["001-workspace-layout"] }
   - { unit: { kind: section, file: "Makefile", anchor: "test" }, with_specs: ["001-workspace-layout"] }
@@ -144,10 +143,22 @@ Paths-scoped rules auto-load when an agent touches a matching file:
 
 | Hook | Matcher | Behavior |
 |---|---|---|
-| `SessionStart` | startup, resume, clear, compact | recompile the registry; report registry and index freshness |
+| `SessionStart` | startup, resume, clear, compact | report registry (`compile --check`) and index freshness; never write |
 | `PostToolUse` | `Edit`, `Write` | after a `spec.md` edit, recompile; after any hashed-input edit, `index check` |
-| `PreToolUse` | `Bash` matching `gh pr create` | run `spec-spine couple`; block without a waiver; block if `.derived/` is dirty |
-| `Stop` | `*` | if the index is stale and no merge/rebase is in progress, `spec-spine index` and report |
+| `PreToolUse` | `Bash` | refuse a `git push` targeting `main`; on `gh pr create` run `spec-spine couple`, block without a waiver, block if the index is stale or `.derived/` is dirty |
+| `Stop` | `*` | report a stale index; never regenerate it |
+
+Hooks MUST read and MUST NOT write, with one exception: the `PostToolUse`
+recompile after a `spec.md` edit, where the session is live and can commit the
+regenerated shards alongside the edit that made them stale. A hook cannot
+commit what it writes, so a writing `SessionStart` hides a stale committed
+registry by repairing it as a side effect of reading it, and a writing `Stop`
+leaves `.derived/` dirty for a session that has already ended.
+
+Each hook MUST act on the repository the action targets, resolved from the
+edited file's path or from the command's explicit `cd` prefix, and MUST NOT
+assume the session's project directory: a session with several checkouts open
+must never judge one repository by another's state.
 
 The `PostToolUse` glob list MUST equal `[index] extra_hashed_inputs` in
 `spec-spine.toml`; a change to one is a change to both (both are owned: the
@@ -176,12 +187,15 @@ default is the binary on `PATH`.
 
 ### 3.7 Verification blocks
 
-`scripts/verify-spec.sh <id>` is the kit's verify runner: it reads the spec's
+`spec-spine verify <id>` is the verify runner: it reads the spec's
 `## Verification` section, runs every non-comment line inside its `verify:cli`
 fences from the repository root in order, and stops at the first non-zero exit.
 It reports `passed`, `FAILED at N`, or `not-declared`. `not-declared` exits 0
 because it is an honest zero, not a pass, which means a spec with no block is
-indistinguishable from one whose checks all succeeded.
+indistinguishable from one whose checks all succeeded. `--plan` prints the
+commands and runs none of them: the safety affordance for the one verb that
+executes what the corpus declares, and the way to read a `## Verification`
+block this session did not author.
 
 - Every spec MUST carry a `## Verification` section with at least one
   `verify:cli` command **before it flips to `implementation: complete`**. The
@@ -200,18 +214,21 @@ indistinguishable from one whose checks all succeeded.
   lifecycle counts and the burn-down without parsing `.derived/**` directly.
 - **FR-002.** The `PreToolUse` hook blocks `gh pr create` when `spec-spine
   couple` exits non-zero and the command's `--body` lacks the waiver keyword.
-- **FR-003.** The `Stop` hook never runs `spec-spine index` while
-  `.git/MERGE_HEAD`, `rebase-merge`, `rebase-apply`, or `CHERRY_PICK_HEAD`
-  exists.
+- **FR-003.** No hook writes into the repository it observes, except the
+  `PostToolUse` recompile after a `spec.md` edit. The `Stop` hook never runs
+  `spec-spine index` at all, in any tree state.
 - **FR-004.** `make ci` and the CI workflow (spec 003) run the same gate set;
   a local pass implies a CI pass for the governance jobs.
 - **FR-005.** `/spec-new` computes the next ordinal from `spec-spine registry
   list --ids-only`, never from `ls`.
-- **FR-006.** `/burndown` derives its list from `spec-spine index render`
-  output (the governed projection), never from the shard JSON.
-- **FR-007.** `scripts/verify-spec.sh <id>` exits 0 and reports `passed` for
-  every spec at `implementation: complete`, and reports `not-declared` for no
-  such spec.
+- **FR-006.** `/burndown` and `make burndown` derive their list from
+  `spec-spine index diagnostics`, the typed read, never from the shard JSON
+  and never by grepping `index render`.
+- **FR-007.** `spec-spine verify <id>` exits 0 and reports `passed` for every
+  spec at `implementation: complete`, and reports `not-declared` for no such
+  spec.
+- **FR-008.** The `PreToolUse` hook refuses a `git push` that targets `main`,
+  whichever branch the session is on.
 
 ## 5. Acceptance criteria
 
@@ -222,8 +239,11 @@ indistinguishable from one whose checks all succeeded.
 - **AC-3.** `make spine` exits 0 on `main`.
 - **AC-4.** Every skill file's `allowed-tools` list excludes destructive shell
   verbs; `/ship` and `/shepherd` are the only skills that push.
-- **AC-5.** For each `implementation: complete` spec, `scripts/verify-spec.sh
-  <id>` prints `passed` and exits 0; none prints `not-declared`.
+- **AC-5.** For each `implementation: complete` spec, `spec-spine verify <id>`
+  prints `passed` and exits 0; none prints `not-declared`.
+- **AC-6.** The `Stop` hook's command contains no `spec-spine index`
+  invocation other than `index check`, and the `PreToolUse` hook refuses a
+  push to `main`.
 
 ## 6. Out of scope
 
@@ -264,6 +284,50 @@ indistinguishable from one whose checks all succeeded.
   writing `Stop` hook stalled an orchestrator for eleven hours on a tree
   it had dirtied). Porting them changes what §3.5 requires and is an
   amendment for a human to file; the hooks are unchanged until then.
+- **D-4 (2026-09-07, pin bump).** `SPEC_SPINE_VERSION` moves from 0.14.0 to
+  0.15.0 (`Makefile`; CI reads it from there). Byte-compatibility was verified
+  before the bump, the same way D-2 verified 0.14.0: 0.15.0's `compile
+  --check` and `index check` both report fresh against shards written by
+  0.14.0, and `make ci` exits 0 with the derived tree unchanged. What the bump
+  buys is what D-5 to D-7 spend: `spec-spine verify` (spec-spine spec 049),
+  `index diagnostics` and `index check`'s warning counts (050), and the
+  read-only kit hooks (046) that D-3 was waiting on.
+- **D-5 (2026-09-07, the hooks port D-3 deferred).** D-3 recorded that porting
+  the kit's read-only hooks changes what §3.5 requires and is an amendment for
+  a human to file, and left the hooks alone. That amendment is filed here, with
+  human approval, and §3.5, FR-003 and FR-008 above are the amended text. Three
+  writes are removed: `SessionStart`'s bare `compile`, the `PreToolUse` gate's
+  `index` (it blocked on the uncommitted output of its own write), and `Stop`'s
+  regeneration. All four hooks now resolve the repository the action targets
+  rather than `CLAUDE_PROJECT_DIR`, which in a session holding several
+  checkouts open judged this repository by a sibling's state. The push gate is
+  new: `AGENTS.md` has always said never commit to `main` and nothing enforced
+  it. Two project facts are kept over the kit's text: the binary resolution
+  falls back to `$HOME/.cargo/bin/spec-spine` after `PATH`, and the
+  `PostToolUse` glob list is butler-ai's hashed inputs. That list now genuinely
+  equals `[index] extra_hashed_inputs` as §3.5 requires, which the previous
+  list did not: it watched `Cargo.toml`, `package.json` and
+  `pnpm-workspace.yaml`, none of which are hashed inputs.
+- **D-6 (2026-09-07, the verb replaces the script).** `scripts/verify-spec.sh`
+  is deleted and its claim removed from §2; `spec-spine verify <id>` (spec-spine
+  spec 049) does the same job as a typed, tested read of authored markdown. The
+  two were confirmed equivalent before the swap, on this corpus: for spec 004
+  the verb's `--plan` lists the same twelve commands in the same order, and a
+  real run prints the same `passed (12 command(s))` line the script printed.
+  D-1's statement that the script "is the kit's copy and is claimed here" is
+  superseded. The kit at the pinned v0.15.0 still ships the script, so
+  `.claude/skills/{verify,spec,validate-and-fix}` are taken from the kit's
+  `main` instead, where spec-spine spec 051 completed this migration; the
+  skill's own text pins the requirement, "spec-spine 0.15.0 or later", which
+  D-4 satisfies. The other twelve skills are identical at both points.
+- **D-7 (2026-09-07, `--fail-on-unresolved` stays off).** Spec-spine spec 050
+  adds an opt-in gate that turns an unresolved unit into exit 1, and its own
+  repository turns it on. butler-ai MUST NOT: this corpus is specified before
+  it is built, and its 108 `W-001` warnings are the burn-down that
+  `specs/018-implementation-sequencing` works through, not a defect. `make
+  spine` keeps the four gates it had. What 050 is used for here is reading:
+  `make burndown` takes the typed `index diagnostics` instead of grepping
+  `index render` (FR-006), and gains a per-spec count for free.
 
 ## 8. Verification
 
@@ -274,7 +338,16 @@ make spine
 spec-spine index check --slice governance
 # §3.6: every Makefile target the contract names still exists.
 sh -c 'for t in setup spine ci pr-prep burndown coverage spec-new build test lint; do grep -qE "^${t}:" Makefile || { echo "missing target: ${t}"; exit 1; }; done'
-# §3.7 + AC-5: the verify runner works, and no complete spec is undeclared.
-test -x scripts/verify-spec.sh
-sh -c 'for s in 000-butler-bootstrap 001-workspace-layout 003-governance-ci 009-pipeline-state-machine; do ./scripts/verify-spec.sh "$s" >/dev/null 2>&1 || exit 1; done'
+# §3.7 + AC-5: the verify verb works, and no complete spec is undeclared.
+# This spec is excluded from its own list: verifying 002 from inside 002's
+# verification block would recurse.
+sh -c 'for s in 000-butler-bootstrap 001-workspace-layout 003-governance-ci 008-change-detection 009-pipeline-state-machine; do spec-spine verify "$s" >/dev/null 2>&1 || { echo "verify failed: $s"; exit 1; }; done'
+# D-6: the script the verb replaced is gone, and nothing calls it.
+sh -c '! test -e scripts/verify-spec.sh'
+# FR-003 + AC-6: the Stop hook reads and never regenerates the index.
+sh -c 'test "$(jq -r ".hooks.Stop[].hooks[].command" .claude/settings.json | grep -o "index [a-z]*" | sort -u | tr "\n" ",")" = "index check,"'
+# FR-008 + AC-6: the push gate exists.
+sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "push-gate"'
+# FR-006: burndown reads the typed diagnostics, not a grep over `index render`.
+sh -c 'grep -q "index diagnostics" Makefile && ! grep -q "index render | grep" Makefile'
 ```

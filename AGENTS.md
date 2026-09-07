@@ -123,7 +123,7 @@ ready spec of the lowest open phase.
    (`spec-spine index`, then `couple --base origin/main`). All must exit 0.
    Commit the regenerated shards with the code they describe.
 6. **Satisfy the spec's acceptance criteria verbatim.** `/verify <id>` runs
-   the spec's `## Verification` block through `scripts/verify-spec.sh`. If a
+   the spec's `## Verification` block through `spec-spine verify <id>`. If a
    criterion cannot be satisfied, keep `implementation: in-progress`, add a
    dated note to the spec saying exactly what remains, and report it. Flip to
    `implementation: complete` only at zero `W-001` for the spec
@@ -154,7 +154,7 @@ Skills live in `.claude/skills/`:
 - `/setup`: one-time contributor setup; installs the pinned spec-spine and verifies the governed loop.
 - `/next`: the next ready spec from `registry plan`, minus drafts, with in-flight specs and honest blockers. Read-only.
 - `/build <id>`: one spec start to finish per "Working the backlog".
-- `/verify <id>`: run a spec's `verify:cli` blocks locally through `scripts/verify-spec.sh`.
+- `/verify <id>`: run a spec's `verify:cli` blocks locally through `spec-spine verify`.
 - `/spec`: author the next spec from the template at the next free ordinal, born `draft`; taxonomy from `spec-spine.toml`, phase from spec 018.
 - `/burndown`: what is left to build, per spec and per phase; proposes the next unit of work (this repository's own).
 - `/implement-plan`: execute a cross-cutting plan file step by step with checkpoints.
@@ -168,7 +168,10 @@ Skills live in `.claude/skills/`:
 - `/refactor-claude-md`: tighten and restructure `CLAUDE.md`.
 
 The fifteen (all but `/burndown`) are the spec-spine kit's, byte for byte
-(spec-spine spec 048). The project layer the skills read lives in this file
+(spec-spine spec 048). Twelve match the kit at the pinned release;
+`/verify`, `/spec` and `/validate-and-fix` are taken from the kit's `main`,
+where spec-spine spec 051 moved them onto `spec-spine verify` (spec 002 D-6).
+The project layer the skills read lives in this file
 (the pin in `Makefile`, `make ci` and `make pr-prep` as the gate, the default
 branch) and in the path-scoped rules; do not edit a skill to add a project
 fact, add it here.

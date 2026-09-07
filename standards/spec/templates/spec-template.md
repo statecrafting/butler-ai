@@ -75,7 +75,7 @@ What this spec deliberately does not cover, and which spec covers it instead.
 ## 7. Verification
 
 The commands that prove this spec's acceptance criteria on a merged checkout.
-`scripts/verify-spec.sh <id>` runs every non-comment line of the `verify:cli`
+`spec-spine verify <id>` runs every non-comment line of the `verify:cli`
 fences below, from the repository root, in order, stopping at the first non-zero
 exit. Keep them mechanical and independent of the machine they run on: no
 absolute paths, no network beyond what the gate already needs, no interactive
