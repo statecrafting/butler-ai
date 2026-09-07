@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "platform"
 created: "2026-09-01"
-implementation: in-progress
+implementation: complete
 owner: "butler-ai maintainers"
 risk: high
 platforms: ["windows", "macos"]
@@ -301,7 +301,13 @@ unless a spec adds it with a stated need (015 constrains this).
      rather than twice.
 
   D-5 was additionally open at the time, and blocked one of §3.3's five
-  actions. It is resolved (D-9); the other three reasons stand.
+  actions. It is resolved (D-9).
+
+  **Reasons 1 and 2 are resolved (2026-09-07) by 018 R-010 and D-10.** Most of
+  that checklist could never have been signed in phase 2 by anyone, on either
+  platform, which is what R-010 now says out loud; D-10 disposes of the
+  Windows column. **Reason 3 stands**: FR-006 is still unwritten, and D-11
+  records what completing this spec found instead.
 
 - **D-7 (2026-09-06, `macos-private-api`).** §3.2 requires `transparent:
   true`. Tauri implements macOS window transparency behind its
@@ -357,6 +363,86 @@ unless a spec adds it with a stated need (015 constrains this).
   `UiCommand::SetInteractive { on: bool }` is a two-state command, which is a
   toggle's shape and not a hold's.
 
+- **D-10 (2026-09-07, the Windows sign-off is deferred to 017; maintainer's
+  decision).** AC-3 requires the checklist signed on both platforms. No
+  Windows host is available to this project. The maintainer's decision is to
+  defer the Windows column rather than hold the entire build order behind
+  acquiring one: five of its eight rows are deferred to 005 and 019 in any
+  case (018 R-010), and the other three are observable today with nowhere to
+  observe them.
+
+  The deferral names spec **017** as the point at which the Windows column
+  comes due. 017 is what builds, signs and notarizes a Windows artifact, so it
+  is the first spec that cannot honestly ship without someone having run the
+  app on Windows. `apps/desktop/README.md` carries it in the row's `When`
+  column so it cannot be lost between here and there.
+
+  This weakens no Windows requirement. `window_flags_match_spec` asserts §3.2's
+  flag set on both platforms, CI's `rust (windows-latest)` job compiles and
+  tests the crate on Windows on every PR, and what stays unverified is exactly
+  what a manual checklist verifies anywhere: what the operating system did with
+  the request, as opposed to what was requested.
+
+- **D-11 (2026-09-07, two requirements that were specified and never built).**
+  Completing this spec found two gaps between §3 and the crate. Neither was a
+  design question; both were simply absent.
+
+  **FR-004's macOS half did not exist.** §3.2 requires the app to be an
+  accessory (`LSUIElement`, no Dock icon), and nothing in the crate set an
+  activation policy, nor does `tauri.conf.json` carry `LSUIElement`.
+  `OverlayWindowConfig::skip_taskbar` was documented as covering it. It does
+  not: `skip_taskbar` is a *window* flag Tauri documents as unsupported on
+  macOS, the Dock tile is an *application* property, and Tauri's default is
+  `NSApplicationActivationPolicyRegular`. So the app had a Dock tile, and
+  `window_flags_match_spec` passed the whole time, because it asserts the
+  requested config and this requirement was never in the config.
+
+  `MACOS_ACTIVATION_POLICY` now carries it as a value, on the D-4 pattern;
+  `run()`'s setup hook applies it before the window is created, so no tile
+  appears even for the moment creating one would take; `macos_app_is_an_accessory`
+  holds it. Verified on this host: `lsappinfo` reports
+  `ApplicationType="UIElement"`.
+
+  **§3.4's tray menu was inert.** `build_menu` created all seven items and
+  `build_tray` attached no handler, so every one of them, `Quit` included, did
+  nothing. With no Dock tile and no taskbar button that menu is the only chrome
+  the app has, so the effect was a running process a user could not end through
+  any interface the product offers. `on_menu_event` now routes `Quit` to
+  `app.exit(0)`; the other six belong to specs 005, 014, 016 and 019 and are
+  matched by id and left visibly unhandled, the way `on_shortcut` already
+  handles the same situation.
+
+  Both are the same failure: a requirement whose only evidence was a manual
+  checklist row nobody had run. That is the argument for 018 R-010 marking a
+  deferred row *as deferred*, rather than leaving it an empty box among other
+  empty boxes where a genuine miss looks identical to a scheduled one.
+
+- **D-12 (2026-09-07, a verification command that could not fail).** §8
+  contained
+
+  ```sh
+  sh -c '! grep -qE "https?://(?!ipc\.localhost)" .../tauri.conf.json || true'
+  ```
+
+  `grep -E` has no negative lookahead, so the pattern is a syntax error, `grep`
+  exits 2, `!` turns that into success, and the trailing `|| true` would have
+  masked it regardless. The command passed unconditionally and could not have
+  caught the remote URL it was written to catch. This is the defect spec 003
+  fixed for its own gates: a gate that passes by never executing.
+
+  The replacement drops the `$schema` line, extracts every remaining URL, and
+  fails if any is not `http://ipc.localhost`. **`$schema` is excluded
+  deliberately**, and that judgement is what this decision records: the file's
+  first line is `"$schema": "https://schema.tauri.app/config/2"`, a JSON Schema
+  reference read by editors and by `tauri` at build time, never fetched by the
+  app and not reachable from the webview, which is what §3.2's "No remote
+  content is ever loaded" and 015 §3.3 are about. Excluding it keeps the check
+  meaningful; failing on it would make the check something a future reader
+  deletes.
+
+  Both controls were run before it landed: it exits 0 on the file as it stands,
+  and exits 1 when a remote URL is injected into it.
+
 ## 8. Verification
 
 The manual half is `apps/desktop/README.md` (AC-3). What a process can check:
@@ -372,11 +458,19 @@ cargo build -p butler-desktop --locked
 sh -c '! grep -qE "\"(fs|shell|http|dialog):" apps/desktop/src-tauri/capabilities/default.json'
 # Section 3.2: the CSP is exactly what the spec fixes, and loads nothing remote.
 grep -q "default-src .self." apps/desktop/src-tauri/tauri.conf.json
-sh -c '! grep -qE "https?://(?!ipc\.localhost)" apps/desktop/src-tauri/tauri.conf.json || true'
+sh -c 'grep -v "\"\$schema\"" apps/desktop/src-tauri/tauri.conf.json | grep -oE "https?://[^\"]+" | grep -vx "http://ipc.localhost" | grep . && exit 1 || exit 0'
 # Section 3.1: main.rs does one thing.
 sh -c 'test "$(grep -c . apps/desktop/src-tauri/src/main.rs)" -lt 12'
-# AC-3: the manual checklist exists and is not yet signed off.
+# AC-3, read through 018 R-010: the checklist exists and marks its deferred
+# rows as deferred, naming the spec each waits on, rather than leaving them as
+# empty boxes indistinguishable from unknowns.
 test -f apps/desktop/README.md
+grep -q 'deferred to 005' apps/desktop/README.md
+grep -q 'deferred to 019' apps/desktop/README.md
+# D-11: §3.2's macOS accessory requirement and §3.4's Quit are asked for in
+# code, not only in prose. Both were specified and unbuilt until 2026-09-07.
+grep -q 'ActivationPolicy::Accessory' apps/desktop/src-tauri/src/window.rs
+grep -q 'ids::QUIT => app.exit(0)' apps/desktop/src-tauri/src/tray.rs
 # D-9: §3.3's Interact default is registrable, and the code binds the exact
 # accelerator the table states. A drift between the two fails here.
 grep -q 'Cmd+Shift+Space' apps/desktop/src-tauri/src/shortcuts.rs

@@ -140,6 +140,17 @@ pub fn run() {
             // first so that everything after them is observable and
             // configured; they are no-ops until those specs land.
 
+            // §3.2, FR-004: become an accessory app before any window exists,
+            // so a Dock tile never appears even for the moment it would take
+            // to create one. A failure is reported and not fatal, matching
+            // `raise_above_menu_bar`: the app still works, it is just more
+            // visible than the spec wants. Nothing here is a privacy
+            // guarantee; spec 005 owns the one that is.
+            #[cfg(target_os = "macos")]
+            if let Err(e) = handle.set_activation_policy(window::MACOS_ACTIVATION_POLICY) {
+                eprintln!("could not become an accessory app (§3.2): {e}");
+            }
+
             // 3. Create the overlay window, hidden and click-through.
             let _overlay = create_overlay_window(&handle, OverlayGeometry::default())?;
 
