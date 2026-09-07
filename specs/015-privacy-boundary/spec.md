@@ -5,7 +5,7 @@ status: approved
 kind: "constraint"
 domain: "platform"
 created: "2026-09-01"
-implementation: pending
+implementation: in-progress
 owner: "butler-ai maintainers"
 risk: critical
 platforms: "all"
@@ -15,6 +15,10 @@ depends_on:
 extends:
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/redaction.rs", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/tests/redaction.rs", nature: additive }
+  # AC-3's synthetic fixture generator. Declared here because AC-3 requires the
+  # file to exist and no spec claimed it; `require_ownership` refuses an
+  # unclaimed source file inside a discovered package.
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/tests/fixtures/redaction/gen.rs", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: module, id: "butler_core::redaction" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::redaction::redact" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::redaction::RedactedText" }, nature: additive }
@@ -174,3 +178,64 @@ there is nothing secret in them) and is written only where the user chooses.
   already running with the user's privileges sees the same screen).
 - The provider's own data handling; the user chooses the provider and the
   README links to its policy.
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-06, phase 1 partial; this spec stays `in-progress`).** The
+  redaction half of this spec is built: `redaction.rs`, `tests/redaction.rs`,
+  the fixture generator, and the `redact` / `RedactedText` / `SecretKind` /
+  `RedactionPolicy` surface. FR-001, FR-002, AC-2 and AC-3 hold and are
+  checked by §8.
+
+  **This spec cannot reach zero `W-001` in phase 1, so it does not flip to
+  `complete`.** Seven of its twelve owned units are the `constrains`
+  invariant-freeze edges, and each names a file a later phase creates:
+  `tauri.conf.json` and `capabilities/` (004, phase 2), `logging.rs` (016,
+  phase 2), `frame.rs` (006, phase 3), `recognized.rs` (007, phase 3),
+  `anthropic.rs` and `secrets.rs` (010, phase 4). `constrains` is an owning
+  edge, so the indexer counts them; AC-1 says so outright ("once they exist").
+
+  This makes spec 018's phase 1 exit criterion ("`make burndown` shows zero for
+  these four") unsatisfiable for this spec as written. That is a real
+  contradiction in the plan, not a defect here, and it is the same shape as the
+  one 009 D-1 records, where spec 019 was split out because a phase 1 spec
+  cannot own units a phase 2 crate contains. It is left for a human: the
+  options are to amend 018's phase 1 exit criterion to except a constraint
+  spec's forward edges, to split the forward `constrains` edges into a spec
+  that phases with them, or to accept that this spec is legitimately
+  `in-progress` until phase 4 completes. FR-003 (010), FR-004 (whole pipeline)
+  and FR-005 (egress proxy) likewise cannot be discharged before those phases.
+
+  **What remains, precisely:** the seven `constrains` units and FR-003 to
+  FR-005. Nothing in the redaction module is outstanding.
+
+- **D-2 (2026-09-06, a real bug the property test caught).** `match_bearer`
+  sliced `s[..7]` to compare the scheme, which panics when byte 7 falls inside
+  a multi-byte character, and counted the token's length in bytes, which can
+  return an offset that is not a character boundary. Arbitrary screen text is
+  exactly where that input comes from. Both are fixed by `str::get` and by
+  summing `char::len_utf8`. The other matchers were already safe because they
+  bound their scans to ASCII bytes, which are whole characters. Recorded
+  because it is the argument for the property tests being in §8 rather than a
+  reviewer's judgement.
+
+## 8. Verification
+
+AC-1 is deliberately not checkable yet: it asserts ownership of the seven
+constrained units "once they exist", and phases 2 to 4 create them (D-1).
+
+```verify:cli
+# FR-001 and FR-002, plus determinism, idempotence and totality.
+cargo test -p butler-core --locked redaction::
+# FR-002's compile-fail half: RedactedText has no constructor but `redact`.
+# The doc tests include a positive control, so a passing compile_fail block
+# cannot be passing because the import path is wrong.
+cargo test -p butler-core --locked --doc
+# AC-3: the fixtures are synthetic and committed.
+test -f crates/butler-core/tests/fixtures/redaction/gen.rs
+sh -c '! grep -rnE "sk-ant-api03-[A-Za-z0-9]{90,}" crates/butler-core/tests/'
+# AC-2: docs reproduce spec 015 section 3.1 in full, including Diagnostics.
+sh -c 'for c in Pixels Answer Secret Settings Diagnostics; do grep -q "^| $c |" docs/architecture.md || exit 1; done'
+# Section 3.2: redaction is pure. No clock, filesystem or network.
+sh -c '! grep -nE "std::(time|fs|net)" crates/butler-core/src/redaction.rs'
+```

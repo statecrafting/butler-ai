@@ -4,28 +4,6 @@
     "warnings": [
       {
         "code": "W-001",
-        "message": "spec '015-privacy-boundary' file unit 'crates/butler-core/src/redaction.rs' does not exist",
-        "path": "crates/butler-core/src/redaction.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' file unit 'crates/butler-core/tests/redaction.rs' does not exist",
-        "path": "crates/butler-core/tests/redaction.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' module unit 'butler_core::redaction' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' symbol unit 'butler_core::redaction::redact' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' symbol unit 'butler_core::redaction::RedactedText' did not resolve"
-      },
-      {
-        "code": "W-001",
         "message": "spec '015-privacy-boundary' file unit 'crates/butler-capture/src/frame.rs' does not exist",
         "path": "crates/butler-capture/src/frame.rs"
       },
@@ -69,6 +47,18 @@
       {
         "path": "crates/butler-core/src/lib.rs",
         "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/redaction.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-core/tests/fixtures/redaction/gen.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-core/tests/redaction.rs",
+        "source": "multiple"
       }
     ],
     "resolvedUnits": [
@@ -86,7 +76,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/redaction.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -95,7 +89,24 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/tests/fixtures/redaction/gen.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/fixtures/redaction/gen.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/tests/redaction.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -104,7 +115,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/redaction.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -113,7 +128,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/redaction.rs",
+            "span": {
+              "endLine": 135,
+              "startLine": 132
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -122,7 +145,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/redaction.rs",
+            "span": {
+              "endLine": 216,
+              "startLine": 188
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -211,5 +242,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "8273c43a853eff81fc64c75cfa8fe84c5d29c08c37a8d8388696dee74d18fa79"
+  "shardHash": "c7ceb3fb76c09d31350746127104f7a6545bc7691ccfe6eebc18371c618d78da"
 }
