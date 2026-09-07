@@ -181,6 +181,6 @@
     "summary": "The typed seam between the Rust process and the webview. `UiEvent` (Rust → UI: runtime status, answer lifecycle, paced chunks, exclusion status, prompts for credentials or permissions) and `UiCommand` (UI → Rust: arm, disarm, ask now, dismiss, set interaction, read and update settings, store a secret, run the self-test) are defined once in `butler-core::ipc` as serde types, exposed as Tauri commands and events in the desktop crate, and exported to TypeScript with `tauri-specta` into a committed, generated bindings file whose regeneration CI verifies is a no-op. The contract is versioned and additive within a major.\n",
     "title": "IPC contract: typed commands and events between the Rust runtime and the overlay, with generated bindings"
   },
-  "shardHash": "85399a5b477312731656be2d1df4f1afe9a9e7c0015726cfae1cb24a61b38c01",
+  "shardHash": "c79f433db5d764a1e0f058a66702cf34ca0f42c2f2c2ea361715ba24f5251ffb",
   "specVersion": "1.1.0"
 }

@@ -167,6 +167,7 @@ pub fn store_secret(provider: String, secret: String) -> Result<(), ErrorKind> {
 /// machinery would give each variant its own Tauri event name, which would
 /// put the variant list in the webview as a list of `listen` calls: exactly
 /// the second source of truth this spec exists to remove.
+///
 #[must_use]
 pub fn builder() -> tauri_specta::Builder<tauri::Wry> {
     tauri_specta::Builder::<tauri::Wry>::new()
@@ -219,6 +220,17 @@ mod tests {
 
     /// FR-002: the exporter's output is byte-identical across runs.
     ///
+    /// Not run on Windows, and the reason is a linker one rather than a
+    /// behavioural one: calling `builder()` makes `tauri::Wry` *live* in this
+    /// test binary, which imports `webview2-com`'s entry points.
+    /// `tauri-build` puts `WebView2Loader.dll` beside `target/debug/`, and a
+    /// test binary runs from `target/debug/deps/`, so the process fails to
+    /// start with `STATUS_ENTRYPOINT_NOT_FOUND` before any test runs. The
+    /// property is platform-independent and macOS checks it; the genuinely
+    /// cross-platform half of FR-002 is CI's, which runs the exporter on both
+    /// platforms and fails on a non-empty `git diff`. See spec 011 D-8.
+    #[cfg(not(windows))]
+    ///
     /// This is the half that can fail on one machine. The other half, "and
     /// across platforms", is CI's: `jobs.rust` re-runs the exporter on macOS
     /// and Windows and fails on a non-empty `git diff`, so a platform-varying
@@ -245,6 +257,9 @@ mod tests {
     /// Tauri's own "command not found", which is not in the contract. This
     /// counts what the builder actually collected against the eight variants
     /// `UiCommand` currently has.
+    ///
+    /// Not run on Windows, for the linker reason above (spec 011 D-8).
+    #[cfg(not(windows))]
     #[test]
     fn every_command_variant_is_registered() {
         let exported = super::builder()

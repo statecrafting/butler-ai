@@ -312,6 +312,36 @@ retype bumps major and requires amending this spec (the `constrains` edge).
   version is now carried alongside the path. Neither crate is published, so
   that number is read by nothing else.
 
+- **D-8 (2026-09-07, why two tests do not run on Windows).** CI's
+  `rust (windows-latest)` job failed with `STATUS_ENTRYPOINT_NOT_FOUND`
+  (`0xc0000139`) on `butler-desktop`'s library test binary, before a single
+  test ran. Nothing native was added by this spec: the lockfile delta is eight
+  pure-Rust crates and no change to any `windows-*` or `webview2-*` version.
+
+  The cause is **liveness, not dependencies**. Before this spec, nothing in the
+  library test binary called `run()`, so the linker dropped it and never
+  emitted Wry's `webview2-com` imports. The two new tests call `builder()`,
+  whose type is `tauri_specta::Builder<tauri::Wry>`, which makes Wry live and
+  those imports real. `tauri-build` puts `WebView2Loader.dll` beside
+  `target/debug/`, and a test binary runs from `target/debug/deps/`, so the
+  loader cannot resolve them.
+
+  This is why the *application* is unaffected, and why CI's exporter step is
+  too: `cargo run --bin export-bindings` produces an executable in
+  `target/debug/`, next to the DLL. Only test binaries sit one directory down.
+
+  Making `builder` generic over the runtime, so tests could use
+  `tauri::test::MockRuntime`, does not compile: `collect_commands!` expands to
+  an item, and an item cannot capture an outer function's type parameter
+  (E0401). So the two tests are `#[cfg(not(windows))]`, with the reason at the
+  call site.
+
+  **Nothing is lost.** Both properties are platform-independent, and macOS
+  checks them every run. FR-002's genuinely cross-platform half was never
+  these tests anyway: it is §3.3's CI step, which runs the exporter on macOS
+  **and** Windows and fails on a non-empty `git diff`, so a render that varied
+  by platform would show up there as a dirty tree.
+
 ## 8. Verification
 
 ```verify:cli
