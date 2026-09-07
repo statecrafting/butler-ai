@@ -84,7 +84,7 @@
       "platforms": "all"
     },
     "id": "008-change-detection",
-    "implementation": "pending",
+    "implementation": "in-progress",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "risk": "medium",
@@ -106,6 +106,6 @@
     "summary": "The `delta` module of `butler-core`: a `ChangeDetector` trait and the v1 `LevenshteinDetector`, which compares the normalized text of the current frame with the text last sent to inference and returns `Unchanged` or `Changed` with a similarity ratio. A normalized edit-distance ratio, a configurable threshold, a stability window (a change must persist across consecutive frames so mid-scroll and mid-render frames are not sent), and an exclusion set (the overlay's own last answer, used only when exclusion is not verified) make the outline's \"only call the LLM when the Levenshtein distance exceeds a threshold\" precise, cheap and testable. Pure code: no OS, no clock, no I/O.\n",
     "title": "Change detection: fire inference only when the screen's text has meaningfully changed"
   },
-  "shardHash": "248758a2a66af282b8b6d14abb92f524e48b8f25a9282a2d50c26431d0787bd6",
+  "shardHash": "fa0332b1e5a52b1e824ee7789de93443fac4d2534045ddbdaaf2a9180108fdb0",
   "specVersion": "1.1.0"
 }
