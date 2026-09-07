@@ -76,7 +76,9 @@ spec-scoped `constrains`).
   else, except regenerated `.derived/` shards and generated bindings.
 - **R-004.** Flipping a spec to `complete` requires `make burndown` to report
   zero unresolved units for it and the spec's ACs to be checked off in the PR
-  body.
+  body. R-009 says what "zero unresolved units" means for a constraint spec,
+  and R-010 says what "checked off" means for an AC whose evidence a later
+  phase delivers.
 - **R-005.** A design change discovered during implementation is a spec
   amendment first (the refusal rule): the agent stops, proposes the amendment,
   and continues only after it is approved.
@@ -107,6 +109,24 @@ spec-scoped `constrains`).
   `complete` in the phase of its last one. Such a spec is "delivered" for the
   purposes of a phase exit when its own units are at zero and its assertions
   are written, which is what the phase table's exit column means for it.
+
+- **R-010.** A spec's **manual** acceptance criteria are read against what its
+  own phase can observe. A checklist row that depends on a capability a later
+  phase delivers is **deferred**: it names the spec it waits on, is marked as
+  deferred in the checklist itself, and is signed in the phase that delivers
+  that capability. R-004's "the spec's ACs are checked off in the PR body" is
+  read against the rows the spec's own phase can observe.
+
+  A deferred row is not an unchecked box, and the distinction MUST be visible
+  in the checklist rather than inferred from it: an unchecked box is an
+  unknown, a deferred row is a scheduled one. The spec that unblocks a
+  deferred row carries its sign-off as part of that spec's own acceptance, so
+  the debt is scheduled rather than forgotten.
+
+  This is R-009's treatment applied to the manual half of acceptance, for the
+  same reason: an exit criterion naming something only a later phase creates
+  is unsatisfiable, and no amount of testing discipline makes it otherwise.
+  See D-5.
 
 ## 4. Out of scope
 
@@ -139,7 +159,7 @@ spec-scoped `constrains`).
   to `-p butler-core` would enforce it directly; that is a 003 amendment, and
   it is deliberately not folded into this one.
 
-- **D-2 (2026-09-06, amendment, approved by the maintainer in session).**
+- **D-4 (2026-09-06, amendment, approved by the maintainer in session).**
   Phase 1's exit criterion asked for `make burndown` at zero for all four of
   its specs. Spec 015 cannot satisfy that in phase 1 and never could: seven of
   its twelve owned units are forward `constrains` edges naming files that
@@ -170,3 +190,47 @@ spec-scoped `constrains`).
   the coupling gate reads at merge. What changed is that a spec no longer waits
   for a constraint on itself to be satisfied before it may create the thing
   being constrained.
+
+- **D-5 (2026-09-07, R-010, approved by the maintainer in session).** Spec 004
+  AC-3 requires a manual checklist covering FR-002 to FR-005, signed on both
+  platforms, before the spec flips to `complete`. Most of that checklist
+  cannot be observed in phase 2 on either platform:
+
+  | Checklist row | Cannot be observed until |
+  |---|---|
+  | FR-001, window flags as realized by the OS | 005 |
+  | FR-002, click-through | 005 |
+  | FR-003's Interact row, the overlay accepting clicks | 005 |
+  | FR-004's Windows half, no taskbar button | 005 |
+  | FR-005 and §3.5, the permission prompt on arming | 019 |
+
+  Spec 004 §3.2 forbids showing the overlay before capture exclusion has been
+  applied. That is spec 005, in phase 3. Arming, which is what would trigger
+  the permission flow, is spec 019's runtime. Phase 3 requires phase 2
+  complete, which requires 004 complete, which requires those rows signed.
+  The plan had deadlocked itself again, in the same shape as D-4 and for the
+  same underlying reason: an acceptance criterion that names a capability a
+  later phase delivers.
+
+  Measured rather than reasoned about: the overlay is created `visible: false`,
+  and no code path in `butler-desktop` calls `show()`, so there is no sequence
+  of actions a tester could perform that would make those rows observable. The
+  rows that *are* observable in phase 2 (shortcut registration, the absence of
+  a Dock tile, the tray menu) were verified on macOS while writing this.
+
+  Two alternatives were rejected. Narrowing 004's AC-3 in place would leave
+  the next spec to rediscover the same problem with no rule to lean on; 005
+  and 017 both have manual acceptance and would have hit it. Holding 004
+  `in-progress` until phase 3 and reworking phase 2's dependency edges would
+  leave one spec open across two phases and drain R-002 of its meaning. R-010
+  generalizes instead, exactly as R-009 did for the machine half, and leaves
+  every acceptance criterion's substance intact: nothing is dropped, the
+  deferred rows are scheduled onto the spec that makes them observable.
+
+  **Not resolved here.** §2's phase 2 exit criterion has the same defect one
+  level up: it asks that the "app launches on both platforms to a transparent,
+  click-through overlay showing `Disarmed`", which is the same visible overlay
+  §3.2 forbids until 005 has applied exclusion. R-010 governs a *spec's*
+  acceptance criteria, not this plan's own exit column, so it does not reach
+  that row. It does not bind until phase 2 ends, which is after 019, and it is
+  left for the maintainer rather than folded into this amendment.
