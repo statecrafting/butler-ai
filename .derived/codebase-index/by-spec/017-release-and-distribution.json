@@ -43,8 +43,7 @@
     "dependsOn": [
       "003-governance-ci",
       "004-desktop-shell",
-      "013-output-pacing",
-      "015-privacy-boundary"
+      "013-output-pacing"
     ],
     "implementingPaths": [
       {
@@ -151,5 +150,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "5bf47946a7309af32f7f27ffaaa548ad85d6d740e5764a617f14278bb7172efd"
+  "shardHash": "bf9bca23e046b0592bb2ebd58aa4f454cf710b50a2ef6c268e44ec89233f74b7"
 }

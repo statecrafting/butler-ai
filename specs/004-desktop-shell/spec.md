@@ -11,15 +11,20 @@ risk: high
 platforms: ["windows", "macos"]
 phase: 2
 depends_on:
-  # Phase 2 entry (018 R-002, R-007): the whole of phase 1 must be complete.
+  # Phase 2 entry (018 R-002, R-007): phase 1's feature specs must be complete.
   # 009 is also a build dependency, not only a gate: this crate joins the
   # workspace by adding `apps/desktop/src-tauri` to `members`, and cargo
   # refuses that list while the `crates/*` glob beside it still matches
   # nothing (001 D-1). `butler-core` is what populates it.
+  #
+  # 015 is deliberately absent (018 R-008, D-2). It constrains this spec's
+  # `tauri.conf.json` and `capabilities/`, so depending on it inverts the
+  # edge and deadlocks: 015 cannot resolve those units until this spec
+  # creates them. Its authority here is the `constrains` edge and the
+  # coupling gate, not build order.
   - "001-workspace-layout"
   - "008-change-detection"
   - "009-pipeline-state-machine"
-  - "015-privacy-boundary"
 establishes:
   - { kind: crate, id: "butler-desktop" }
   - "apps/desktop/src-tauri/Cargo.toml"

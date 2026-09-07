@@ -92,7 +92,6 @@
       "005-capture-exclusion",
       "007-text-recognition",
       "009-pipeline-state-machine",
-      "015-privacy-boundary",
       "014-user-configuration"
     ],
     "implementingPaths": [
@@ -282,5 +281,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "654fdc41fe3a1f0ee1470a9a29e47845f238cb376fe11bd8432315362cea89c5"
+  "shardHash": "ffd5f9139d78ed261c0f807f941acc3beb9f84f898c5dd2639391a72745cfd5a"
 }

@@ -13,10 +13,12 @@ phase: 5
 depends_on:
   # Phase 5 entry (018 R-002, R-007). 013 is the leaf of phase 4 and
   # transitively requires 010, 011 and 012.
+  #
+  # 015 is deliberately absent (018 R-008, D-2): it constrains
+  # `tauri.conf.json`, which this spec also claims.
   - "003-governance-ci"
   - "004-desktop-shell"
   - "013-output-pacing"
-  - "015-privacy-boundary"
 establishes:
   - { kind: section, file: ".github/workflows/release.yml", anchor: "on" }
   - { kind: section, file: ".github/workflows/release.yml", anchor: "permissions" }

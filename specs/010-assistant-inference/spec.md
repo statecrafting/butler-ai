@@ -13,10 +13,14 @@ phase: 4
 depends_on:
   # Phase 4 entry (018 R-002, R-007). 005 and 007 are the leaves of phase 3
   # and transitively require 004 and 006.
+  #
+  # 015 is deliberately absent (018 R-008, D-2): it constrains this spec's
+  # `anthropic.rs` and `secrets.rs`. The compile-time dependency on
+  # `RedactedText` is real but is enforced by the compiler, not the plan;
+  # 015's redaction module landed in phase 1 and is not what this waits on.
   - "005-capture-exclusion"
   - "007-text-recognition"
   - "009-pipeline-state-machine"
-  - "015-privacy-boundary"
   - "014-user-configuration"
 establishes:
   - { kind: crate, id: "butler-llm" }

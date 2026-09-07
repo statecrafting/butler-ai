@@ -4,8 +4,7 @@
     "dependsOn": [
       "003-governance-ci",
       "004-desktop-shell",
-      "013-output-pacing",
-      "015-privacy-boundary"
+      "013-output-pacing"
     ],
     "domain": "distribution",
     "establishes": [
@@ -97,6 +96,6 @@
     "summary": "How a tagged commit becomes something a user can install and trust: a release workflow that builds on the two platform runners, code-signs (Authenticode on Windows; Developer ID plus notarization on macOS), emits SHA-256 sidecars and GitHub build-provenance attestations, and publishes a GitHub Release; an updater (`tauri-plugin-updater`) that is off by default and, when the user enables it, checks a single pinned endpoint over HTTPS with signature verification, as an amendment to the privacy boundary records. Version lives in three files kept in lockstep by a script. Deferred until phase 5; specified now so the shell's bundle config is authored with it in mind.\n",
     "title": "Release and distribution: signed, notarized, attested desktop builds with an opt-in updater"
   },
-  "shardHash": "776c510e0166026bc57ca2c459a2b7743d72d27df939f1d603d502b2d32e3cf0",
+  "shardHash": "e455d71da429749b019db076b04c578427919032d365c3d0b6b2ce60bc02ea21",
   "specVersion": "1.1.0"
 }

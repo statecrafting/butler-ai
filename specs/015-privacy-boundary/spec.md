@@ -219,6 +219,26 @@ there is nothing secret in them) and is written only where the user chooses.
   because it is the argument for the property tests being in §8 rather than a
   reviewer's judgement.
 
+- **D-3 (2026-09-06, D-1 resolved).** The maintainer chose to amend spec 018.
+  It gained **R-009**, which says a constraint spec whose `constrains` edges
+  name units later phases create is `in-progress` for the duration by design
+  and gates nothing, and reads R-004's "zero unresolved units" against its own
+  `establishes`/`extends` units rather than its forward edges. Phase 1's exit
+  criterion now matches.
+
+  Amending the prose alone would have changed nothing, because `registry plan`
+  schedules on `depends_on`, and four specs named this one as a phase gate:
+  004, 010, 016 and 017. That is exactly the set that owns a unit this spec
+  constrains, so each pair was a cycle. 018 **R-008** now forbids the shape and
+  those four edges are gone; 004 became schedulable immediately
+  (`ready: 1, blocked: 12` to `ready: 2, blocked: 11`).
+
+  This spec therefore stays `in-progress` until phase 4, correctly and by rule
+  rather than as an unresolved question. Its authority over the seven units is
+  undiminished: it is carried by the `constrains` edges, which point the right
+  way and are what the coupling gate reads. What remains here is unchanged
+  from D-1: the seven forward units and FR-003 to FR-005.
+
 ## 8. Verification
 
 AC-1 is deliberately not checkable yet: it asserts ownership of the seven
