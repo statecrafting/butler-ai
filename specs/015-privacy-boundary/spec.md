@@ -5,7 +5,7 @@ status: approved
 kind: "constraint"
 domain: "platform"
 created: "2026-09-01"
-implementation: pending
+implementation: in-progress
 owner: "butler-ai maintainers"
 risk: critical
 platforms: "all"
@@ -15,6 +15,10 @@ depends_on:
 extends:
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/redaction.rs", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/tests/redaction.rs", nature: additive }
+  # AC-3's synthetic fixture generator. Declared here because AC-3 requires the
+  # file to exist and no spec claimed it; `require_ownership` refuses an
+  # unclaimed source file inside a discovered package.
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/tests/fixtures/redaction/gen.rs", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: module, id: "butler_core::redaction" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::redaction::redact" }, nature: additive }
   - { spec: "009-pipeline-state-machine", unit: { kind: symbol, id: "butler_core::redaction::RedactedText" }, nature: additive }

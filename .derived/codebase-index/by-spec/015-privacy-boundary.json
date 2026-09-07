@@ -14,6 +14,11 @@
       },
       {
         "code": "W-001",
+        "message": "spec '015-privacy-boundary' file unit 'crates/butler-core/tests/fixtures/redaction/gen.rs' does not exist",
+        "path": "crates/butler-core/tests/fixtures/redaction/gen.rs"
+      },
+      {
+        "code": "W-001",
         "message": "spec '015-privacy-boundary' module unit 'butler_core::redaction' did not resolve"
       },
       {
@@ -92,6 +97,15 @@
         "unit": {
           "kind": "file",
           "path": "crates/butler-core/src/redaction.rs"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/fixtures/redaction/gen.rs"
         }
       },
       {
@@ -211,5 +225,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "8273c43a853eff81fc64c75cfa8fe84c5d29c08c37a8d8388696dee74d18fa79"
+  "shardHash": "8299093ababa386bc27ab51d979815234476bf2e8c6c8e8526b51dfe816769d5"
 }
