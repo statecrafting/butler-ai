@@ -83,13 +83,14 @@
       "3.3 Repository hygiene",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions"
     ],
     "specPath": "specs/003-governance-ci/spec.md",
     "status": "approved",
     "summary": "Makes the governance model enforceable: a `spec-spine` workflow that runs the full gate chain (`compile --check`, `index check`, `lint --fail-on-warn`, `index coverage --fail-on-untraced`, `couple` against the PR's frozen base and head SHAs with the PR-body waiver) on every pull request; a `ci` workflow for the language gates that activates itself when the workspace lands; a single `gate` status check for branch protection; CODEOWNERS for the load-bearing paths; LF normalization and the opt-in merge driver for the committed shard trees; Dependabot for actions, cargo and npm. Owns the security-relevant workflow keys (`on`, `permissions`, the jobs) as section units so a token-scope or trigger change forces this spec's review.\n",
     "title": "Governance CI: the gate chain on every PR, code ownership, and derived-artifact merge hygiene"
   },
-  "shardHash": "357088b8c961fed64aa63f930f463e408084a2c2f91c0afff3169dae29c6017d",
+  "shardHash": "f756ac751580642bd26c6429339cc1d478bc321243d821f9e405e710981b3c8d",
   "specVersion": "1.1.0"
 }

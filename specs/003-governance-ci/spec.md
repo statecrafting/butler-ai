@@ -149,3 +149,18 @@ pre-commit staleness check).
 - Release workflows, signing, notarization, attestations (spec 017).
 - AI PR review automation (a later tooling spec; it needs write permissions
   and a secret, which this workflow deliberately does not have).
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-06).** §3.2 requires `cargo deny check` on a matrix of
+  `windows-latest` and `macos-latest`. `jobs.rust` originally spelled that step
+  as `EmbarkStudios/cargo-deny-action@v2`, which declares `runs: using:
+  "docker"`; a Docker container action runs only on Linux runners, so on both
+  matrix legs the step failed with `Container action is only supported on
+  Linux`. The failure was invisible until the first crate landed, because every
+  Rust step is guarded by spec 001 §3.5's populated-workspace predicate, so it
+  surfaced as a phase 1 blocker rather than as a phase 0 defect. The step is now
+  the command this section always named, with the binary installed by
+  `taiki-e/install-action@v2`. The matrix is unchanged and no requirement moved:
+  this brings `jobs.rust` to what §3.2 already specified. A container action is
+  not usable anywhere in `jobs.rust` while the matrix excludes Linux.

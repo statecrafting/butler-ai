@@ -59,9 +59,17 @@ jobs:
       - name: Format
         if: steps.ws.outputs.present == 'true'
         run: cargo fmt --all --check
+      # cargo-deny runs as a command, not as EmbarkStudios/cargo-deny-action,
+      # which is a Docker container action and so is Linux-only; this matrix is
+      # Windows and macOS (spec 003 D-1).
+      - name: Install cargo-deny
+        if: steps.ws.outputs.present == 'true'
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
       - name: cargo-deny
         if: steps.ws.outputs.present == 'true'
-        uses: EmbarkStudios/cargo-deny-action@v2
+        run: cargo deny check
       # Spec 011: the committed TypeScript bindings must be what the Rust
       # contract generates.
       - name: IPC bindings are fresh
