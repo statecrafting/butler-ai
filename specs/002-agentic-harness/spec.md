@@ -214,9 +214,12 @@ default is the binary on `PATH`.
   favour of the kit's `/spec`, which derives the ordinal from
   `spec-spine registry list --ids-only`, reads the taxonomy from
   `spec-spine.toml`, and leaves the phase to spec 018 (the `make spec-new`
-  scaffold target stays for a hand-run). The three floor rules are the
-  kit's spec 047 text, which adds the typed-read rationale that makes
-  `make burndown`'s grep over `index render` output legitimate. The kit
+  scaffold target stays for a hand-run). The three floor rules stay
+  spec 000's text: the kit's spec 047 wording (the typed-read rationale
+  that makes `make burndown`'s grep over `index render` output explicitly
+  legitimate, the two legitimate mid-build edits, the `extends` pointer,
+  "a waiver is a human instrument") refines guardrails 3 and 4 and is an
+  amendment for a human to file against spec 000, not an edit here. The kit
   moved every project fact out of the skills into `AGENTS.md`, which gains
   the "Working the backlog" section the skills sequence and an
   orchestrator extracts verbatim. `scripts/verify-spec.sh` is the kit's
