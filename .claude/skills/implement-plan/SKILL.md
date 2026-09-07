@@ -1,179 +1,119 @@
 ---
 name: implement-plan
-description: Execute a plan file step-by-step with progress tracking and phase checkpoints
+description: "Execute a plan file step by step with progress tracking, phase checkpoints, and the governed gate after every step that touches spec-owned paths. For one whole spec, prefer /build."
 allowed-tools: Bash, Read, Edit, Write, Glob, Grep, Agent
 argument-hint: "<path-to-plan-file>"
 ---
 
 # Implement Plan
 
-Execute a plan document while maintaining progress tracking and checkpoint discipline.
+Execute a plan document (the `architect` agent's output, saved to a file)
+while keeping progress visible and the tree green. For implementing one
+spec end to end, prefer `/build <spec-id>`: it is the protocol. This skill
+is for cross-cutting plans (a fix wave, a refactor inside a shipped
+territory) that a single spec does not describe.
 
 ## Input
 
-Plan file path: $ARGUMENTS
+Plan file path: `$ARGUMENTS`. If absent, look for `*.plan.md` in the
+session scratchpad and under any plans directory the project keeps, list
+candidates, and ask.
 
-If no path is provided, search for plan files:
-1. Look for `*.plan.md` or files in a `plans/` directory.
-2. List candidates and ask the user to select one.
+The plan's own `status` field (`draft`, `in-development`, `in-review`,
+`completed`, `blocked`) is a planning vocabulary for the plan file only.
+It is not the spec `status` or `implementation` field; never write it
+into a `spec.md`.
 
-## Phase 0: Parse Plan
+## Phase 0: parse
 
-1. **Read the plan file** at the given path.
-2. **Extract structure**:
-   - YAML frontmatter (if present): status, dates, metadata
-   - Goals / objectives section
-   - Acceptance criteria (these become trackable tasks)
-   - Implementation details / steps
-   - Any existing progress checkboxes
-3. **Validate plan readiness**:
-   - If no clear acceptance criteria or implementation steps exist, stop and ask for clarification.
-   - If status is `completed`, confirm with user before re-implementing.
-   - If status is `blocked`, ask what needs unblocking.
+1. Read the plan in full.
+2. Extract: frontmatter (status, dates), goals, acceptance criteria,
+   implementation steps, existing checkboxes, and the **owning spec** of
+   every path the plan touches (`spec-spine registry show <id> --json`,
+   `spec-spine index coverage` for the unclaimed ones).
+3. Validate readiness: no clear acceptance criteria or steps means stop
+   and ask; `completed` means confirm before redoing; `blocked` means ask
+   what unblocks it.
+4. If any step touches a shipped spec's territory in a way its behavior
+   section does not describe, stop: that needs a spec amendment first
+   (`.claude/rules/adversarial-prompt-refusal.md`).
 
-## Phase 1: Generate Task List and Initialize
+## Phase 1: task list and checkpoint
 
-### Build the checklist
+Build one checkbox per acceptance criterion and per concrete step. Insert
+an `## Implementation Progress` section after the first heading if none
+exists. Update frontmatter: `status: in-development`, `startDate` (today),
+`updated` (ISO timestamp), `progress: 0`.
 
-Extract discrete tasks from:
-- Acceptance criteria (each criterion = one checkbox)
-- Implementation steps (each concrete step = one checkbox)
-- Any sub-tasks described in the plan body
+CHECKPOINT: present the checklist, the count, the owning specs involved,
+and an estimated complexity. Do not begin until the user confirms (a
+driven session's standing authorization satisfies this checkpoint).
 
-### Insert progress section
+## Phase 2: implementation
 
-If the plan does not already have an "Implementation Progress" section, insert one after the first `#` heading:
+Per task:
 
-```markdown
-## Implementation Progress
+1. Announce the task.
+2. Implement it, on a feature branch, never on the default branch.
+3. Verify: the narrowest test target the stack offers, then the gate as
+   `AGENTS.md` lists it whenever the task touched a spec-owned path, a
+   `spec.md`, a manifest, or any hashed input (`spec-spine.toml [index]
+   extra_hashed_inputs`; typically the harness, design docs, workflows,
+   standards).
+4. Update the plan file: check the box, recompute `progress` (checked over
+   total, rounded), update `updated`.
+5. Next task.
 
-- [ ] Task from acceptance criteria 1
-- [ ] Task from acceptance criteria 2
-- [ ] Implementation step A
-- [ ] Implementation step B
-```
+Rules: read the entire plan before starting; keep the plan in sync after
+every task, not in batches; never commit unless asked (`/commit` when
+asked); never disable or skip a failing test; never regenerate a
+never-touch artefact the path-scoped rules name; claim every new source
+file in the spec whose territory it joins (the ownership ratchet,
+`C-002`), or declare the `extends` edge when the territory is another
+spec's; preserve the plan's structure.
 
-### Update frontmatter
+Mid-implementation checkpoint at 50 percent: report done, issues,
+deviations, remaining. Wait for confirmation.
 
-Update the plan's YAML frontmatter:
-- Set `status` to `in-development` (from `draft`, `ready-for-development`, or similar)
-- Set `startDate` to today's date if not already set
-- Set `updated` to current ISO timestamp
-- Set `progress` to `0`
+## Phase 3: completion
 
-### CHECKPOINT: Present the task list to the user and wait for approval before proceeding.
-
-Show:
-- Total number of tasks extracted
-- The full checklist
-- Estimated complexity (low / medium / high based on task count and plan detail)
-
-**Do not begin implementation until the user confirms.**
-
-## Phase 2: Implementation
-
-Work through each task systematically:
-
-### Per-task loop
-
-1. **Announce** which task you are starting.
-2. **Implement** the task: write code, create files, modify configs as needed.
-3. **Verify** the task:
-   - Run relevant build commands, type checks, or tests as applicable (`make build`, `make test`).
-   - Never disable or skip failing tests; fix them.
-4. **Update the plan file**:
-   - Check off the completed checkbox: `- [x] Task description`
-   - Update `progress` in frontmatter: `(completed / total) * 100`, rounded to nearest integer
-   - Update `updated` timestamp
-5. **Move to next task.**
-
-### Implementation rules
-
-- **Read the entire plan** before starting. Understand the full scope so early decisions support later tasks.
-- **Keep the plan file in sync** after every completed task, not in batches.
-- **Do not commit automatically.** Only commit if the user explicitly requests it.
-- **Never skip tests.** If tests fail, fix them.
-- **Preserve plan structure.** Do not reorganize or rewrite existing plan sections. Only add the progress section and update frontmatter/checkboxes.
-- **Run quality gates** where applicable (build, type-check, lint) to catch errors early.
-- **Run the spec-spine gate chain** (`spec-spine compile`, `spec-spine index check`, `spec-spine lint --fail-on-warn`) after any change that touches spec-owned paths or `.derived/` regeneration.
-
-### Mid-implementation checkpoint
-
-At the halfway point (50% progress), pause and report:
-- Tasks completed so far
-- Any issues encountered
-- Any deviations from the plan
-- Remaining tasks
-
-**Wait for user confirmation before continuing.**
-
-## Phase 3: Completion
-
-When all tasks are checked off:
-
-1. **Update frontmatter**:
-   - Set `status` to `in-review`
-   - Set `progress` to `100`
-   - Update `updated` timestamp
-
-2. **Run final verification**: execute all relevant quality checks (tests, lints, type checks, builds) and report any failures.
-
-3. **Deliver summary**:
+Set `status: in-review`, `progress: 100`, `updated`. Run the full
+composite. Deliver:
 
 ```
 ## Implementation Complete
-
-**Plan**: [plan title]
-**Tasks completed**: X / X
+**Plan**: <title>
+**Tasks**: X / X
 **Status**: in-review
-**Duration**: [start to now]
-
 ### What was done
-- [Bullet summary of major changes]
-
-### Files modified
-- [List of key files created or changed]
-
-### Verification results
-- Tests: [pass/fail count]
-- Build: [pass/fail]
-- Spec-spine gate: [compile ok | lint ok | index ok | couple ok]
-
+### Files modified (with owning spec)
+### Verification
+- governance gate: ok | FAIL at <step>
+- stack gate: ok | FAIL at <command>
 ### Known issues or follow-ups
-- [Any items that need attention]
 ```
 
-## Status State Machine
+## Status state machine
 
-Valid status transitions:
+`draft -> in-development -> in-review -> completed`, with `blocked`
+reachable from `in-development` and returning to it. `completed` is set by
+the user, never by this skill.
 
-```
-draft --> in-development --> in-review --> completed
-                ^                |
-                |                v
-              blocked <------+
-```
-
-- `draft` or `ready-for-development`: initial states, transition to `in-development` when work begins.
-- `in-development`: active implementation in progress.
-- `blocked`: encountered a blocker; document the issue in the plan and notify the user.
-- `in-review`: all tasks complete, awaiting review.
-- `completed`: review passed (set by user, not by this command).
-
-## Error Handling
+## Error handling
 
 | Situation | Action |
-|-----------|--------|
-| Plan file not found | Search for candidates, ask user for correct path |
-| No frontmatter | Warn that this may not be a structured plan; offer to add frontmatter |
-| Already completed | Confirm with user before re-implementing |
-| Blocked status | Ask user to resolve blocker before proceeding |
-| Test/build failure during task | Fix the issue, do not skip. If unfixable, mark task as blocked and continue with others |
-| Ambiguous task | Ask user for clarification before implementing |
-| Spec coupling failure | Surface the drift, do not silently patch the spec to match new code |
+|---|---|
+| Plan not found | search, list candidates, ask |
+| No frontmatter | warn; offer to add it |
+| Already completed | confirm before redoing |
+| Blocked | ask what unblocks it |
+| Test or build failure | fix; if unfixable, mark the task blocked and continue with independent tasks |
+| Ambiguous task | ask |
+| Coupling failure | surface the drift; never patch a spec you are not implementing to match the code |
+| Never-touch artefact would change | stop; a human decides |
 
-## Progress Calculation
+## Project layer
 
-- Count ONLY checkboxes in the "Implementation Progress" section.
-- `progress = round((checked / total) * 100)`
-- Update after every task completion, not in batches.
+Read from `AGENTS.md`: the gate command list and the narrowest test
+targets. Read from `.claude/rules/`: the never-touch artefacts. Nothing
+here is edited per project.

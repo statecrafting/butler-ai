@@ -41,12 +41,7 @@
       "013-output-pacing",
       "015-privacy-boundary"
     ],
-    "implementingPaths": [
-      {
-        "path": "docs/threat-model.md",
-        "source": "spec-edge"
-      }
-    ],
+    "implementingPaths": [],
     "resolvedUnits": [
       {
         "locations": [],
@@ -124,5 +119,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "7c710a09ad5e009b7fdcc046097b96ec72eee1ad9d6806d359660103bfbfe34c"
+  "shardHash": "58fe909124a7577ad2220aa75c5b6b81f274ed5746ae48678c92e96b65ca1262"
 }

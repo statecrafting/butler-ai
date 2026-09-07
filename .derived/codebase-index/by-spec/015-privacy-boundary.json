@@ -65,12 +65,7 @@
     "dependsOn": [
       "009-pipeline-state-machine"
     ],
-    "implementingPaths": [
-      {
-        "path": "docs/threat-model.md",
-        "source": "spec-edge"
-      }
-    ],
+    "implementingPaths": [],
     "resolvedUnits": [
       {
         "locations": [],
@@ -198,5 +193,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "e89e9dbddae30e60f4987acb10fe89a253c829dc6b8cb1521b88c176c9016e98"
+  "shardHash": "9e9471c6633f031c48a3ae980117825cfe7554e2cc6fe5a394f9491230ae386c"
 }

@@ -18,12 +18,7 @@
       "009-pipeline-state-machine",
       "004-desktop-shell"
     ],
-    "implementingPaths": [
-      {
-        "path": "docs/architecture.md",
-        "source": "spec-edge"
-      }
-    ],
+    "implementingPaths": [],
     "resolvedUnits": [
       {
         "locations": [],
@@ -61,5 +56,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "8854ca854bab701dbd870f8ec4284bfc6bd05bb0d726f7e1948cb8a1fac948a0"
+  "shardHash": "75fa6cf0e96a0ec7523734795ed83ddb32748228cc7cde6f6366bb66295f5bc6"
 }
