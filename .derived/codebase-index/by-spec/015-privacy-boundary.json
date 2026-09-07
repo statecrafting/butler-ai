@@ -69,10 +69,6 @@
       {
         "path": "crates/butler-core/src/lib.rs",
         "source": "spec-edge"
-      },
-      {
-        "path": "docs/threat-model.md",
-        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
@@ -215,5 +211,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "7fb269b9cfad05ae82385ce607ae4138b27ab7ec2859d8b377a74cd620681791"
+  "shardHash": "8273c43a853eff81fc64c75cfa8fe84c5d29c08c37a8d8388696dee74d18fa79"
 }

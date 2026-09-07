@@ -27,10 +27,6 @@
       {
         "path": "crates/butler-core/tests/machine.rs",
         "source": "multiple"
-      },
-      {
-        "path": "docs/architecture.md",
-        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
@@ -211,5 +207,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "eb46bb64ad4b51875df006148fde5974872e5314833ff416d5686ab93e0f5470"
+  "shardHash": "d1bc87809012919739c1f74be818b9d3e2876cc25bf0569bafe845c24e5d4c5b"
 }

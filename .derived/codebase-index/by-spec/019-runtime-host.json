@@ -32,10 +32,6 @@
       {
         "path": "Cargo.toml",
         "source": "spec-edge"
-      },
-      {
-        "path": "docs/architecture.md",
-        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
@@ -106,5 +102,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "2f879a928eb4b038cb5678815b4e77441c4123296fd5c61568b91716e6ad3bed"
+  "shardHash": "ddfb297e41dc20f92815a611b8535a91bf21c8c5fbfe1bb176418afe79139081"
 }

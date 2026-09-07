@@ -73,12 +73,7 @@
       "001-workspace-layout",
       "011-ipc-contract"
     ],
-    "implementingPaths": [
-      {
-        "path": "docs/architecture.md",
-        "source": "spec-edge"
-      }
-    ],
+    "implementingPaths": [],
     "resolvedUnits": [
       {
         "locations": [],
@@ -215,5 +210,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "e8e218545670f22039c494c40e47ae62c8c69cdfd5d6446c468b6a5f1ff9e1c8"
+  "shardHash": "de63aeb1f992ee4f9f6554cd88dc84dee31731df09c92a808fe39b2a26aaa9f3"
 }

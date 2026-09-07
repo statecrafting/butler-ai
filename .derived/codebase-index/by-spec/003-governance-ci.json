@@ -88,7 +88,7 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 76,
+              "endLine": 84,
               "startLine": 23
             }
           }
@@ -106,8 +106,8 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 110,
-              "startLine": 77
+              "endLine": 118,
+              "startLine": 85
             }
           }
         ],
@@ -232,5 +232,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "f2443f2d583d5a061dbfe61841864d37dc7cdacfd9058181136b1117ca96237c"
+  "shardHash": "adfee8e94a1098b4913d1fbe34e9c91912b8a965c53e6b7b4b23455d0517bf68"
 }

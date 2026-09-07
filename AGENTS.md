@@ -42,6 +42,8 @@ picked up on the next init.
    - `spec-spine index check`: codebase index staleness (non-fatal)
    - `spec-spine registry status-report --json --nonzero-only`: lifecycle counts
    - `spec-spine registry list --ids-only`: spec inventory (latest-spec detection)
+   - `spec-spine registry plan`: the ready set (spec-spine 038): which specs can be worked on now and what blocks the rest; `/next` applies the approval and in-flight rules on top of it
+   - `spec-spine index coverage`: which source files no spec specifically claims (exit 2 if the index is stale)
    - `spec-spine index render`: the burn-down (`W-001` lines) and coverage table
    - `ls crates apps/desktop apps/desktop/src-tauri 2>/dev/null`: what has been built so far (absent directories are expected before phase 1 and 2)
    - `ls docs/`: docs surface (`architecture.md`, `threat-model.md`)
@@ -86,6 +88,52 @@ to ad-hoc parsing of `.derived/**/*.json`.
 
 If any file is missing: log "not found" and continue.
 
+## Working the backlog
+
+The governed loop is one spec per session, start to finish, then stop. It is
+what `spec-spine registry plan`, the in-flight leniency and the ownership
+ratchet exist to serve. Record specs (`000`, `002`, `018`) are never work
+orders. The phase graph in spec 018 orders the ready set; take the first
+ready spec of the lowest open phase.
+
+1. **Pick the spec.** `spec-spine registry plan` prints the ready set in
+   dependency order; `/next` applies the two rules on top of it (a `draft`
+   is never offered, an `in-progress` spec is in flight) and names the pick.
+   Never guess. If the spec's Territory names an operator prerequisite (a
+   signing identity, a platform SDK) that is missing, stop and report
+   exactly what is needed instead of mocking around it.
+2. **Branch and flip.** `/build <id>` sequences steps 2 to 6. Work on a
+   feature branch named `NNN-slug`. Flip the spec to `implementation:
+   in-progress`, run `spec-spine compile` and `spec-spine index`, and commit
+   the flip with the regenerated derived shards before writing code. Never
+   commit to `main`.
+3. **Re-read the spec in full before coding.** If the design is imprecise,
+   record the choice as a dated decision entry in the spec. If the design is
+   *wrong*, stop and report the contradiction: never edit a spec afterwards
+   to ratify what the code happened to do
+   (`.claude/rules/adversarial-prompt-refusal.md`).
+4. **Implement within the territory.** Every file you add is claimed by the
+   spec you are implementing, in the same change (`C-002` refuses an
+   unclaimed source file; a `// Spec:` header is the other claim). Touching
+   a unit another spec owns requires an `extends` edge on that spec's unit.
+   Never edit `.derived/` by hand.
+5. **Run the gate before every commit.** `make ci` (`make spine`: `compile
+   --check`, `index check`, `lint --fail-on-warn`, `coverage
+   --fail-on-untraced`; then `build`, `test`, `lint`) and `make pr-prep`
+   (`spec-spine index`, then `couple --base origin/main`). All must exit 0.
+   Commit the regenerated shards with the code they describe.
+6. **Satisfy the spec's acceptance criteria verbatim.** `/verify <id>` runs
+   the spec's `## Verification` block through `scripts/verify-spec.sh`. If a
+   criterion cannot be satisfied, keep `implementation: in-progress`, add a
+   dated note to the spec saying exactly what remains, and report it. Flip to
+   `implementation: complete` only at zero `W-001` for the spec
+   (`/burndown`) and with acceptance holding; recompile and commit.
+7. **Ship.** `/ship`: gate, review, a conventional commit naming the spec id,
+   push the feature branch, open the PR. A `Spec-Drift-Waiver:` line needs
+   explicit human approval; a driven session never self-approves one.
+   `/shepherd` watches the checks, remediates through the gate, merges, and
+   confirms on disk. Then stop: the next session takes the next spec.
+
 ## Available Agents
 
 Agents live in `.claude/agents/`. Four pipeline agents handle the
@@ -104,17 +152,26 @@ Skills live in `.claude/skills/`:
 
 - `/init`: initialize a session (this protocol).
 - `/setup`: one-time contributor setup; installs the pinned spec-spine and verifies the governed loop.
-- `/spec-new`: scaffold the next spec from the template with the right ordinal, taxonomy and phase.
-- `/burndown`: what is left to build, per spec and per phase; proposes the next unit of work.
-- `/implement-plan`: execute a plan file step-by-step with progress tracking.
+- `/next`: the next ready spec from `registry plan`, minus drafts, with in-flight specs and honest blockers. Read-only.
+- `/build <id>`: one spec start to finish per "Working the backlog".
+- `/verify <id>`: run a spec's `verify:cli` blocks locally through `scripts/verify-spec.sh`.
+- `/spec`: author the next spec from the template at the next free ordinal, born `draft`; taxonomy from `spec-spine.toml`, phase from spec 018.
+- `/burndown`: what is left to build, per spec and per phase; proposes the next unit of work (this repository's own).
+- `/implement-plan`: execute a cross-cutting plan file step by step with checkpoints.
 - `/validate-and-fix`: run `make ci` and fix discovered issues by severity.
-- `/code-review`: review the working diff for correctness bugs and spec drift.
-- `/commit`: create a git commit with an impact-focused conventional message.
+- `/code-review`: review the working diff for correctness bugs, spec drift, and illegitimate mid-build spec edits.
+- `/commit`: create a git commit with an impact-focused conventional message, spec ordinal as scope.
 - `/ship`: run the gate, review, commit on a feature branch, open a PR.
-- `/shepherd`: drive an open PR to merge (CI, review threads, currency, merge).
-- `/cleanup`: dead-code and duplicate detection with categorized recommendations.
+- `/shepherd`: watch the PR's checks by head sha, remediate through the gate, merge, confirm on disk.
+- `/cleanup`: dead-code and duplicate detection with ownership-aware recommendations.
 - `/research`: deep research with parallel sub-agents.
 - `/refactor-claude-md`: tighten and restructure `CLAUDE.md`.
+
+The fifteen (all but `/burndown`) are the spec-spine kit's, byte for byte
+(spec-spine spec 048). The project layer the skills read lives in this file
+(the pin in `Makefile`, `make ci` and `make pr-prep` as the gate, the default
+branch) and in the path-scoped rules; do not edit a skill to add a project
+fact, add it here.
 
 ## Conventions
 

@@ -1,84 +1,92 @@
 ---
 name: refactor-claude-md
-description: Modularize large CLAUDE.md files with path-scoped rules and doc extraction
+description: "Tighten CLAUDE.md by extracting context-specific guidance into docs and path-scoped rules under .claude/rules, keeping the harness spec coupled and the index fresh."
+allowed-tools: Bash, Read, Write, Edit, Glob, Grep
+argument-hint: "[path to CLAUDE.md, default ./CLAUDE.md]"
 ---
 
 # Refactor CLAUDE.md
 
-You are helping refactor a CLAUDE.md file to reduce its size while preserving guidance through dedicated documentation files and path-scoped rules.
+Reduce the size of `CLAUDE.md` while preserving guidance, by moving
+context-specific sections into `docs/` and loading them through
+path-scoped rules. In a spec-spine repository `CLAUDE.md`,
+`.claude/rules/`, and `AGENTS.md` are usually hashed inputs of the
+codebase index and owned by a harness spec: every change here couples to
+that spec (a dated decision entry naming the extraction) and stales the
+index until `spec-spine index` runs. Find the owner first:
+
+```sh
+spec-spine index coverage        # which spec claims the harness files
+```
 
 ## Process
 
-1. **Read and analyze** the current CLAUDE.md file in its entirety.
+1. **Read and analyze** the current `CLAUDE.md` in full. Compare it with
+   `AGENTS.md`: anything duplicated between them belongs in `AGENTS.md`
+   only (it is the cross-agent authority; `CLAUDE.md` carries only what
+   Claude Code needs beyond it).
 
-2. **Identify extraction candidates**: sections that are:
-   - Cross-cutting patterns (not core setup/architecture)
-   - Specific to certain file types or components
-   - Large sections with detailed patterns
-   - Content that would benefit from contextual loading
+2. **Identify extraction candidates**: sections that are cross-cutting
+   patterns rather than core setup, specific to certain directories or
+   file types, long and detailed, or better loaded only when relevant.
+   Typical candidates: per-package implementation notes, testing
+   patterns, a subsystem's conventions, a framework guide.
 
-3. **For each candidate section**, recommend:
-   - **Doc name**: what to call the extracted file in `docs/`
-   - **Content scope**: what to include in the doc
-   - **Path-scoped rule**: glob patterns that should trigger loading this doc
-   - **Replacement text**: brief reference to keep in CLAUDE.md
+3. **For each candidate** recommend: the doc name under `docs/`, its
+   scope, the `paths:` globs that should trigger it, and the one-line
+   reference to keep in `CLAUDE.md`.
 
-4. **Suggest documentation table structure**:
-   - Recommend which docs should be in the main reference table.
-   - Provide detailed descriptions for the "Description" column.
-   - Provide specific triggers for the "Read when..." column.
+4. **Create the files** in this order: extract to `docs/<name>.md`;
+   create `.claude/rules/<name>.md` with `paths:` frontmatter and a short
+   reminder pointing at the doc; replace the extracted section in
+   `CLAUDE.md` with the reference; update any documentation table.
 
-5. **Create the files** in this order:
-   - Extract content to `docs/[NAME].md`
-   - Create `.claude/rules/[name].md` with appropriate globs and `@imports`
-   - Update CLAUDE.md to replace extracted content with brief reference
-   - Update the Documentation Reference table if it exists
-
-6. **For path-scoped rules**, use this format:
+   Path-scoped rule format (the key is `paths`, a YAML list of globs):
 
    ```markdown
    ---
-   globs:
-     - "pattern1/**/*"
-     - "pattern2/**/*"
-   imports:
-     - docs/DOC_NAME.md
+   paths:
+     - "crates/<name>/**"
+     - "apps/<name>/**"
    ---
 
-   Brief reminder text with 2-3 key points referencing the imported doc.
+   Two or three key points, and the doc to read: `docs/<name>.md`.
    ```
 
-## Key Principles
+5. **Couple the change**: add a dated decision entry to the harness spec
+   naming the extraction (a new rule file is `establishes` growth for
+   that spec if it lists rules individually), then
+   `spec-spine compile && spec-spine index` and stage the derived
+   directory.
 
-- **Only extract** sections that are specific to certain contexts (not universal patterns).
-- **Preserve critical info** in CLAUDE.md (security rules, setup, architecture overview).
-- **Use meaningful glob patterns** that accurately capture when guidance is needed.
-- **Keep replacements brief**: just enough to know where to look.
-- **Documentation table entries** should have 2-3 sentence descriptions and specific triggers.
+## Key principles
 
-## Good Extraction Candidates
-
-- UI/styling patterns (CSS variables, responsive design, theming)
-- State management patterns (persistence, migration safety)
-- Architecture patterns for specific subsystems (IPC, MCP servers, spec compilation)
-- Testing patterns (integration tests, unit test conventions)
-- Feature-specific guides (governance panels, agent execution, git context)
+- Extract only context-specific guidance; keep universal rules in
+  `CLAUDE.md`.
+- Preserve critical information in `CLAUDE.md`: the invariants, the
+  commands, the architecture table, the governance mechanics, house
+  style.
+- Choose meaningful path patterns; a rule that loads everywhere is a `CLAUDE.md` section
+  in disguise.
+- Keep replacements brief; the reader needs to know where to look.
 
 ## Keep in CLAUDE.md
 
-- Critical warnings (security, destructive operations)
-- Development setup and commands
-- High-level architecture overview
-- General development guidelines
-- Repository structure (crates, packages, apps, tools, specs)
-- Orchestrator behavioral rules
+- The invariants and any determinism or hash-stability rule.
+- Commands and exit codes.
+- The layer-to-package table.
+- Governance mechanics (ownership ratchet, committed derived shards,
+  read-only hooks).
+- House style.
 
-## After Extraction
+## After extraction
 
-1. Show the size reduction (old lines vs. new lines, percentage).
-2. List all files created.
-3. Offer to commit the changes.
+Report the size change (lines before and after), list the files created,
+confirm `spec-spine index check` is fresh, and offer `/commit`.
 
-Ask the user which CLAUDE.md file to refactor (default to `./CLAUDE.md` if not specified).
+## Project layer
 
-$ARGUMENTS
+Read from `spec-spine index coverage`: the harness spec. Nothing here is
+edited per project.
+
+`$ARGUMENTS`
