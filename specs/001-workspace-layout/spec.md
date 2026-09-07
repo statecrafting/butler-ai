@@ -15,6 +15,7 @@ depends_on:
 establishes:
   - "Cargo.toml"
   - "rust-toolchain.toml"
+  - ".nvmrc"
   - "deny.toml"
   - "package.json"
   - "pnpm-workspace.yaml"
@@ -114,6 +115,12 @@ owns the crate; this spec only prescribes what they MUST contain (§3.3).
   test`, `pnpm -r lint`, `pnpm -r typecheck`).
 - `pnpm-workspace.yaml` MUST list `packages: ["apps/*"]`.
 - `pnpm-lock.yaml` is committed; CI installs with `--frozen-lockfile`.
+- `.nvmrc` MUST pin the exact Node version, and that version MUST satisfy
+  `package.json`'s `engines.node` range. It is the Node counterpart of
+  `rust-toolchain.toml`: `engines` states the range a consumer must be inside,
+  `.nvmrc` states the one version this repository builds with, so `nvm use`
+  selects it without argument and a contributor on a newer major is told
+  before `pnpm install` fails rather than after.
 
 ### 3.3 Manifest metadata (linkage floor)
 
@@ -228,4 +235,6 @@ sh -c '! grep -rn "unsafe" crates/butler-core'
 grep -q 'channel = "1.92.0"' rust-toolchain.toml
 grep -q '"node": ">=22 <23"' package.json
 grep -q 'packages:' pnpm-workspace.yaml
+# §3.2: .nvmrc pins one exact version, and it satisfies engines.node.
+sh -c 'v=$(tr -d "[:space:]" < .nvmrc); echo "$v" | grep -qE "^22\\.[0-9]+\\.[0-9]+$"'
 ```

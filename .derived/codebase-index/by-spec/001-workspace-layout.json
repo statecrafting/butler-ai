@@ -5,6 +5,10 @@
     ],
     "implementingPaths": [
       {
+        "path": ".nvmrc",
+        "source": "spec-edge"
+      },
+      {
         "path": "Cargo.toml",
         "source": "spec-edge"
       },
@@ -30,6 +34,19 @@
       }
     ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": ".nvmrc"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": ".nvmrc"
+        }
+      },
       {
         "locations": [
           {
@@ -185,5 +202,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "6d5bd21f220966ffa33b5e2622e8cf05abc1cc8f2f2d79a6f0b1c994fa2b17ff"
+  "shardHash": "f8da77c74a4f264b3d751ea6778feca24e70b374778cf9e034e91efd3b37ed54"
 }

@@ -58,6 +58,10 @@
       },
       {
         "kind": "file",
+        "path": ".nvmrc"
+      },
+      {
+        "kind": "file",
         "path": "deny.toml"
       },
       {
@@ -108,6 +112,6 @@
     "summary": "Fixes the physical shape of the repository so every later spec can name its territory unambiguously: a single root Cargo workspace (`crates/*` plus the Tauri app crate under `apps/desktop/src-tauri`), a single pnpm workspace (`apps/*`), pinned Rust and Node toolchains, edition 2024, a supply-chain policy (`deny.toml`), and the manifest metadata every package must carry so spec-spine discovers it and maps it to its owning spec. Owns the root manifests and co-owns the Makefile's build/test/lint targets with the harness spec. Establishes no product code.\n",
     "title": "Workspace layout: one Cargo workspace, one pnpm workspace, pinned toolchains"
   },
-  "shardHash": "06ed89a3b941d7766541c0eaa9f7b1af4c23ddbf42b468ca48022c2a46ff2c06",
+  "shardHash": "e1b7aab345b3d8102f48866770347e2a4e4849896db7694c0b1cf1f5c974839d",
   "specVersion": "1.1.0"
 }
