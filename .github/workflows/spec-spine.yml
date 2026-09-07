@@ -2,16 +2,20 @@
 #
 # The governance gate: spec-spine's gate chain on every PR. Nothing here writes
 # to .derived/ (a writing `compile` before `--check` would make the freshness
-# check pass unconditionally). The `on`, `permissions`, `jobs.govern` and
-# `jobs.gate` blocks are section units owned by spec 003: editing them without
-# editing that spec fails the coupling gate.
+# check pass unconditionally).
+#
+# This is a REUSABLE workflow (spec 003 §3.1). It declares no event triggers of
+# its own: `ci.yml` calls it as `jobs.govern`, so its result folds into the one
+# `ci-gate` check branch protection requires, instead of publishing a second,
+# separately-named status check. The `github` context inside a called workflow
+# is the caller's, so `github.event.pull_request` below is the real PR event.
+#
+# The `on`, `permissions` and `jobs.govern` blocks are section units owned by
+# spec 003: editing them without editing that spec fails the coupling gate.
 name: spec-spine
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-  merge_group:
+  workflow_call:
 
 permissions:
   contents: read
@@ -60,17 +64,3 @@ jobs:
           echo "coupling base: $BASE_SHA → head: $HEAD_SHA"
           printf '%s' "${PR_BODY:-}" > "$RUNNER_TEMP/pr-body.txt"
           spec-spine couple --base "$BASE_SHA" --head "$HEAD_SHA" --pr-body "$RUNNER_TEMP/pr-body.txt"
-
-  # The single required status check for branch protection.
-  gate:
-    name: gate
-    if: ${{ always() }}
-    needs: [govern]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Require all governance jobs to have passed
-        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
-        run: |
-          echo "govern=${{ needs.govern.result }}"
-          exit 1
-      - run: echo "gate passed"

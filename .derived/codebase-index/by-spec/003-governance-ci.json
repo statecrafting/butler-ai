@@ -88,8 +88,44 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 84,
-              "startLine": 23
+              "endLine": 147,
+              "startLine": 133
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.ci-gate",
+          "file": ".github/workflows/ci.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/ci.yml",
+            "span": {
+              "endLine": 128,
+              "startLine": 126
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.govern",
+          "file": ".github/workflows/ci.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/ci.yml",
+            "span": {
+              "endLine": 90,
+              "startLine": 29
             }
           }
         ],
@@ -106,8 +142,8 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 118,
-              "startLine": 85
+              "endLine": 124,
+              "startLine": 91
             }
           }
         ],
@@ -124,8 +160,8 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 15,
-              "startLine": 10
+              "endLine": 21,
+              "startLine": 16
             }
           }
         ],
@@ -142,8 +178,8 @@
           {
             "file": ".github/workflows/ci.yml",
             "span": {
-              "endLine": 18,
-              "startLine": 16
+              "endLine": 24,
+              "startLine": 22
             }
           }
         ],
@@ -160,26 +196,8 @@
           {
             "file": ".github/workflows/spec-spine.yml",
             "span": {
-              "endLine": 76,
-              "startLine": 65
-            }
-          }
-        ],
-        "ownership": true,
-        "sourceField": "establishes",
-        "unit": {
-          "anchor": "jobs.gate",
-          "file": ".github/workflows/spec-spine.yml",
-          "kind": "section"
-        }
-      },
-      {
-        "locations": [
-          {
-            "file": ".github/workflows/spec-spine.yml",
-            "span": {
-              "endLine": 63,
-              "startLine": 20
+              "endLine": 66,
+              "startLine": 24
             }
           }
         ],
@@ -196,8 +214,8 @@
           {
             "file": ".github/workflows/spec-spine.yml",
             "span": {
-              "endLine": 15,
-              "startLine": 10
+              "endLine": 19,
+              "startLine": 17
             }
           }
         ],
@@ -214,8 +232,8 @@
           {
             "file": ".github/workflows/spec-spine.yml",
             "span": {
-              "endLine": 18,
-              "startLine": 16
+              "endLine": 22,
+              "startLine": 20
             }
           }
         ],
@@ -232,5 +250,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "f552be214d6fbe82d8792e8a8e1719cdd960966de7aa09038b5928101456602c"
+  "shardHash": "c71b67b29dc5b76daf9e31d3d1e3ecbadfea95280cbdee3614f10749b4a3c287"
 }

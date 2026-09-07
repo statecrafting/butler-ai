@@ -1,10 +1,16 @@
 # Spec: specs/003-governance-ci/spec.md
 #
-# The language gates. Every Rust step is guarded by a populated workspace
-# (Cargo.toml plus at least one crates/*/Cargo.toml, spec 001 §3.5) and every
-# web step by pnpm-workspace.yaml, so this workflow is green until there is
-# something to build and real thereafter. `on`, `permissions`, `jobs.rust`,
-# `jobs.web` are section units owned by spec 003.
+# The single CI entry point. Every check butler-ai runs is a job here, and
+# `jobs.ci-gate` aggregates them into the ONE status check branch protection
+# requires (spec 003 §3.1). The governance chain lives in `spec-spine.yml` and
+# is pulled in as a reusable workflow, so it reports through this gate rather
+# than publishing a second, identically-named check.
+#
+# Every Rust step is guarded by a populated workspace (Cargo.toml plus at least
+# one crates/*/Cargo.toml, spec 001 §3.5) and every web step by
+# pnpm-workspace.yaml, so those jobs are green until there is something to build
+# and real thereafter. `on`, `permissions`, `jobs.rust`, `jobs.web`,
+# `jobs.govern` and `jobs.ci-gate` are section units owned by spec 003.
 name: ci
 
 on:
@@ -116,15 +122,26 @@ jobs:
         if: steps.ws.outputs.present == 'false'
         run: echo "pnpm-workspace.yaml absent; the web gates activate when spec 001 lands (phase 1)."
 
-  gate:
-    name: gate
+  # The governance chain, as a reusable workflow so its result reaches ci-gate.
+  govern:
+    uses: ./.github/workflows/spec-spine.yml
+
+  # Spec 003 §3.1: the single required status check for branch protection and
+  # the merge queue. It aggregates every CI job, so branch protection requires
+  # just this one name instead of an enumerated, drift-prone list. A skipped job
+  # counts as a pass; a failed or cancelled job fails the gate.
+  ci-gate:
+    name: ci-gate
     if: ${{ always() }}
-    needs: [rust, web]
+    needs: [rust, web, govern]
     runs-on: ubuntu-latest
     steps:
       - name: Require all CI jobs to have passed
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: |
-          echo "rust=${{ needs.rust.result }} web=${{ needs.web.result }}"
+          echo "A required CI job failed or was cancelled:"
+          echo "  rust=${{ needs.rust.result }} web=${{ needs.web.result }} govern=${{ needs.govern.result }}"
           exit 1
-      - run: echo "gate passed"
+      - name: All required CI jobs passed
+        run: |
+          echo "ci-gate passed: rust, web and govern are all green or skipped"
