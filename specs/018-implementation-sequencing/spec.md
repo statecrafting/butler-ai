@@ -56,7 +56,7 @@ spec-scoped `constrains`).
 | Phase | Specs | Entry | Exit criterion | Parallelism |
 |---|---|---|---|---|
 | 0 | 000, 002, 003 | none | corpus compiles; harness and CI green on `main` | n/a (done) |
-| 1 | 001, 009, 008, 015 | phase 0 | `make ci` green on the CI matrix (003 §3.2); `make burndown` shows zero for these four | 009 first (it owns `butler-core`); then 008 and 015 in parallel |
+| 1 | 001, 009, 008, 015 | phase 0 | `make ci` green on the CI matrix (003 §3.2); `make burndown` shows zero for 001, 009 and 008, and zero for 015's *own* units (R-009 exempts its forward `constrains` edges) | 009 first (it owns `butler-core`); then 008 and 015 in parallel |
 | 2 | 004, 011, 012, 014, 016, 019 | phase 1 | app launches on both platforms to a transparent, click-through overlay showing `Disarmed`; bindings fresh in CI | 004 first; then 011 (the contract and its generated bindings), then 012 (the UI that imports them), then 014; 016 in parallel once 004 is complete; 019 last, since the runtime emits 011's events and 016's traces |
 | 3 | 006, 007, 005 | phase 2 | arming runs the self-test and reports `Verified` on both platforms; a static screen yields `Unchanged` cycles | 006 and 007 in parallel; 005 after 006 |
 | 4 | 010, 013 | phase 3 | a question on screen produces a paced answer end to end; 015 FR-004/005 pass | 013's pure policy may start with phase 1; wiring after 010 |
@@ -68,7 +68,8 @@ spec-scoped `constrains`).
   it. `spec-spine lint` does not check this; the `spec-authoring` rule and
   `/code-review` do.
 - **R-002.** No phase starts until the previous phase's specs are
-  `implementation: complete`, with the exception noted for 013.
+  `implementation: complete`, with the exception noted for 013 and the one
+  R-009 makes for constraint specs.
 - **R-003.** Within a phase, a spec is implemented by one agent on one branch
   named `NNN-slug`; the PR touches that spec's `spec.md` (at minimum flipping
   `implementation` and recording decisions) and its claimed units, and nothing
@@ -89,6 +90,23 @@ spec-scoped `constrains`).
   the rest of it. An edge that exists only as a phase gate MUST carry a
   frontmatter comment saying so, so it is never mistaken for a compile-time
   dependency and never deleted as unused.
+
+- **R-008.** A spec MUST NOT `depends_on` a constraint spec that `constrains`
+  one of its own units. The governing relationship is already carried, in the
+  correct direction, by the `constrains` edge and enforced at merge by the
+  coupling gate. The inverse edge is a cycle: the constraint spec cannot
+  resolve that unit until the constrained spec creates it, and the constrained
+  spec cannot start until the constraint spec is complete. See D-2, where
+  exactly this deadlocked the whole plan after phase 1.
+
+- **R-009.** A `kind: constraint` spec whose `constrains` edges name units that
+  later phases create is **`in-progress` for the duration of those phases, by
+  design**, and gates nothing. R-004's "zero unresolved units" is read against
+  its *own* units, the ones it `establishes` or `extends`; its forward
+  `constrains` edges resolve as each constrained spec lands, and it flips to
+  `complete` in the phase of its last one. Such a spec is "delivered" for the
+  purposes of a phase exit when its own units are at zero and its assertions
+  are written, which is what the phase table's exit column means for it.
 
 ## 4. Out of scope
 
@@ -120,3 +138,35 @@ spec-scoped `constrains`).
   `cargo tree -p butler-core`), which any runner checks. An ubuntu job scoped
   to `-p butler-core` would enforce it directly; that is a 003 amendment, and
   it is deliberately not folded into this one.
+
+- **D-2 (2026-09-06, amendment, approved by the maintainer in session).**
+  Phase 1's exit criterion asked for `make burndown` at zero for all four of
+  its specs. Spec 015 cannot satisfy that in phase 1 and never could: seven of
+  its twelve owned units are forward `constrains` edges naming files that
+  phases 2 to 4 create. Its own AC-1 says as much ("once they exist").
+
+  The prose was the smaller half of the problem. `registry plan` schedules on
+  `depends_on`, and four specs carried `- "015-privacy-boundary"` as a phase
+  gate: 004, 010, 016 and 017. That set is not arbitrary. It is exactly the
+  set of specs that own a unit 015 constrains, and each pair is a **cycle**:
+
+  | Spec | Owns, and 015 constrains |
+  |---|---|
+  | 004 | `tauri.conf.json`, `capabilities/` |
+  | 010 | `anthropic.rs`, `secrets.rs` |
+  | 016 | `logging.rs` |
+  | 017 | `tauri.conf.json` |
+
+  Measured rather than reasoned about: with 015 `in-progress`, `registry plan`
+  reported `ready: 1, blocked: 12`, and 004's only blocker was 015. With 015
+  flipped to `complete` instead, `spec-spine index check` exited 2 with six
+  `I-004` and one `I-007`. Both states are red, and nothing after phase 1 could
+  start in either. The plan had deadlocked itself.
+
+  R-008 removes the inverted edges and forbids the shape; R-009 says what a
+  constraint spec's `implementation` field actually tracks. Neither weakens the
+  privacy boundary: 015's authority over those seven units is carried by the
+  `constrains` edges, which point the correct way, are acyclic, and are what
+  the coupling gate reads at merge. What changed is that a spec no longer waits
+  for a constraint on itself to be satisfied before it may create the thing
+  being constrained.

@@ -11,8 +11,10 @@ risk: medium
 platforms: "all"
 phase: 2
 depends_on:
+  # 015 is deliberately absent (018 R-008, D-2): it constrains this spec's
+  # `logging.rs`, so the edge would invert and deadlock. The "logs carry no
+  # content" invariant reaches this spec as a `constrains` edge.
   - "004-desktop-shell"
-  - "015-privacy-boundary"
 extends:
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/logging.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/diagnostics.rs", nature: additive }

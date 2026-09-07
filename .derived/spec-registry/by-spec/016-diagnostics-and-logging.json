@@ -2,8 +2,7 @@
   "record": {
     "created": "2026-09-01",
     "dependsOn": [
-      "004-desktop-shell",
-      "015-privacy-boundary"
+      "004-desktop-shell"
     ],
     "domain": "platform",
     "extends": [
@@ -89,6 +88,6 @@
     "summary": "Operational visibility without content: `tracing` with a rolling file appender in the platform log directory, level from settings (default `info`; `trace` records every state transition by id), structured fields restricted to a closed set of key names, and a diagnostics bundle (recent log, settings, versions, exclusion status, platform info) that the user builds from the tray and saves where they choose. The privacy boundary (015) constrains `logging.rs`; this spec makes the constraint operational with a field allowlist enforced at compile time.\n",
     "title": "Diagnostics and logging: structured, content-free tracing and a user-initiated diagnostics bundle"
   },
-  "shardHash": "2287e8b5e56f45c92a51a1a605f3cdd8bb2dee57deeb6b2ac5e11089c5bf2818",
+  "shardHash": "e5f82321bf4836d7ac6d209a3f303903cd5560345da6b8c86994bece460a4ba3",
   "specVersion": "1.1.0"
 }

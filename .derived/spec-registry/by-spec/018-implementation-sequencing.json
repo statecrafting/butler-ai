@@ -84,6 +84,6 @@
     "summary": "The build order for butler-ai as a sequencing plan over the product specs, expressed with spec-scoped `constrains` edges so the plan is part of the authority graph rather than a README. Five phases, each with an entry condition, an exit criterion (the phase's specs at zero `W-001` and flipped to `implementation: complete`), and the parallelism an orchestrator may use within it. The `phase` frontmatter key on every product spec mirrors this plan, and so does its `depends_on` (R-007); all three MUST agree.\n",
     "title": "Implementation sequencing: the phased build order for agentic development"
   },
-  "shardHash": "c0804494094546444c05fd5de93a18c3fa2efb88f1cf31db85afbdacb809e05f",
+  "shardHash": "877cbf0207e3d0b237eebdc6ed5468fbd0c68a9b3b494dc83641e098d1528471",
   "specVersion": "1.1.0"
 }
