@@ -29,11 +29,13 @@
 //!   names lives here, with its default in code and its validation pure
 //!   (spec 014).
 //!
-//! The remaining module arrives with its own spec and extends this crate:
-//! `pacing` (spec 013).
+//! - [`pacing`]: the reading-pace policy. A streamed answer is readable only
+//!   if it arrives at roughly the rate a person reads, and the policy lives
+//!   here so the machine knows when rendering is done (spec 013).
 
 pub mod delta;
 pub mod ipc;
 pub mod machine;
+pub mod pacing;
 pub mod redaction;
 pub mod settings;

@@ -780,6 +780,8 @@ export type Theme =
  * `SettingsUpdated` and carries `f64` fields (opacity, font scale, the
  * similarity threshold), and floats have no total equality. Nothing needs
  * `Eq` here; the tests compare with `assert_eq!`, which does not.
+ * 
+ * No derived `Debug` either: see the hand-written one below.
  */
 export type UiEvent = 
 /**
@@ -790,6 +792,16 @@ export type UiEvent =
  * An inference began.
  */
 { type: "answer-started"; request: number } | 
+/**
+ * A paced piece of the answer (spec 013 §3.2).
+ * 
+ * Emitted for each `Some(Release)` the pacer hands back, which is the
+ * only place answer text crosses the boundary. The overlay appends it
+ * and applies no timing of its own: the reading pace is a pure policy in
+ * `butler_core::pacing`, so it is testable without a browser and the
+ * machine knows when rendering is done (spec 013 §1).
+ */
+{ type: "answer-chunk"; request: number; index: number; text: string; is_last: boolean } | 
 /**
  * An inference finished.
  */
@@ -984,7 +996,7 @@ export const DEFAULT_SETTINGS: Settings = {
     }
   },
   "pacing": {
-    "words_per_minute": 300
+    "words_per_minute": 220
   },
   "shortcuts": {
     "arm_disarm": "CmdOrCtrl+Shift+B",

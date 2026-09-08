@@ -148,8 +148,8 @@ export function SettingsPanel(props: { readonly open: boolean }) {
             <input
               id="butler-wpm"
               type="number"
-              min="60"
-              max="1200"
+              min="120"
+              max="600"
               step="10"
               value={
                 patch().pacing?.words_per_minute ??

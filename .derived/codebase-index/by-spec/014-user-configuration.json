@@ -320,8 +320,8 @@
           {
             "file": "crates/butler-core/src/settings.rs",
             "span": {
-              "endLine": 408,
-              "startLine": 389
+              "endLine": 410,
+              "startLine": 391
             }
           }
         ],
@@ -337,8 +337,8 @@
           {
             "file": "crates/butler-core/src/settings.rs",
             "span": {
-              "endLine": 855,
-              "startLine": 830
+              "endLine": 862,
+              "startLine": 837
             }
           }
         ],
@@ -384,5 +384,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "1e4938a95703658cdd268ab25e46770d395034b65da24c00ef1a678f7b46d2b4"
+  "shardHash": "ed49b7e49f9b3d2aa1afe4e69c3905ec08523cabace2829f91f96b680ccba940"
 }

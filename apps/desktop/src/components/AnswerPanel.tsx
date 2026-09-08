@@ -6,15 +6,14 @@
  * `aria-live="polite"` per §3.5, so a screen reader announces an answer
  * without interrupting what the user is doing.
  *
- * Spec 013 will host `PacedAnswer` here and feed `state.answer` from paced
- * chunks. Until then the panel renders the buffer as it is, which is empty:
- * the `AnswerChunk` event is not in the contract yet (spec 011 D-3), so there
- * is nothing to append. The lifecycle around it (started, done, failed) is in
- * the contract and is rendered.
+ * Spec 013 hosts `PacedAnswer` here: the answer text itself is rendered chunk
+ * by chunk at a reading pace, and this panel is the lifecycle around it
+ * (started, done, failed, refused).
  */
 
 import { Match, Switch } from "solid-js";
 
+import { PacedAnswer } from "./PacedAnswer";
 import { state } from "../state/runtime";
 
 /** §3.3 fixes these two strings. */
@@ -31,11 +30,11 @@ export function AnswerPanel() {
         <Match when={state.phase === "done" && state.stop === "refusal"}>
           <span class="dim">{DECLINED}</span>
         </Match>
-        <Match when={state.phase === "streaming" && state.answer === ""}>
+        <Match when={state.phase === "streaming" && state.chunks.length === 0}>
           <span class="dim">Thinking</span>
         </Match>
-        <Match when={state.answer !== ""}>
-          <span>{state.answer}</span>
+        <Match when={state.chunks.length > 0}>
+          <PacedAnswer />
         </Match>
       </Switch>
     </div>
