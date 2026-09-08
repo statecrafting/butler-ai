@@ -106,6 +106,14 @@ zip = { version = "8", default-features = false, features = ["deflate"] }
 tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "macros"] }
 tokio-util = { version = "0.7", default-features = false }
 
+# spec 006: the capture crate. `xcap` goes through the compositor path on
+# both platforms (DXGI desktop duplication on Windows, ScreenCaptureKit on
+# macOS), which is the property spec 005's self-test relies on: a window-list
+# composition could re-include a window the OS was asked to exclude.
+# `zeroize` is what makes a dropped `Frame` stop existing in freed memory.
+xcap = { version = "0.9" }
+zeroize = { version = "1", default-features = false, features = ["alloc"] }
+
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,
 # butler-desktop) carry FFI under `#[allow(unsafe_code)]` with a `// SAFETY:`
