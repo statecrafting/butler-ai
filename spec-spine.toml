@@ -8,6 +8,16 @@
 # unresolved unit becomes a hard error. Nothing here is a default left implicit:
 # every knob is written out so the governance model is legible in one file.
 
+[meta]
+# The binary this corpus is governed by (spec-spine spec 062). The CLI checks
+# itself on every run and refuses with exit 3 when it does not satisfy the
+# requirement, which is what makes the version question answerable BEFORE an
+# exit code is interpreted: a binary predating a flag rejects it, and reading
+# that rejection as staleness sends a session to regenerate shards that were
+# already correct. Keep this in lockstep with `SPEC_SPINE_VERSION` in the
+# Makefile, which is what CI and `make setup` install.
+required_version = ">=0.17.0"
+
 [manifest]
 # Cargo: `[package.metadata.butler].spec = "NNN-slug"`
 # npm:   `"butler": { "spec": "NNN-slug" }` in package.json
@@ -49,19 +59,47 @@ standalone_npm_packages    = []
 # Everything the harness and the gates depend on is folded into the staleness
 # hash, so an edit to any of it without `spec-spine index` fails `index check`.
 # `.claude/agent-memory/` is deliberately NOT matched (gitignored local state).
+#
+# EVERY PATTERN ENDS IN A FILE COMPONENT, AND THAT IS THE POINT. In the glob
+# crate `dir/**` matches a sequence of path COMPONENTS, so it enumerates
+# directories, and the hasher keeps only entries that are files: `dir/**`
+# therefore matches nothing at all, silently (spec-spine spec 069). Six entries
+# here were in that form until 2026-09-08, which meant the constitution, the
+# contract, the templates, every workflow and every `.claude/` agent, rule and
+# skill had never contributed to any content hash while this comment said they
+# had. Do not "simplify" a `**/*` back to `**`.
+#
+# The patterns are narrow on purpose (spec-spine spec 057 §4). A bare
+# `.claude/**/*` would fold in `.DS_Store`, `agent-memory/` and
+# `settings.local.json`, making the shard hashes machine-dependent; and an entry
+# here restamps the GLOBAL scalar, restaling every shard when it changes, so it
+# earns its place by being a governance file some spec claims.
 extra_hashed_inputs = [
-  "standards/**",
-  ".github/workflows/**",
+  "standards/**/*.md",
+  ".github/workflows/*.yml",
+  ".github/dependabot.yml",
   ".claude/settings.json",
-  ".claude/agents/**",
-  ".claude/rules/**",
-  ".claude/skills/**",
+  ".claude/agents/*.md",
+  ".claude/rules/*.md",
+  ".claude/skills/*/*.md",
   ".mcp.json",
   "AGENTS.md",
   "CLAUDE.md",
   "Makefile",
+  "CODEOWNERS",
+  ".gitattributes",
+  ".githooks/*.sh",
+  "scripts/*.sh",
+  "scripts/*.py",
+  # Spec 001's toolchain and dependency-policy surface: each is claimed by a
+  # spec, and each changes what the build and the supply-chain gate accept.
+  "rust-toolchain.toml",
+  "deny.toml",
+  "package.json",
+  "pnpm-workspace.yaml",
+  ".nvmrc",
   "apps/desktop/src-tauri/tauri.conf.json",
-  "apps/desktop/src-tauri/capabilities/**",
+  "apps/desktop/src-tauri/capabilities/*.json",
 ]
 resolver_exclusions = ["target", "node_modules", ".derived", "dist", "build", ".next", ".vite", "gen"]
 
@@ -70,22 +108,60 @@ resolver_exclusions = ["target", "node_modules", ".derived", "dist", "build", ".
 # can be gated on the harness slice alone.
 [index.slices]
 governance = [
-  "standards/**",
+  "standards/**/*.md",
   ".claude/settings.json",
-  ".claude/agents/**",
-  ".claude/rules/**",
-  ".claude/skills/**",
+  ".claude/agents/*.md",
+  ".claude/rules/*.md",
+  ".claude/skills/*/*.md",
   ".mcp.json",
   "AGENTS.md",
   "CLAUDE.md",
-  ".github/workflows/**",
+  ".github/workflows/*.yml",
 ]
 # The Tauri security surface: window config, CSP, and the capability grants.
 # Spec 004 owns the file; spec 015 constrains it. A change here is a security
 # review by construction.
 desktop-security = [
   "apps/desktop/src-tauri/tauri.conf.json",
-  "apps/desktop/src-tauri/capabilities/**",
+  "apps/desktop/src-tauri/capabilities/*.json",
+]
+
+[lint]
+# Claimed source files this corpus has decided to leave out of every content
+# hash (spec-spine spec 057 §3.5). A `file` unit carries no span, and only
+# span-backing sources are folded into a shard hash, so a bare `file` claim on
+# a source file is witnessed by nothing: `index check` will not call the index
+# stale for an edit to one.
+#
+# These forty-nine are not undefended, and that is why the gap is acceptable
+# here rather than merely tolerated: `require_ownership` is on, so `couple`
+# refuses a changed source file whose owning spec did not change in the same
+# PR. That is the check protecting this surface, and it is stricter than
+# staleness. What the gap costs is narrow and is written down here: the index
+# does not notice the edit, and a corpus attestation covers a ledger that never
+# read those bytes.
+#
+# Suppressing the warning does NOT suppress the count: `index check` keeps
+# reporting the total, which is the difference between recording a decision and
+# turning a check off. The governance surface is hashed instead, above.
+unwitnessed_allowed = [
+  # Per-app prose, claimed by 005, 006 and 007 so each documents its own
+  # surface in one place. This entry mirrors the `**/README.md` line in
+  # `[coupling] bypass_prefixes` deliberately: the two are the same decision,
+  # that README prose is documentation and not authority. Hashing it would
+  # restamp the global scalar and force a full reindex on every prose edit,
+  # which is the governance drag the bypass exists to avoid.
+  "**/README.md",
+  "crates/**/*.rs",
+  "apps/desktop/src-tauri/src/**/*.rs",
+  "apps/desktop/src-tauri/build.rs",
+  "apps/desktop/src/**/*.ts",
+  "apps/desktop/src/**/*.tsx",
+  "apps/desktop/src/**/*.css",
+  "apps/desktop/index.html",
+  "apps/desktop/vite.config.ts",
+  "apps/desktop/eslint.config.js",
+  "apps/desktop/tsconfig.json",
 ]
 
 [branding]
