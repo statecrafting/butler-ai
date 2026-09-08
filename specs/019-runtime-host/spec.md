@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-02"
-implementation: pending
+implementation: complete
 owner: "butler-ai maintainers"
 risk: high
 platforms: "all"
@@ -151,3 +151,86 @@ spec is what makes the call.
   stateful executor dilutes that), or split the executor into its own phase 2
   spec. The third is this spec. Spec 009 keeps the pure reducer and its
   Linux-CI guarantee; the executor is scheduled after the crate that hosts it.
+
+- **D-2 (2026-09-07, `Ports`, because 006, 007 and 010 do not exist yet).**
+  §3.1 describes the runtime as owning `Box<dyn ScreenSource>`,
+  `Box<dyn TextRecognizer>` and `Box<dyn Assistant>`. Those three traits are
+  specs 006, 007 and 010, in phases 3 and 4. Defining them here would be this
+  spec claiming another's territory, and inventing their shapes would force a
+  retype when the real ones land.
+
+  So the executor depends on **one** port it does own: `Ports`, with a method
+  per effect that needs the outside world. `Runtime::spawn` is generic over
+  it, which also keeps the trait free of boxed futures. When 006, 007 and 010
+  land, one type implements `Ports` by delegating to them; the event loop,
+  its ordering and its cancellation do not change, and every test here keeps
+  its meaning because the mocks implement the same port a real adapter will.
+
+  This is the hexagonal shape §3.1 is already reaching for, named. **Owed to
+  phase 4**: the adapter that composes the three real traits behind it.
+
+- **D-3 (2026-09-07, shutdown is a signal, not a dropped handle).** The first
+  event loop ended when `rx.recv()` returned `None`, which never happened:
+  the loop keeps a `Sender` of its own so spawned effects can post results
+  back, so the channel could not close while the loop was alive. Every test
+  hung.
+
+  Shutdown is now an explicit `CancellationToken`. That also fixes a second
+  problem the first design had: a caller that had cloned a handle could keep
+  the process alive past shutdown without meaning to, because the channel's
+  liveness was the exit condition.
+
+  **Cancellation closes the receiver rather than breaking the loop.** §3.2
+  says shutdown "closes the channel... and joins the event task", and what is
+  already queued is still applied: a `Disarm` sent immediately before
+  shutdown must take effect, or the machine's last recorded state is a lie.
+  `Receiver::close` refuses new sends and lets the buffer drain, which is
+  exactly that sentence. The first version broke out on cancellation instead
+  and two tests caught it: the machine stayed `Armed` after a `Disarm` it had
+  been handed.
+
+- **D-4 (2026-09-07, FR-006's subscriber and the thread it lives on).**
+  `tracing::subscriber::set_default` installs a subscriber for the **calling
+  thread**. FR-006's test first ran the runtime on a multi-thread tokio
+  runtime, where the event loop runs on a worker, so it captured nothing: the
+  regex over "every line" passed because there were no lines.
+
+  It now runs on a current-thread runtime, where the event loop runs on the
+  test's own thread. The test asserts the output is non-empty before checking
+  it, so the vacuous version cannot come back. Worth recording because a
+  regex assertion over an empty capture is green, and green is what a test
+  that has stopped testing looks like.
+
+- **D-5 (2026-09-07, `Notice::AnswerDone` carries no stop reason).** Spec
+  009's `Notice::AnswerDone` has only a request id, but spec 011's
+  `UiEvent::AnswerDone` needs a `StopSummary`. The reducer does not have one:
+  the pacer knows when an answer finished cleanly, and that is spec 013.
+
+  `EndTurn` is emitted, which is the only honest default of the four: a
+  refusal and a token cap both reach the overlay by other routes
+  (`AnswerFailed`, or the provider's own reason once 010 supplies it), so
+  this value cannot silently claim one of those happened. **Owed to spec 013**:
+  the real stop reason, once the pacer reports it.
+
+## 8. Verification
+
+```verify:cli
+# AC-1, AC-2 and FR-001 to FR-006: the mock-port harness, on both CI targets.
+cargo test -p butler-desktop --locked runtime
+# AC-2 names FR-005 and FR-006 as tests rather than review claims, so their
+# absence must fail rather than pass quietly.
+grep -q "fn fr_005_the_status_payload_carries_no_text" apps/desktop/src-tauri/src/runtime.rs
+grep -q "fn fr_006_trace_records_name_ids_only" apps/desktop/src-tauri/src/runtime.rs
+# AC-3: the decision log names both halves.
+sh -c 'grep "^| D3 " docs/architecture.md | grep -q "009" && grep "^| D3 " docs/architecture.md | grep -q "019"'
+# §2 and spec 009 AC-3: this spec owns no code in `butler-core`, and the
+# executor's dependencies never reach it.
+sh -c '! cargo tree -p butler-core --locked --edges normal | grep -Eq "tokio|tauri|windows|objc2|xcap"'
+# §3.1: one task owns the state. A second `State::default()` outside the
+# event loop would be a second owner.
+sh -c 'test "$(grep -c "State::default()" apps/desktop/src-tauri/src/runtime.rs)" -le 3'
+# D-3: shutdown drains what is queued rather than discarding it.
+grep -q "rx.close()" apps/desktop/src-tauri/src/runtime.rs
+# Territory: every unit this spec claims resolves.
+sh -c 'spec-spine index render | grep "W-001" | grep -q "019-runtime-host" && exit 1 || exit 0'
+```

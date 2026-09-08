@@ -1,18 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '019-runtime-host' file unit 'apps/desktop/src-tauri/src/runtime.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/runtime.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '019-runtime-host' symbol unit 'butler_desktop::runtime::Runtime' did not resolve"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "009-pipeline-state-machine",
@@ -30,6 +16,10 @@
       {
         "path": "apps/desktop/src-tauri/src/lib.rs",
         "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/runtime.rs",
+        "source": "multiple"
       }
     ],
     "resolvedUnits": [
@@ -73,7 +63,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/runtime.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -82,7 +76,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/runtime.rs",
+            "span": {
+              "endLine": 155,
+              "startLine": 144
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -108,5 +110,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "3c9e235df7dcea292ab1202802fb34bcd21df341a0612708a37b3f8ea5f78da2"
+  "shardHash": "2e258594df6580139c005d43b4bb5e457ee5f1d4f201fafbaef9412803e189af"
 }

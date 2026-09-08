@@ -101,6 +101,11 @@ tracing-subscriber = { version = "0.3", default-features = false, features = ["f
 tracing-appender = { version = "0.2" }
 zip = { version = "8", default-features = false, features = ["deflate"] }
 
+# spec 019: the effect executor. Reaches `butler-desktop` only; spec 009 AC-3
+# bans it from `butler-core` and that crate's own test enforces the budget.
+tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "macros"] }
+tokio-util = { version = "0.7", default-features = false }
+
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,
 # butler-desktop) carry FFI under `#[allow(unsafe_code)]` with a `// SAFETY:`
