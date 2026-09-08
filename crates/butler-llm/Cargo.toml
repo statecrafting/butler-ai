@@ -1,0 +1,49 @@
+# Spec: specs/010-assistant-inference/spec.md
+#
+# The provider boundary. Spec 010 §1: the rest of the system depends on the
+# `Assistant` trait, the reference provider is Anthropic's Messages API, and a
+# second provider is a new file rather than a redesign.
+#
+# Rust has no official Anthropic SDK, so §3.2 is implemented over raw HTTPS and
+# the wire contract is pinned by fixture tests rather than by a dependency.
+#
+# `unsafe` never appears here (spec 001 FR-005): this crate does no FFI.
+
+[package]
+name = "butler-llm"
+version = "0.1.0"
+description = "Streaming assistant inference for butler-ai"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[package.metadata.butler]
+spec = "010-assistant-inference"
+
+[dependencies]
+# spec 015: `RedactedText` is the only thing that may leave the process, and
+# `redact` is its only constructor.
+butler-core = { path = "../butler-core", version = "0.1.0" }
+futures-core = { workspace = true }
+futures-util = { workspace = true }
+keyring = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+zeroize = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "net", "io-util"] }
+# FR-003 drives a local mock server, so the cancellation assertion is about
+# the client's reaction rather than about a fast stream finishing anyway.
+reqwest = { workspace = true }
+futures-util = { workspace = true }
+tokio-util = { workspace = true }
+
+[lints]
+workspace = true

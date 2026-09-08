@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "assistant"
 created: "2026-09-01"
-implementation: pending
+implementation: complete
 owner: "butler-ai maintainers"
 risk: high
 platforms: "all"
@@ -215,3 +215,130 @@ cycle returns to `Idle`) with a `budget.exhausted` UI event once per hour.
   the 018 R-002 gate. This crate names no capture or OCR type; the edges make
   the phase order mechanical for an orchestrator that schedules on
   `depends_on` alone.
+
+- **D-2 (2026-09-07, the wire contract was checked, not recalled).** §3.2
+  describes the Messages API precisely, and it was verified against the
+  current API reference rather than written from memory. It is accurate: the
+  scalar `fallbacks: "default"` form does pair with
+  `anthropic-beta: server-side-fallback-2026-07-01` (the array form uses a
+  different date, and mixing them is a 400), depth is `output_config.effort`,
+  and thinking is left adaptive by omitting the parameter.
+
+  Three things are **hard failures** on the models §3.2 names, and none is
+  sent: `temperature` / `top_p` / `top_k`, `thinking.budget_tokens`, and an
+  assistant prefill. FR-002's golden asserts the body's whole key set, so any
+  of them appearing later fails a test rather than a request.
+
+- **D-3 (2026-09-07, fixtures are the contract).** Rust has no official
+  Anthropic SDK, so nothing pins the shape of the stream except the fixtures
+  under `tests/fixtures/`. That is the arrangement working rather than a
+  workaround: a fixture is a contract a reviewer can read, and it fails loudly
+  when the wire changes instead of silently when a dependency updates.
+
+  `stream_unknown_events.sse` is the one worth keeping deliberately. It carries
+  an event type from the future and a thinking delta, and asserts the text
+  around them still arrives: §3.2 requires unknown events to be **ignored,
+  never errors**, and without that fixture the first ordinary provider release
+  would break the product.
+
+- **D-4 (2026-09-07, "once per key" without keeping anything derived from the
+  key).** FR-006 wants a rejected key reported once per key, not per request:
+  a user whose key expired should be asked once, not on every capture cycle.
+
+  The identity of "the key" is a **generation counter** bumped when the stored
+  key changes, not a hash of the key. A hash of a secret is still a function of
+  a secret, and there is no reason to keep one when a counter answers the same
+  question. `CredentialAlarm` is where that lives; the provider reports
+  `SecretInvalid` every time, and the caller owns the "once".
+
+- **D-5 (2026-09-07, three bugs the tests found, all in windows).** The spend
+  guard's rolling windows were written against a cutoff computed with
+  `saturating_sub`, and near tick zero that cutoff collapses to 0, so an entry
+  at tick 0 failed a `tick > cutoff` test even though no time had passed.
+  Every rate limit therefore failed to bind on a freshly started process,
+  which is exactly when a runaway loop is most likely. Three tests caught it;
+  the comparison is now on the distance rather than a cutoff.
+
+  A second bug in the same file: an `admitted.len() >= MAX_REQUESTS_PER_MINUTE`
+  fast path, which is only equivalent to the real check while the deque holds
+  a minute's worth. It holds a day's, so the seventh request of the *hour* was
+  refused as if it were the seventh of the minute.
+
+  A third in the SSE parser: `finish` drained the buffer, discarded the frame
+  that draining dispatched, and then dispatched again on cleared state,
+  returning nothing. A server that closes without a final blank line would
+  have lost the last chunk of every answer.
+
+- **D-6 (2026-09-07, the request rates are constants, not settings).** §3.5
+  says `max_requests_per_minute`, `max_requests_per_hour` and
+  `max_output_tokens_per_day` come "from settings". Spec 014's
+  `BudgetSettings` carries what a user tunes, which is money and input size:
+  `daily_usd`, `monthly_usd`, `max_input_tokens`. It has no request-rate
+  fields, and adding three would be an edit to 014's model rather than this
+  spec's to make.
+
+  They are constants here, at §3.5's documented defaults, with the reason
+  stated in the module: these are the limits that stop a runaway loop from
+  spending a user's cap in a minute, and they are the same for everyone. The
+  money caps *are* read from settings. **Owed to spec 014** if the rates should
+  become user-tunable, which is a settings-model change and a UI addition.
+
+- **D-7 (2026-09-07, this crate cannot be cross-checked for Windows).**
+  Specs 005 and 007 validated their Windows code from macOS, either directly
+  (`cargo check --target x86_64-pc-windows-msvc`) or in a scratch crate. Not
+  here: `rustls` pulls `aws-lc-sys`, whose build script needs a C toolchain
+  this host does not have for that target.
+
+  Almost none of the crate is platform-specific: the SSE parser, the prompt
+  contract, the spend guard and the frame mapper are pure and are tested on
+  every target. The platform surface is `keyring`, which selects the OS
+  credential store. CI's `windows-latest` job builds and clippy-checks it on
+  every pull request, which is where that is caught.
+
+- **D-8 (2026-09-07, what the runtime still has to wire).** This crate
+  implements the trait, the provider, the prompt, the keychain and the guard.
+  It is not yet *called*: §3.5 says the runtime feeds the guard and turns a
+  denial into an idle cycle with a once-per-hour notice, and that runs through
+  spec 019's `Ports` adapter, which 019 D-2 leaves owed.
+
+  **Owed with that adapter**: feeding `SpendGuard` from the runtime's tick,
+  raising `NeedsCredential` on `NoCredential`, and the once-per-hour
+  `budget.exhausted` event. The pieces each have their own tests; what is
+  missing is the wiring, and spec 013 is the next spec to touch it.
+
+## 8. Verification
+
+```verify:cli
+# AC-1: the whole crate, with no network. The mock server FR-003 uses is a
+# local socket the test starts and aborts.
+cargo test -p butler-llm --locked
+# FR-004: `Secret` cannot be formatted or cloned. The doctests carry a
+# positive control, so a passing compile_fail block cannot be passing because
+# the import path is wrong.
+cargo test -p butler-llm --locked --doc
+# AC-2: exactly one host, and it is a constant. Matching code lines only: the
+# module's own prose explains the rule and would otherwise fail this check,
+# which is the trap spec 016 D-2 names.
+sh -c 'test "$(grep -rn "api\.anthropic\.com" crates/butler-llm/src | grep -v "^[^:]*:[0-9]*://" | grep -v "//!" | wc -l | tr -d " ")" -eq 2'
+# §3.2 and spec 015 §3.3: an endpoint override must be https, and the client
+# cannot read a proxy from the environment. `system-proxy` is not merely
+# unused; without the feature reqwest has no such code at all.
+grep -q 'starts_with("https://")' crates/butler-llm/src/anthropic.rs
+sh -c 'grep "^reqwest = " Cargo.toml | grep -qv "system-proxy"'
+# §3.2: the three parameters that are 400s on the models this spec names are
+# not sent, and FR-002's golden pins the whole key set.
+sh -c '! grep -qE "\"(temperature|top_p|top_k|budget_tokens)\"" crates/butler-llm/src/anthropic.rs'
+test -f crates/butler-llm/tests/fixtures/prompts/request_body.json
+sh -c '! grep -qE "\"(temperature|top_p|top_k|thinking)\"" crates/butler-llm/tests/fixtures/prompts/request_body.json'
+# §3.2: the scalar fallbacks form and its beta header move together. Pairing
+# either with the other form is a 400.
+grep -q 'server-side-fallback-2026-07-01' crates/butler-llm/src/anthropic.rs
+# AC-3: the prompt is a reviewed fixture, and a prompt change is a spec change.
+test -f crates/butler-llm/tests/fixtures/prompts/system.txt
+sh -c 'grep -q "UNTRUSTED DATA" crates/butler-llm/tests/fixtures/prompts/system.txt'
+# §3.4 and spec 015: the key is never written anywhere but the keychain.
+sh -c '! grep -rq "impl std::fmt::Debug for Secret\|impl Display for Secret" crates/butler-llm/src'
+grep -q "fn drop" crates/butler-llm/src/secrets.rs
+# Territory: every unit this spec claims resolves.
+sh -c 'spec-spine index render | grep "W-001" | grep -q "010-assistant-inference" && exit 1 || exit 0'
+```

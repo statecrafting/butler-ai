@@ -1,19 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' file unit 'crates/butler-llm/src/anthropic.rs' does not exist",
-        "path": "crates/butler-llm/src/anthropic.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' file unit 'crates/butler-llm/src/secrets.rs' does not exist",
-        "path": "crates/butler-llm/src/secrets.rs"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "009-pipeline-state-machine"
@@ -50,6 +35,14 @@
       {
         "path": "crates/butler-core/tests/redaction.rs",
         "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/src/anthropic.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-llm/src/secrets.rs",
+        "source": "spec-edge"
       },
       {
         "path": "crates/butler-ocr/src/recognized.rs",
@@ -209,7 +202,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/anthropic.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "constrains",
         "unit": {
@@ -218,7 +215,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/secrets.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "constrains",
         "unit": {
