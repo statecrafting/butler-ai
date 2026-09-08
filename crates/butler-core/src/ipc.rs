@@ -221,6 +221,16 @@ pub enum UiEvent {
         /// What it found.
         verdict: ExclusionSummary,
     },
+    /// Mount or unmount the self-test's sentinel pattern (spec 005 §3.4).
+    ///
+    /// The one event that asks the overlay to *do* something rather than
+    /// telling it something. It exists because the self-test's question is
+    /// "would a recording see this window", and the only way to ask it is to
+    /// put something recognizable in the window and go looking for it.
+    SelfTestSentinel {
+        /// Whether the pattern is on screen.
+        on: bool,
+    },
     /// The configuration changed and was persisted (spec 014 §3.3).
     ///
     /// Broadcast after a successful `UpdateSettings`, and in reply to
@@ -463,6 +473,8 @@ mod tests {
             UiEvent::SelfTestResult {
                 verdict: ExclusionSummary::Compromised,
             },
+            UiEvent::SelfTestSentinel { on: true },
+            UiEvent::SelfTestSentinel { on: false },
             UiEvent::SettingsUpdated {
                 settings: Box::new(Settings::default()),
             },
@@ -514,6 +526,7 @@ mod tests {
                 | UiEvent::NeedsCredential { .. }
                 | UiEvent::NeedsPermission { .. }
                 | UiEvent::SelfTestResult { .. }
+                | UiEvent::SelfTestSentinel { .. }
                 | UiEvent::SettingsUpdated { .. } => {}
             }
         }

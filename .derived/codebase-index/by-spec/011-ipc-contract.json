@@ -263,8 +263,8 @@
           {
             "file": "crates/butler-core/src/ipc.rs",
             "span": {
-              "endLine": 299,
-              "startLine": 260
+              "endLine": 309,
+              "startLine": 270
             }
           }
         ],
@@ -280,7 +280,7 @@
           {
             "file": "crates/butler-core/src/ipc.rs",
             "span": {
-              "endLine": 240,
+              "endLine": 250,
               "startLine": 174
             }
           }
@@ -310,5 +310,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "32012cb7cd9d1bbce63f1b4df844be41faafec29cd5503020823c6594d4a9810"
+  "shardHash": "d946566a83e939fa17be27d1c2bc0911e78ff35fd93f51f5a56fee3700f89ce5"
 }

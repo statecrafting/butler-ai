@@ -811,6 +811,15 @@ export type UiEvent =
  */
 { type: "self-test-result"; verdict: ExclusionSummary } | 
 /**
+ * Mount or unmount the self-test's sentinel pattern (spec 005 §3.4).
+ * 
+ * The one event that asks the overlay to *do* something rather than
+ * telling it something. It exists because the self-test's question is
+ * "would a recording see this window", and the only way to ask it is to
+ * put something recognizable in the window and go looking for it.
+ */
+{ type: "self-test-sentinel"; on: boolean } | 
+/**
  * The configuration changed and was persisted (spec 014 §3.3).
  * 
  * Broadcast after a successful `UpdateSettings`, and in reply to

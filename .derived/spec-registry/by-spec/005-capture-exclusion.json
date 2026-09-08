@@ -94,6 +94,46 @@
           "kind": "file",
           "path": "Cargo.toml"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "011-ipc-contract",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/generated/bindings.ts"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/state/runtime.ts"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/app_state.rs"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/README.md"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -104,7 +144,7 @@
       ]
     },
     "id": "005-capture-exclusion",
-    "implementation": "pending",
+    "implementation": "complete",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "references": [
@@ -139,13 +179,14 @@
       "3.6 Feedback-loop guard",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "8. Verification"
     ],
     "specPath": "specs/005-capture-exclusion/spec.md",
     "status": "approved",
     "summary": "The stealth mechanism and its verification. On Windows the overlay window's handle receives `SetWindowDisplayAffinity(WDA_EXCLUDEFROMCAPTURE)`; on macOS the `NSWindow.sharingType` is set to `NSWindowSharingNone`. Both are requests to the compositor, not guarantees, so this spec also defines a self-test that captures the screen through the same platform path recording tools use and asserts the overlay's pixels are absent, and a typed `ExclusionStatus` the runtime and UI must honour: the app never claims to be hidden when it has not verified that it is. The same property protects the pipeline from OCR-ing its own answers.\n",
     "title": "Capture exclusion: keep the overlay out of the OS frame buffer, and verify it"
   },
-  "shardHash": "852ab503caaa94180bbf2949945ec7ae4e942c08b55a650d3db6aa01a1b0d17e",
+  "shardHash": "e4f484a1648efe072e421754ed4097d37147fb02ad4697b917129529647b6c65",
   "specVersion": "1.1.0"
 }

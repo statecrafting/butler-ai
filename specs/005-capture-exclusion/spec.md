@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "platform"
 created: "2026-09-01"
-implementation: pending
+implementation: complete
 owner: "butler-ai maintainers"
 risk: critical
 platforms: ["windows", "macos"]
@@ -31,6 +31,17 @@ extends:
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/lib.rs", nature: additive }
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/Cargo.toml", nature: additive }
   - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
+  # §3.4 step 1: the overlay has to paint the sentinel, and the runtime has to
+  # be able to ask it to. That is one additive event on spec 011's contract
+  # and one case in spec 012's store (D-3).
+  - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/ipc.rs", nature: additive }
+  - { spec: "011-ipc-contract", unit: "apps/desktop/src/generated/bindings.ts", nature: additive }
+  - { spec: "012-overlay-ui", unit: "apps/desktop/src/state/runtime.ts", nature: additive }
+  # §3.5: the status is held in `AppState` and never persisted.
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/app_state.rs", nature: additive }
+  # The manual checklist. §3.4's rows became observable when this spec landed,
+  # and three things still need a human or a second computer (018 R-010).
+  - { spec: "012-overlay-ui", unit: "apps/desktop/README.md", nature: additive }
 refines:
   - { aspect: "capture-exclusion", unit: "apps/desktop/src-tauri/src/window.rs" }
 references:
@@ -207,3 +218,115 @@ guard must not mask a broken exclusion in tests).
 - Hiding the process from process lists, task managers, or endpoint agents.
   butler-ai is a normal, signed desktop application (spec 017) and does not
   attempt to conceal its own existence on the machine.
+
+- **D-1 (2026-09-07, a fifth state: `Unknown`).** §3.1 names four. A fresh
+  `AppState` needs a value before `apply_exclusion` has run, and every
+  candidate among the four is a claim: `Applied` says a call succeeded,
+  `Unsupported` says the platform cannot, and `Verified` and `Compromised` say
+  a frame was examined.
+
+  `Unknown` is the honest fifth, and it is never returned by
+  `apply_exclusion` or by the self-test: it exists only as the state before
+  either has spoken. It maps to the wire's existing `unknown` summary, so
+  spec 011's contract is unchanged, and it refuses arming like the other three
+  non-verified states.
+
+- **D-2 (2026-09-07, the sentinel alpha, and why it is not the lowest one).**
+  §3.4 asks for "the lowest alpha the capture path still resolves", so the
+  user sees the test for as little as possible, and AC-3 asks for that value
+  to be recorded with its empirical justification.
+
+  **`SENTINEL_ALPHA` is 1.0**, full opacity, and there is no empirical
+  justification because nobody has measured the floor. That is stated rather
+  than papered over, because the two errors are not symmetric:
+
+  - Too **high**: the user sees a flash for one or two frames.
+  - Too **low**: the capture cannot resolve the pattern, the self-test finds
+    nothing, and it reports `Verified` for an overlay the other party can
+    plainly see.
+
+  The second is the product lying about the only thing it promises. Until
+  someone measures the floor on both platforms, the safe end is the visible
+  one. **Owed**: the measurement, and then the constant.
+
+- **D-3 (2026-09-07, the self-test was a vacuous pass and had to be fixed).**
+  The first implementation captured the screen and looked for the sentinel's
+  colours **without asking the overlay to paint them**. §3.4 step 1 says to
+  mount the sentinel; the step was left for later because spec 011's contract
+  had no way to ask.
+
+  That is not a partial implementation. It is a self-test that finds colours
+  nobody is painting, finds none, and reports **`Verified` for every overlay
+  there will ever be**, on a machine where exclusion is completely broken. It
+  is exactly the vacuous pass FR-003's two-direction rule exists to rule out,
+  and it would have passed every test in this repository.
+
+  The fix is one additive event, `UiEvent::SelfTestSentinel { on }`, which the
+  overlay's store already had a slot for (spec 012's `setSentinel`). The
+  self-test now mounts the pattern, waits `SENTINEL_PAINT_WAIT` for paint,
+  captures, unmounts, and only then decides. Every path that could not
+  complete a measurement returns `Compromised`, never `Verified`: `unverifiable`
+  is one function so that no future exit path can quietly choose otherwise.
+
+- **D-4 (2026-09-07, the Windows call, checked without a Windows machine).**
+  `apps/desktop/src-tauri` cannot be cross-compiled from macOS: Tauri's build
+  script fails before type-checking begins. So the Win32 calls were validated
+  in a **scratch crate** that depends only on the `windows` bindings and
+  contains the same calls, checked against `x86_64-pc-windows-msvc`.
+
+  It caught a real error: `GetWindowDisplayAffinity`'s out-parameter is
+  `*mut u32`, not `*mut WINDOW_DISPLAY_AFFINITY`, even though the setter takes
+  the newtype. That would have been a red Windows job twenty minutes later.
+  The technique is worth reusing for any Win32 code in the Tauri crate.
+
+- **D-5 (2026-09-07, §3.6's feedback-loop guard is owed).** §3.6 requires that
+  when the status is not `Verified`, the change detector (008) is given the
+  overlay's last rendered text as an exclusion set, so the pipeline never
+  treats its own answer as new screen content.
+
+  The wiring runs through spec 019's `Ports`, whose adapter over 006, 007 and
+  010 does not exist (019 D-2), and through the pacer that knows the last
+  rendered text (013). Neither is built. **Owed to phase 4**, with the rest of
+  that adapter.
+
+  The guard's *absence* is not a privacy hole: it is a correctness one, and it
+  only bites when exclusion has already failed, which §3.5 refuses to arm on
+  anyway unless the user opted into degraded mode.
+
+## 8. Verification
+
+```verify:cli
+# AC-1 and FR-003's two directions: a frame containing the sentinel is
+# Compromised, one without it is Verified, and an empty sample is neither.
+cargo test -p butler-desktop --locked exclusion
+# §3.2: no fallback to WDA_MONITOR. A black rectangle where the overlay is
+# reveals more than showing it would: it tells the other party both that
+# something is hidden and exactly where.
+#
+# Matching an import or a call rather than the bare name, because the file's
+# comment explains why the fallback is absent and a substring search fails on
+# the explanation. That trap is spec 016 D-2; this is the fifth time in this
+# corpus, so the rule is now: a grep-shaped check never searches prose.
+# Tested with a negative control.
+sh -c '! grep -qE "^use .*WDA_MONITOR|WDA_MONITOR\)" apps/desktop/src-tauri/src/exclusion/windows.rs'
+# §3.5: only a measurement permits arming. Neither "the OS said yes" nor
+# "nothing has been attempted" is good enough.
+grep -q "Self::Verified { .. } => true" apps/desktop/src-tauri/src/exclusion/mod.rs || grep -q "matches!(self, Self::Verified" apps/desktop/src-tauri/src/exclusion/mod.rs
+# §2 and §3.5: one path shows the overlay, and it consults the status.
+sh -c 'test "$(grep -rc "\.show()" apps/desktop/src-tauri/src --include="*.rs" | grep -v ":0" | wc -l | tr -d " ")" -eq 1'
+grep -q "fn show_if_permitted" apps/desktop/src-tauri/src/window.rs
+# D-3: the self-test paints the sentinel before it looks for it. Without this
+# it looks for colours nobody draws and verifies every overlay forever.
+grep -q "SelfTestSentinel" apps/desktop/src-tauri/src/exclusion/selftest.rs
+grep -q "self-test-sentinel" apps/desktop/src/state/runtime.ts
+# §3.4: the colours the self-test looks for are the ones the overlay paints.
+grep -q "#ff00ff" apps/desktop/src/components/Sentinel.tsx
+grep -q "0xFF, 0x00, 0xFF" apps/desktop/src-tauri/src/exclusion/selftest.rs
+# AC-2: the threat model lists what this does and does not defend against.
+sh -c 'grep -A12 "^## 3. Capture exclusion" docs/threat-model.md | grep -qi "hardware capture"'
+sh -c 'grep -A12 "^## 3. Capture exclusion" docs/threat-model.md | grep -qi "remote-desktop"'
+# §3.5: the status is never persisted; it is recomputed every launch.
+sh -c '! grep -q "exclusion" apps/desktop/src-tauri/src/settings_store.rs'
+# Territory: every unit this spec claims resolves.
+sh -c 'spec-spine index render | grep "W-001" | grep -q "005-capture-exclusion" && exit 1 || exit 0'
+```

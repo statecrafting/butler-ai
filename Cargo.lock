@@ -409,6 +409,7 @@ dependencies = [
 name = "butler-desktop"
 version = "0.1.0"
 dependencies = [
+ "butler-capture",
  "butler-core",
  "dirs",
  "objc2",
@@ -429,6 +430,7 @@ dependencies = [
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
+ "windows 0.62.2",
  "zip",
 ]
 

@@ -123,7 +123,9 @@ unicode-segmentation = { version = "1" }
 objc2-vision = { version = "0.3", default-features = false, features = ["std", "VNRequest", "VNObservation", "VNRecognizeTextRequest", "VNRequestHandler", "VNTypes", "VNDefines", "objc2-core-graphics", "objc2-core-foundation"] }
 objc2-core-foundation = { version = "0.3", default-features = false, features = ["std", "CFCGTypes"] }
 objc2-core-graphics = { version = "0.3", default-features = false, features = ["std", "CGImage", "CGColorSpace", "CGDataProvider", "CGContext"] }
-windows = { version = "0.62", features = ["Media_Ocr", "Graphics_Imaging", "Globalization", "Foundation", "Foundation_Collections", "Storage_Streams", "Security_Cryptography"] }
+# spec 007 needs the OCR and imaging modules; spec 005 needs the Win32 window
+# ones for SetWindowDisplayAffinity and its read-back.
+windows = { version = "0.62", features = ["Media_Ocr", "Graphics_Imaging", "Globalization", "Foundation", "Foundation_Collections", "Storage_Streams", "Security_Cryptography", "Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }
 # `RecognizeAsync` returns a `windows_future::IAsyncOperation`, and the
 # `windows` crate does not re-export that type, so the crate that waits on one
 # names it directly (spec 007 D-5).

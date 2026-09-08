@@ -21,11 +21,13 @@ scheduled one, and that difference is recorded here rather than inferred.
 
 Two capabilities this app does not yet have shape most of this file:
 
-- **The overlay is never visible.** It is created `visible: false`, and no
-  code path calls `show()`. Spec 004 §3.2 forbids showing it before capture
-  exclusion has been applied, and that is **spec 005**, in phase 3. Any row
-  that asks a tester to look at, click on, or click through the overlay is
-  deferred to 005.
+- **The overlay is visible from spec 005 onward.** It was created
+  `visible: false` with no code path calling `show()`, because spec 004 §3.2
+  forbids showing it before capture exclusion has been applied. Spec 005
+  landed that, and `window::show_if_permitted` is now the one path that turns
+  it on: only when the self-test reported `Verified`, or when the user
+  accepted degraded mode. Rows that ask a tester to look at, click on, or
+  click through the overlay are **observable now**, and still need a human.
 - **Nothing arms.** Arming is **spec 019**'s runtime, and the onboarding panel
   it would open is spec 012's. Any row about the permission prompt is deferred
   to 019.
@@ -37,9 +39,9 @@ Two capabilities this app does not yet have shape most of this file:
 | FR-003 | Global shortcuts register | `Cmd+Shift+B`, `Cmd+Shift+H`, `Cmd+Shift+Space` and `Cmd+Shift+Enter` are absent from the tray's "Shortcuts unavailable" section, so the OS accepted all four | phase 2 | [x] |
 | FR-004 | No Dock icon | The app has no Dock tile and no app-switcher entry; the menu-bar icon is present | phase 2 | [x] |
 | §3.4 | Tray menu | Every item is present and enabled; a shortcut that failed to register appears under "Shortcuts unavailable" | phase 2 | [x] |
-| FR-001 | Window flags | The overlay is transparent, has no title bar, no shadow, and floats above other windows including full-screen apps | deferred to 005 | [ ] |
-| FR-002 | Click-through | With no modifier held, click where the overlay is. The click reaches the window beneath it | deferred to 005 | [ ] |
-| FR-003 | Interact toggle | With another app focused, press `Cmd+Shift+Space`: the overlay accepts clicks. Press it again: clicks pass through again. One press is one flip, not two | deferred to 005 | [ ] |
+| FR-001 | Window flags | The overlay is transparent, has no title bar, no shadow, and floats above other windows including full-screen apps | phase 3, now observable | [ ] |
+| FR-002 | Click-through | With no modifier held, click where the overlay is. The click reaches the window beneath it | phase 3, now observable | [ ] |
+| FR-003 | Interact toggle | With another app focused, press `Cmd+Shift+Space`: the overlay accepts clicks. Press it again: clicks pass through again. One press is one flip, not two | phase 3, now observable | [ ] |
 | FR-005 | Permission onboarding | With Screen Recording denied, arming opens the onboarding panel **exactly once per launch** and the pipeline stays disarmed. Arming again does not re-prompt | deferred to 019 | [ ] |
 
 ### Evidence for the phase 2 rows
@@ -66,10 +68,10 @@ when a tester is in front of the running app anyway.
 | FR-003 | Global shortcuts register | `Ctrl+Shift+B`, `Ctrl+Shift+H`, `Ctrl+Shift+Space` and `Ctrl+Shift+Enter` are absent from the tray's "Shortcuts unavailable" section | phase 2, deferred: no Windows host | [ ] |
 | D-9 | Developer tools still work | In a browser, `Ctrl+Shift+I` still opens developer tools. Butler must not have claimed it globally | phase 2, deferred: no Windows host | [ ] |
 | §3.4 | Tray menu | Every item is present and enabled | phase 2, deferred: no Windows host | [ ] |
-| FR-001 | Window flags | The overlay is transparent, undecorated, and always on top | deferred to 005 | [ ] |
-| FR-002 | Click-through | With no modifier held, click where the overlay is. The click reaches the window beneath it | deferred to 005 | [ ] |
-| FR-003 | Interact toggle | With another app focused, press `Ctrl+Shift+Space`: the overlay accepts clicks. Press it again: clicks pass through again. One press is one flip, not two | deferred to 005 | [ ] |
-| FR-004 | No taskbar button | The overlay has no taskbar button and never takes focus; the tray icon is present | deferred to 005 | [ ] |
+| FR-001 | Window flags | The overlay is transparent, undecorated, and always on top | phase 3, now observable | [ ] |
+| FR-002 | Click-through | With no modifier held, click where the overlay is. The click reaches the window beneath it | phase 3, now observable | [ ] |
+| FR-003 | Interact toggle | With another app focused, press `Ctrl+Shift+Space`: the overlay accepts clicks. Press it again: clicks pass through again. One press is one flip, not two | phase 3, now observable | [ ] |
+| FR-004 | No taskbar button | The overlay has no taskbar button and never takes focus; the tray icon is present | phase 3, now observable | [ ] |
 | §3.5 | No permission prompt | Arming never prompts; capture is permitted unconditionally | deferred to 019 | [ ] |
 
 The three phase 2 Windows rows are deferred for a different reason from the
@@ -101,13 +103,13 @@ tester should look at on the first run where there *is* something to see.
 
 | # | Requirement | What to look for | When | Pass |
 |---|---|---|---|---|
-| §3.2 | Dark wallpaper | The plate is legible; the wallpaper reads through it; nothing paints a full-window rectangle | deferred to 005 | [ ] |
-| §3.2 | Light wallpaper | The same, with the light plate | deferred to 005 | [ ] |
-| §3.2 | Over a full-screen app (macOS) | The overlay floats above a full-screen window and follows across spaces | deferred to 005 | [ ] |
-| §3.5 | Contrast | Status and answer text meet WCAG AA at 14 px against the plate, on both wallpapers | deferred to 005 | [ ] |
-| §3.2 | 125% scaling (Windows) | Text and plate scale; nothing clips | deferred to 005 | [ ] |
-| §3.2 | 200% scaling (Windows) | The same at 200% | deferred to 005 | [ ] |
-| §3.2 | Idle repaint | Nothing animates while idle. A capture tool's CPU graph stays flat | deferred to 005 | [ ] |
+| §3.2 | Dark wallpaper | The plate is legible; the wallpaper reads through it; nothing paints a full-window rectangle | phase 3, now observable | [ ] |
+| §3.2 | Light wallpaper | The same, with the light plate | phase 3, now observable | [ ] |
+| §3.2 | Over a full-screen app (macOS) | The overlay floats above a full-screen window and follows across spaces | phase 3, now observable | [ ] |
+| §3.5 | Contrast | Status and answer text meet WCAG AA at 14 px against the plate, on both wallpapers | phase 3, now observable | [ ] |
+| §3.2 | 125% scaling (Windows) | Text and plate scale; nothing clips | phase 3, now observable | [ ] |
+| §3.2 | 200% scaling (Windows) | The same at 200% | phase 3, now observable | [ ] |
+| §3.2 | Idle repaint | Nothing animates while idle. A capture tool's CPU graph stays flat | phase 3, now observable | [ ] |
 
 What *is* checked today, without a window, is in `pnpm -r test`: FR-001
 asserts the computed background of `html`, `body` and `#root` is fully
@@ -148,6 +150,24 @@ binding that does not build is caught. What no CI job checks is whether it
 *recognizes*, because the runner has no document on a screen to recognize.
 Spec 007 D-3 records a second Windows-only gap: the engine reports no
 confidence, so §3.4's confidence filter is inert there.
+
+## Capture exclusion (spec 005)
+
+The self-test measures this on every launch and the status strip shows what it
+found, so most of spec 005 needs no checklist. Two things a machine cannot
+check, and one that needs a second computer:
+
+| # | Requirement | What to do | When | Pass |
+|---|---|---|---|---|
+| FR-003 | Really invisible to a real tool | Share the screen in Zoom, Teams, Meet or OBS with the overlay visible. The overlay is absent from what the other party sees, and from a recording | phase 3, now observable | [ ] |
+| §3.4 | The sentinel is not a nuisance | Trigger the self-test from the tray. The magenta and green pattern is on screen for at most a frame or two and does not persist | phase 3, now observable | [ ] |
+| FR-001 | Windows read-back | On Windows 10 2004+ or Windows 11, the status strip reports `verified` rather than `unsupported` | deferred: no Windows host | [ ] |
+
+The self-test is the product's own answer to the first row, and it runs
+automatically. The row exists because the self-test checks *one* capture path
+(the compositor's, through spec 006) and a real conferencing tool is the check
+that the path it uses is the same one. `docs/threat-model.md` §3 lists the
+paths this mechanism does not defend against at all.
 
 ## Sign-off
 

@@ -201,6 +201,60 @@ fn apply_geometry<R: Runtime>(
     Ok(())
 }
 
+/// Show the overlay, but only if it is safe to (spec 005 §2, §3.5).
+///
+/// Spec 004 §3.2 says the window MUST never be shown before exclusion has
+/// been applied, and spec 005 refines that: it must not be shown at all when
+/// the status is `Unsupported` or `Compromised`, unless the user has
+/// explicitly accepted degraded mode.
+///
+/// This is the one function that turns the overlay on, and it takes the
+/// status rather than a boolean so the refusal reason survives to the caller.
+/// A `show()` anywhere else would be a second path around the gate.
+///
+/// # Errors
+///
+/// Returns [`AppError::Window`] if the platform refuses to show the window.
+pub fn show_if_permitted<R: Runtime>(
+    window: &WebviewWindow<R>,
+    status: &crate::exclusion::ExclusionStatus,
+    allow_degraded: bool,
+) -> Result<bool, AppError> {
+    if !status.permits_arming() && !allow_degraded {
+        return Ok(false);
+    }
+
+    // FR-005. Some window managers reset display affinity across a
+    // hide/show, so exclusion is re-applied every time the overlay is shown
+    // rather than once at startup. `apply_exclusion` is idempotent, which is
+    // what makes this safe to do unconditionally; a caller that had to track
+    // whether it was needed would eventually get it wrong.
+    //
+    // A re-application that now fails refuses the show, unless the user
+    // accepted degraded mode. The window was safe a moment ago; that is not
+    // a reason to trust it now.
+    match crate::exclusion::apply_exclusion(window) {
+        Ok(reapplied) => {
+            if !reapplied.permits_arming()
+                && !matches!(reapplied, crate::exclusion::ExclusionStatus::Applied { .. })
+                && !allow_degraded
+            {
+                return Ok(false);
+            }
+        }
+        Err(e) => {
+            if !allow_degraded {
+                return Err(AppError::Window(e.to_string()));
+            }
+        }
+    }
+
+    window
+        .show()
+        .map_err(|e| AppError::Window(e.to_string()))
+        .map(|()| true)
+}
+
 /// Set the overlay's interactivity. `true` makes it click-through.
 ///
 /// # Errors
