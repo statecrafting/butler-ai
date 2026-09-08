@@ -29,6 +29,7 @@ pub mod diagnostics;
 pub mod events;
 pub mod logging;
 pub mod permissions;
+pub mod runtime;
 pub mod settings_store;
 pub mod shortcuts;
 pub mod tray;
