@@ -17,6 +17,8 @@ use std::sync::{Mutex, PoisonError};
 
 use butler_core::settings::Settings;
 
+use crate::exclusion::ExclusionStatus;
+
 use crate::shortcuts::ShortcutReport;
 
 /// Shared, typed application state.
@@ -38,6 +40,12 @@ pub struct AppState {
     /// §3.3: a registration failure is surfaced in the tray menu and logged,
     /// and the app continues, so the outcome has to be readable later.
     shortcuts: Mutex<ShortcutReport>,
+    /// What capture exclusion last reported (spec 005).
+    ///
+    /// Never persisted: §3.5 says it is recomputed every launch, because a
+    /// remembered `Verified` from a previous OS version is exactly the claim
+    /// constitution §VI forbids.
+    exclusion: Mutex<ExclusionStatus>,
     /// The current configuration (spec 014).
     ///
     /// The settings handle §3.1 names. One in-memory copy, replaced whole on
@@ -81,6 +89,23 @@ impl AppState {
             .shortcuts
             .lock()
             .unwrap_or_else(PoisonError::into_inner) = report;
+    }
+
+    /// What capture exclusion last reported (spec 005 §3.5).
+    #[must_use]
+    pub fn exclusion(&self) -> ExclusionStatus {
+        self.exclusion
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone()
+    }
+
+    /// Record what the exclusion call or the self-test found.
+    pub fn set_exclusion(&self, status: ExclusionStatus) {
+        *self
+            .exclusion
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner) = status;
     }
 
     /// The current configuration, cloned (spec 014).

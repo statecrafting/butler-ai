@@ -1,45 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' module unit 'butler_desktop::exclusion' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/exclusion/mod.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/exclusion/mod.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/exclusion/windows.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/exclusion/windows.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/exclusion/macos.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/exclusion/macos.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' file unit 'apps/desktop/src-tauri/src/exclusion/selftest.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/exclusion/selftest.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' symbol unit 'butler_desktop::exclusion::apply_exclusion' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' symbol unit 'butler_desktop::exclusion::verify_exclusion' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '005-capture-exclusion' symbol unit 'butler_desktop::exclusion::ExclusionStatus' did not resolve"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "004-desktop-shell",
@@ -51,8 +10,32 @@
         "source": "spec-edge"
       },
       {
+        "path": "apps/desktop/README.md",
+        "source": "spec-edge"
+      },
+      {
         "path": "apps/desktop/src-tauri/Cargo.toml",
         "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/app_state.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/exclusion/macos.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/exclusion/mod.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/exclusion/selftest.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/exclusion/windows.rs",
+        "source": "multiple"
       },
       {
         "path": "apps/desktop/src-tauri/src/lib.rs",
@@ -60,6 +43,18 @@
       },
       {
         "path": "apps/desktop/src-tauri/src/window.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/generated/bindings.ts",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/state/runtime.ts",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/ipc.rs",
         "source": "spec-edge"
       }
     ],
@@ -80,6 +75,19 @@
       {
         "locations": [
           {
+            "file": "apps/desktop/README.md"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/README.md"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": "apps/desktop/src-tauri/Cargo.toml"
           }
         ],
@@ -91,7 +99,24 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/app_state.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/app_state.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/exclusion/macos.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -100,7 +125,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/exclusion/mod.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -109,7 +138,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/exclusion/selftest.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -118,7 +151,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/exclusion/windows.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -140,7 +177,50 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/generated/bindings.ts"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/generated/bindings.ts"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src/state/runtime.ts"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/state/runtime.ts"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/ipc.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/ipc.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/exclusion/mod.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -149,7 +229,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/exclusion/mod.rs",
+            "span": {
+              "endLine": 88,
+              "startLine": 57
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -158,7 +246,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/exclusion/mod.rs",
+            "span": {
+              "endLine": 154,
+              "startLine": 150
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -167,7 +263,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/exclusion/mod.rs",
+            "span": {
+              "endLine": 166,
+              "startLine": 160
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -206,5 +310,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "717a5997059be44403488cad49ba5a14f5734926faedee50ce4f1b54c8cc3414"
+  "shardHash": "43d27b26ccefb9c8e33211f3532c9a1e4b8404ba568b5c803079d8bb9a41055d"
 }

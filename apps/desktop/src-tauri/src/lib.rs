@@ -27,6 +27,7 @@ pub mod app_state;
 pub mod commands;
 pub mod diagnostics;
 pub mod events;
+pub mod exclusion;
 pub mod logging;
 pub mod permissions;
 pub mod runtime;
@@ -212,13 +213,48 @@ pub fn run() {
             }
 
             // 3. Create the overlay window, hidden and click-through.
-            let _overlay = create_overlay_window(&handle, OverlayGeometry::default())?;
+            let overlay = create_overlay_window(&handle, OverlayGeometry::default())?;
 
-            // 4. Apply capture exclusion and record its verified status
-            //    (spec 005). Until it lands the window stays hidden: §3.2
-            //    forbids showing it before exclusion has been applied, and
-            //    showing it here "for now" is exactly the shortcut that would
-            //    make a degraded state invisible.
+            // 4. Apply capture exclusion, verify it, and only then decide
+            //    whether the overlay may be seen at all (spec 005 §2, §3.5).
+            //
+            //    The order is the whole point. `apply_exclusion` returns
+            //    `Applied`, never `Verified`: nothing has looked at a frame
+            //    yet. The self-test is what replaces that request with a
+            //    measurement, and `show_if_permitted` is the only path that
+            //    turns the overlay on.
+            let applied = match exclusion::apply_exclusion(&overlay) {
+                Ok(status) => status,
+                Err(e) => {
+                    eprintln!("capture exclusion could not be applied: {e}");
+                    exclusion::ExclusionStatus::Unsupported {
+                        reason: e.to_string(),
+                    }
+                }
+            };
+
+            let source = butler_capture::platform_source();
+            let status = exclusion::verify_exclusion(&overlay, &source, &applied);
+            // §3.5: the status reaches the overlay's status strip, and the
+            // strip is what the user reads before trusting the product.
+            let _ = events::emit(
+                &handle,
+                &butler_core::ipc::UiEvent::SelfTestResult {
+                    verdict: status.summary(),
+                },
+            );
+            let state = handle.state::<AppState>();
+            state.set_exclusion(status.clone());
+
+            let allow_degraded = state.settings().privacy.allow_degraded_mode;
+            match window::show_if_permitted(&overlay, &status, allow_degraded) {
+                Ok(true) => {}
+                Ok(false) => eprintln!(
+                    "the overlay stays hidden: capture exclusion is {}, and degraded mode is off",
+                    status.summary_name()
+                ),
+                Err(e) => eprintln!("the overlay could not be shown: {e}"),
+            }
 
             // 5. Register shortcuts. Failures are reported, not fatal (§3.3).
             let report = shortcuts::register_shortcuts(&handle);

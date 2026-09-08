@@ -114,6 +114,12 @@ export function apply(event: UiEvent): void {
     case "settings-updated":
       setState({ settings: event.settings });
       return;
+    case "self-test-sentinel":
+      // Spec 005 §3.4: the runtime asks for the pattern, captures the screen,
+      // and asks for it to go away again. Solid writes the DOM synchronously,
+      // so the only wait left on the Rust side is paint.
+      setState({ sentinel: event.on });
+      return;
     default: {
       // Exhaustiveness. If a new `UiEvent` variant reaches here, `event` is
       // no longer `never` and this assignment fails to compile.

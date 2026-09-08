@@ -26,6 +26,9 @@ tauri-build = { workspace = true }
 # bans those (`[bans] wildcards = "deny"`). Neither crate is published, so the
 # number is only ever read by that check.
 butler-core = { path = "../../../crates/butler-core", version = "0.1.0" }
+# spec 005: the self-test captures through the same compositor path recording
+# tools use, which is the whole reason its answer means anything.
+butler-capture = { path = "../../../crates/butler-capture", version = "0.1.0" }
 tauri = { workspace = true }
 tauri-plugin-global-shortcut = { workspace = true }
 tauri-specta = { workspace = true }
@@ -51,6 +54,10 @@ zip = { workspace = true }
 # Tauri equivalent, so this crate does that one piece of FFI itself. Spec 001
 # FR-005 allows it here (a platform crate) under `#[allow(unsafe_code)]` with a
 # `// SAFETY:` note on the smallest possible block.
+[target.'cfg(target_os = "windows")'.dependencies]
+# spec 005 §3.2: SetWindowDisplayAffinity and its read-back.
+windows = { workspace = true }
+
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = { workspace = true }
 objc2-app-kit = { workspace = true }
