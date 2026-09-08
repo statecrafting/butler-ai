@@ -1,0 +1,46 @@
+# Spec: specs/007-text-recognition/spec.md
+#
+# The OCR crate. Both target platforms ship a capable, hardware-accelerated
+# engine, so butler-ai uses theirs: a smaller binary, no model licensing, no
+# GPU dependency of ours, and the engines improve with the OS (§1).
+#
+# The engine bindings are cfg-gated. `normalize` is pure and has no platform
+# code at all, which is what lets §3.4's fixtures run on a Linux runner
+# (AC-1).
+#
+# FR-004: no networking crate appears in this tree. Recognition is on device,
+# and a dependency that could open a socket would be the one place that stopped
+# being true.
+
+[package]
+name = "butler-ocr"
+version = "0.1.0"
+description = "On-device text recognition for butler-ai"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[package.metadata.butler]
+spec = "007-text-recognition"
+
+[dependencies]
+butler-capture = { path = "../butler-capture", version = "0.1.0" }
+thiserror = { workspace = true }
+unicode-normalization = { workspace = true }
+unicode-segmentation = { workspace = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = { workspace = true }
+objc2-foundation = { workspace = true }
+objc2-vision = { workspace = true }
+objc2-core-graphics = { workspace = true }
+objc2-core-foundation = { workspace = true }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { workspace = true }
+windows-future = { workspace = true }
+
+[lints]
+workspace = true
