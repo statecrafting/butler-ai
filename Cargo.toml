@@ -114,6 +114,17 @@ tokio-util = { version = "0.7", default-features = false }
 xcap = { version = "0.9" }
 zeroize = { version = "1", default-features = false, features = ["alloc"] }
 
+# spec 007: the OCR crate. The engines are the operating systems' own, so no
+# model ships with the app and no pixels leave the process; these are only the
+# bindings. `unicode-normalization` and `unicode-segmentation` back the pure
+# normalization pass (§3.4), which runs on every target including Linux.
+unicode-normalization = { version = "0.1" }
+unicode-segmentation = { version = "1" }
+objc2-vision = { version = "0.3", default-features = false, features = ["std", "VNRequest", "VNObservation", "VNRecognizeTextRequest", "VNRequestHandler", "VNTypes", "VNDefines", "objc2-core-graphics", "objc2-core-foundation"] }
+objc2-core-foundation = { version = "0.3", default-features = false, features = ["std", "CFCGTypes"] }
+objc2-core-graphics = { version = "0.3", default-features = false, features = ["std", "CGImage", "CGColorSpace", "CGDataProvider", "CGContext"] }
+windows = { version = "0.62", features = ["Media_Ocr", "Graphics_Imaging", "Globalization", "Foundation", "Foundation_Collections", "Storage_Streams", "Security_Cryptography"] }
+
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,
 # butler-desktop) carry FFI under `#[allow(unsafe_code)]` with a `// SAFETY:`

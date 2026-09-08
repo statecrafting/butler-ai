@@ -67,6 +67,14 @@
           "kind": "file",
           "path": "Cargo.toml"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/README.md"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -77,7 +85,7 @@
       ]
     },
     "id": "007-text-recognition",
-    "implementation": "pending",
+    "implementation": "complete",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "risk": "medium",
@@ -92,13 +100,15 @@
       "3.4 Normalization (`normalize(lines: &[Line], frame: Size) -> String`)",
       "4. Functional requirements",
       "5. Acceptance criteria",
-      "6. Out of scope"
+      "6. Out of scope",
+      "7. Resolved decisions",
+      "8. Verification"
     ],
     "specPath": "specs/007-text-recognition/spec.md",
     "status": "approved",
     "summary": "The `butler-ocr` crate: a `TextRecognizer` trait that turns a `FrameView` into `Recognized` text with per-line geometry and confidence, backed by the operating system's own OCR engine (Apple Vision `VNRecognizeTextRequest` on macOS, `Windows.Media.Ocr` on Windows) so no model ships with the app and no pixels leave the process; plus a deterministic normalization pass that turns engine output into the stable, layout-ordered string the change detector (008) compares and the assistant (010) reads. Recognition runs entirely on device.\n",
     "title": "Text recognition: native on-device OCR with a normalized text output"
   },
-  "shardHash": "7025bf844716ca66f77341d3647b72076ac53a777e0133e5bc4513bece35b583",
+  "shardHash": "b35cdad43f2b8c84d55925abef8df1c6e755e1e19933cc91c7452156e394bcf0",
   "specVersion": "1.1.0"
 }

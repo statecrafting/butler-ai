@@ -133,6 +133,22 @@ phase 3" and names neither. §7.1 records an Apple M1 Max for spec 008's
 benchmark, which is one of the two. The Windows machine is unchosen, and
 naming one that has not been measured on would be worse than leaving it blank.
 
+## Text recognition (spec 007)
+
+One of spec 007's requirements needs the reference hardware, and one needs a
+Windows machine. Recorded here for the reason 018 R-010 gives.
+
+| # | Requirement | What to do | When | Pass |
+|---|---|---|---|---|
+| FR-001 | Recognition latency | `recognize` on a 1080p screenshot of a typical document completes under 400 ms p50 | deferred: reference hardware | [ ] |
+| §3.3 | `Windows.Media.Ocr` produces text | On Windows, recognizing a document screenshot returns lines whose text matches what is on screen | deferred: no Windows host | [ ] |
+
+The Windows engine compiles on CI's `windows-latest` runner every PR, so a
+binding that does not build is caught. What no CI job checks is whether it
+*recognizes*, because the runner has no document on a screen to recognize.
+Spec 007 D-3 records a second Windows-only gap: the engine reports no
+confidence, so §3.4's confidence filter is inert there.
+
 ## Sign-off
 
 | Platform | Scope | OS version | Date | Tester | Signed |

@@ -4,11 +4,6 @@
     "warnings": [
       {
         "code": "W-001",
-        "message": "spec '015-privacy-boundary' file unit 'crates/butler-ocr/src/recognized.rs' does not exist",
-        "path": "crates/butler-ocr/src/recognized.rs"
-      },
-      {
-        "code": "W-001",
         "message": "spec '015-privacy-boundary' file unit 'crates/butler-llm/src/anthropic.rs' does not exist",
         "path": "crates/butler-llm/src/anthropic.rs"
       },
@@ -55,6 +50,10 @@
       {
         "path": "crates/butler-core/tests/redaction.rs",
         "source": "multiple"
+      },
+      {
+        "path": "crates/butler-ocr/src/recognized.rs",
+        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
@@ -228,7 +227,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-ocr/src/recognized.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "constrains",
         "unit": {
