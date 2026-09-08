@@ -63,6 +63,14 @@
           "kind": "file",
           "path": "Cargo.toml"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "012-overlay-ui",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/README.md"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -73,7 +81,7 @@
       ]
     },
     "id": "006-screen-capture",
-    "implementation": "pending",
+    "implementation": "complete",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "risk": "medium",
@@ -89,13 +97,14 @@
       "4. Functional requirements",
       "5. Acceptance criteria",
       "6. Out of scope",
-      "7. Resolved decisions"
+      "7. Resolved decisions",
+      "8. Verification"
     ],
     "specPath": "specs/006-screen-capture/spec.md",
     "status": "approved",
     "summary": "The `butler-capture` crate: a `ScreenSource` trait that yields one `Frame` of one monitor on demand, an `xcap`-backed implementation for Windows and macOS, monitor enumeration and selection, and the `Frame` type whose lifecycle rules (in-memory only, no `Serialize`, dropped after recognition) are the first link in the privacy chain. Snapshot polling at a configurable interval replaces continuous video capture: the pipeline asks for a frame when the state machine says so, never on a free-running loop. Cadence, scheduling and backoff are the state machine's (009); this crate only knows how to take one picture.\n",
     "title": "Screen capture: snapshot polling of one monitor through the compositor"
   },
-  "shardHash": "c20526d8e10433634f6b3baf752b30eb35db7910fec92e2375a042e0e888bb81",
+  "shardHash": "650b9910e7b4e88fe740dfd76f16485922c917c4bb7fd940d3e391174d834eae",
   "specVersion": "1.1.0"
 }

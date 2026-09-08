@@ -115,6 +115,24 @@ transparent, and FR-002 asserts the surface is inert by default. Those are
 the properties a screenshot would be checking anyway; what the list above
 adds is a human eye on legibility, which no assertion covers.
 
+## Screen capture (spec 006)
+
+Three of spec 006's requirements need a real display, and two of those need
+the reference hardware `docs/architecture.md` §7 names. They are rows here for
+the same reason the rest of this file exists (018 R-010): a requirement whose
+evidence is a machine nobody has yet is deferred, not unchecked.
+
+| # | Requirement | What to do | When | Pass |
+|---|---|---|---|---|
+| FR-001 | Capture latency | `capture` on a 4K monitor completes under 100 ms p50 and 250 ms p99 | deferred: reference hardware | [ ] |
+| FR-002 | Source determinism | Two consecutive captures of a genuinely static screen (no clock, no cursor over the display) are byte-identical | deferred: reference hardware | [ ] |
+| FR-005 | Permission refusal | With Screen Recording denied on macOS, `capture` returns `PermissionDenied` in under 50 ms and **no system prompt appears**. The shell owns prompting | deferred: a macOS account with the grant revoked | [ ] |
+
+`docs/architecture.md` §7 still says the reference machines are "to be fixed in
+phase 3" and names neither. §7.1 records an Apple M1 Max for spec 008's
+benchmark, which is one of the two. The Windows machine is unchosen, and
+naming one that has not been measured on would be worse than leaving it blank.
+
 ## Sign-off
 
 | Platform | Scope | OS version | Date | Tester | Signed |

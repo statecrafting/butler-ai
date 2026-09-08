@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "pipeline"
 created: "2026-09-01"
-implementation: pending
+implementation: complete
 owner: "butler-ai maintainers"
 risk: medium
 platforms: ["windows", "macos"]
@@ -36,6 +36,11 @@ extends:
   # dependencies (xcap, image, zeroize) are pinned once in spec 001's root
   # manifest (001 FR-004) before this crate's manifest references them.
   - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
+  # The manual checklist. 018 R-010 says a requirement whose evidence a later
+  # phase or a missing machine supplies is recorded there as deferred, and
+  # three of this spec's are (D-2). The file sits inside spec 012's package,
+  # so writing to it is an edge rather than a waiver.
+  - { spec: "012-overlay-ui", unit: "apps/desktop/README.md", nature: additive }
 summary: >
   The `butler-capture` crate: a `ScreenSource` trait that yields one `Frame`
   of one monitor on demand, an `xcap`-backed implementation for Windows and
@@ -177,3 +182,91 @@ pub struct Frame {
   019) as the 018 R-002 gate. Nothing in this crate calls settings, logging
   or the runtime; the edges exist so the orchestrator, which schedules on
   `depends_on` alone, cannot start phase 3 while phase 2 is unfinished.
+
+- **D-2 (2026-09-07, three requirements that need a real screen).** FR-001
+  (latency), FR-002 (two identical captures) and FR-005 (permission refused
+  without a prompt) cannot be asserted by `cargo test`. The first two need the
+  reference hardware `docs/architecture.md` §7 names, and a *genuinely* static
+  screen: a clock in a menu bar is enough to make FR-002 fail on a machine
+  where the capture path is perfect. FR-005 needs a macOS account with the
+  Screen Recording grant revoked.
+
+  They are rows in `apps/desktop/README.md` under 018 R-010, marked deferred
+  with what each waits on. §7 still names neither reference machine; §7.1
+  records an Apple M1 Max for spec 008's benchmark, which is one of the two,
+  and naming a Windows machine that has not been measured on would be worse
+  than leaving it blank.
+
+  What *is* asserted mechanically is the whole of §3.2, which is the half spec
+  015 depends on, and it is asserted on every target including Linux.
+
+- **D-3 (2026-09-07, how a missing permission is recognized).** §3.1 gives
+  `CaptureError::PermissionDenied` its own variant, but `xcap` reports a
+  missing macOS grant as an ordinary failure with a message. `map_error`
+  therefore inspects the text for "permission" or "not authorized", which is a
+  heuristic and is documented as one at the call site.
+
+  It is not the product's answer to "may we capture?". Spec 004 §3.5 asks
+  `CGPreflightScreenCaptureAccess` and owns prompting; this crate never
+  prompts (FR-005) and never decides. The heuristic exists so a capture that
+  fails for that reason is *reported* usefully rather than as
+  `Unavailable("...")`, and if it ever misclassifies, the shell's
+  authoritative check is what the user actually sees.
+
+- **D-4 (2026-09-07, FR-004 is asserted during deallocation).** "Dropping a
+  `Frame` zeroes its buffer" cannot be checked by reading the memory after the
+  drop: that is a use-after-free, and such a test measures the allocator's
+  reuse policy rather than our `Drop`.
+
+  `tests/frame_lifecycle.rs` installs a pass-through global allocator that
+  inspects one block size on free, while the pointer is still valid and owned
+  by the caller, which is the only moment at which the question has an answer.
+  The test also asserts the hook **fired**, so it cannot pass by watching a
+  size nothing allocated, and asserts the fixture starts non-zero, so it
+  cannot pass by zeroing nothing.
+
+- **D-5 (2026-09-07, `test_support`, and why it is not a hole).** FR-003's
+  compile-fail tests and the lifecycle tests live outside this crate, and
+  `Frame::new` is `pub(crate)` precisely so that nothing outside can turn
+  pixels into a `Frame`.
+
+  `test_support::frame_from_pattern` bridges that, and is deliberately shaped
+  so it cannot be misused: it takes a single byte and **generates** the
+  buffer, so no caller can hand it a real screen. The guarantee §3.2 is after
+  is that arbitrary pixels cannot acquire a `Frame`'s lifecycle without
+  earning it, and a constructor that refuses to accept pixels keeps it.
+
+## 8. Verification
+
+```verify:cli
+# AC-1: the unit tests, the lifecycle tests and the compile-fail doctests.
+# The lifecycle half runs on every target, Linux included (§2).
+cargo test -p butler-capture --locked
+# FR-003: `Frame` cannot be serialized, cloned, or emptied of its pixels. The
+# doctests carry a positive control, so a passing compile_fail block cannot be
+# passing because an import path is wrong.
+cargo test -p butler-capture --locked --doc
+# AC-2: nothing in the crate can write a frame anywhere.
+sh -c '! grep -rqE "serde|image::save|write_to" crates/butler-capture/src'
+# §3.2 and spec 015: the type-level properties, checked as text because their
+# absence is silent. `Frame` itself carries no derive at all: the first
+# version of this check grepped the whole file and matched `Rect`'s
+# `#[derive(Clone, Copy, ...)]`, which is correct and necessary. The real
+# proof that a frame cannot be cloned or serialized is the compile-fail
+# doctest above; this is the second opinion, and it has to look at the right
+# type. Tested with a negative control.
+sh -c '! grep -B3 "^pub struct Frame {" crates/butler-capture/src/frame.rs | grep -q "derive"'
+grep -q "impl Drop for Frame" crates/butler-capture/src/frame.rs
+grep -q "self.pixels.zeroize()" crates/butler-capture/src/frame.rs
+# §3.2: the timestamp is monotonic. A `SystemTime` here would say when in
+# wall-clock terms the user's screen looked like this.
+sh -c '! grep -q "SystemTime" crates/butler-capture/src/frame.rs'
+grep -q "captured_at: Instant" crates/butler-capture/src/frame.rs
+# §3.3: the compositor path is what spec 005's self-test relies on.
+grep -q "capture_image" crates/butler-capture/src/xcap_source.rs
+# D-2: the three requirements that need a real screen are recorded as
+# deferred rather than silently unchecked.
+grep -q "Screen capture (spec 006)" apps/desktop/README.md
+# Territory: every unit this spec claims resolves.
+sh -c 'spec-spine index render | grep "W-001" | grep -q "006-screen-capture" && exit 1 || exit 0'
+```

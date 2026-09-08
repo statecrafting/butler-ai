@@ -1,0 +1,11 @@
+{
+  "package": {
+    "kind": "rust-lib",
+    "name": "butler-capture",
+    "path": "crates/butler-capture",
+    "specRef": "006-screen-capture",
+    "version": "0.1.0"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "5ed225fafed017db0d74e055628fc733099864d7af4417d2d487c7282093848c"
+}

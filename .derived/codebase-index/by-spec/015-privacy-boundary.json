@@ -4,11 +4,6 @@
     "warnings": [
       {
         "code": "W-001",
-        "message": "spec '015-privacy-boundary' file unit 'crates/butler-capture/src/frame.rs' does not exist",
-        "path": "crates/butler-capture/src/frame.rs"
-      },
-      {
-        "code": "W-001",
         "message": "spec '015-privacy-boundary' file unit 'crates/butler-ocr/src/recognized.rs' does not exist",
         "path": "crates/butler-ocr/src/recognized.rs"
       },
@@ -39,6 +34,10 @@
       },
       {
         "path": "apps/desktop/src-tauri/tauri.conf.json",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-capture/src/frame.rs",
         "source": "spec-edge"
       },
       {
@@ -198,7 +197,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-capture/src/frame.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "constrains",
         "unit": {

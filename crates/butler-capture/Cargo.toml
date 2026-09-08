@@ -1,0 +1,33 @@
+# Spec: specs/006-screen-capture/spec.md
+#
+# The capture crate. Spec 006 §2: it knows how to take one picture of one
+# monitor and nothing else. Cadence, scheduling and backoff are the state
+# machine's (009), which is why nothing here depends on it.
+#
+# `xcap` is cfg-gated to the two shipped platforms. On any other target the
+# crate compiles to the trait and `NullSource`, so `butler-core`'s tests and
+# this crate's lifecycle tests still run on a Linux runner (§2).
+
+[package]
+name = "butler-capture"
+version = "0.1.0"
+description = "Snapshot capture of one monitor for butler-ai"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[package.metadata.butler]
+spec = "006-screen-capture"
+
+[dependencies]
+thiserror = { workspace = true }
+# spec 006 §3.2 and spec 015: a dropped frame must not linger in freed memory.
+zeroize = { workspace = true }
+
+[target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
+xcap = { workspace = true }
+
+[lints]
+workspace = true
