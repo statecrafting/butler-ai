@@ -21,7 +21,14 @@ resolver = "3"
 members = ["crates/*", "apps/desktop/src-tauri"]
 
 # Inherited by every member with `<field>.workspace = true`.
+#
+# `version` is one of the three fields spec 017 FR-003 keeps in lockstep (the
+# others are `apps/desktop/package.json` and `tauri.conf.json`). It lives here
+# rather than in each member so `scripts/bump_version.py` has one line to
+# write: five members pinning their own number is the same drift FR-003
+# exists to catch, one level down where nothing would look for it.
 [workspace.package]
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.92.0"
 license = "AGPL-3.0-only"

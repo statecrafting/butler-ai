@@ -1,5 +1,18 @@
 {
   "record": {
+    "coAuthority": [
+      {
+        "unit": {
+          "anchor": "lint",
+          "file": "Makefile",
+          "kind": "section"
+        },
+        "with_specs": [
+          "001-workspace-layout",
+          "002-agentic-harness"
+        ]
+      }
+    ],
     "created": "2026-09-01",
     "dependsOn": [
       "003-governance-ci",
@@ -49,6 +62,46 @@
           "kind": "file",
           "path": "apps/desktop/package.json"
         }
+      },
+      {
+        "nature": "additive",
+        "spec": "004-desktop-shell",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "006-screen-capture",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "007-text-recognition",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "009-pipeline-state-machine",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/Cargo.toml"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "010-assistant-inference",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-llm/Cargo.toml"
+        }
       }
     ],
     "extraFrontmatter": {
@@ -59,7 +112,7 @@
       ]
     },
     "id": "017-release-and-distribution",
-    "implementation": "pending",
+    "implementation": "in-progress",
     "kind": "feature",
     "owner": "butler-ai maintainers",
     "references": [
@@ -89,13 +142,14 @@
       "4. Functional requirements",
       "5. Acceptance criteria",
       "6. Out of scope",
-      "7. Resolved decisions"
+      "7. Resolved decisions",
+      "8. Verification"
     ],
     "specPath": "specs/017-release-and-distribution/spec.md",
     "status": "approved",
     "summary": "How a tagged commit becomes something a user can install and trust: a release workflow that builds on the two platform runners, code-signs (Authenticode on Windows; Developer ID plus notarization on macOS), emits SHA-256 sidecars and GitHub build-provenance attestations, and publishes a GitHub Release; an updater (`tauri-plugin-updater`) that is off by default and, when the user enables it, checks a single pinned endpoint over HTTPS with signature verification, as an amendment to the privacy boundary records. Version lives in three files kept in lockstep by a script. Deferred until phase 5; specified now so the shell's bundle config is authored with it in mind.\n",
     "title": "Release and distribution: signed, notarized, attested desktop builds with an opt-in updater"
   },
-  "shardHash": "e455d71da429749b019db076b04c578427919032d365c3d0b6b2ce60bc02ea21",
+  "shardHash": "1bf13f6f4aab812a215b193e8e57c65150903d7b27dbdaf7a8ea10deba734393",
   "specVersion": "1.1.0"
 }

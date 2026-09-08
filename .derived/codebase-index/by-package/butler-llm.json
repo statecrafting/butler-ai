@@ -3,9 +3,8 @@
     "kind": "rust-lib",
     "name": "butler-llm",
     "path": "crates/butler-llm",
-    "specRef": "010-assistant-inference",
-    "version": "0.1.0"
+    "specRef": "010-assistant-inference"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "043a64418176f0c33c663dcc2a384ab34aa6908741abffea56d45af154aca4b3"
+  "shardHash": "33ffd4e2b0e5e8751c75cfd5f8b64631cab11c600433633b7c7e87aaea1f74f5"
 }
