@@ -7,8 +7,10 @@
  * runtime and reaches here as an event; §1 calls this a thin, honest
  * renderer, and the way to keep it one is to give it nothing to decide.
  *
- * `SettingsPanel` (spec 014) and `PacedAnswer` (spec 013) are added to this
- * file by their own specs, through `extends` edges onto it.
+ * `SettingsPanel` (spec 014) is added to this file by its own spec, through
+ * an `extends` edge onto it. `PacedAnswer` (spec 013) is mounted inside
+ * `AnswerPanel` rather than here: spec 012 §3.3 gives the answer panel the
+ * job of hosting it, and the panel already renders the lifecycle around it.
  */
 
 import { createSignal, onCleanup, onMount, Show } from "solid-js";

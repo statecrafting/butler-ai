@@ -211,10 +211,12 @@ pub struct PacingSettings {
 
 impl Default for PacingSettings {
     fn default() -> Self {
-        // Comfortable silent-reading pace for on-screen prose. Faster than
-        // this and the overlay is a flicker; slower and it is a teleprompter.
+        // Spec 013 §3.1 fixes the rate and its range, which spec 014 D-1
+        // deferred to that spec outright. This crate's own constant is the
+        // single source, so the settings default and the pacing policy cannot
+        // disagree about what a fresh install does (spec 013 D-1).
         Self {
-            words_per_minute: 300,
+            words_per_minute: crate::pacing::DEFAULT_WORDS_PER_MINUTE,
         }
     }
 }
@@ -624,13 +626,18 @@ impl AssistantSettings {
 impl PacingSettings {
     // By value: the struct is two bytes, smaller than the reference to it.
     fn validate_into(self, errors: &mut Vec<SettingsError>) {
-        check_range(
-            errors,
-            "pacing.words_per_minute",
-            f64::from(self.words_per_minute),
-            60.0,
-            1200.0,
-        );
+        // §3.1 of spec 013: `0` disables pacing outright, and any other
+        // value is inside the readable band. A range check alone would
+        // refuse the documented "no pacing" setting.
+        if self.words_per_minute != 0 {
+            check_range(
+                errors,
+                "pacing.words_per_minute",
+                f64::from(self.words_per_minute),
+                f64::from(crate::pacing::MIN_WORDS_PER_MINUTE),
+                f64::from(crate::pacing::MAX_WORDS_PER_MINUTE),
+            );
+        }
     }
 }
 

@@ -1,36 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '013-output-pacing' file unit 'crates/butler-core/src/pacing.rs' does not exist",
-        "path": "crates/butler-core/src/pacing.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '013-output-pacing' file unit 'crates/butler-core/tests/pacing.rs' does not exist",
-        "path": "crates/butler-core/tests/pacing.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '013-output-pacing' module unit 'butler_core::pacing' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '013-output-pacing' symbol unit 'butler_core::pacing::PacingPolicy' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '013-output-pacing' symbol unit 'butler_core::pacing::Pacer' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '013-output-pacing' file unit 'apps/desktop/src/components/PacedAnswer.tsx' does not exist",
-        "path": "apps/desktop/src/components/PacedAnswer.tsx"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "009-pipeline-state-machine",
@@ -40,8 +8,40 @@
     ],
     "implementingPaths": [
       {
+        "path": "apps/desktop/src-tauri/src/settings_store.rs",
+        "source": "spec-edge"
+      },
+      {
         "path": "apps/desktop/src/App.tsx",
         "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/components/AnswerPanel.tsx",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/components/PacedAnswer.tsx",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src/components/SettingsPanel.tsx",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/generated/bindings.ts",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/state/runtime.ts",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/styles/base.css",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src/test/paced.test.tsx",
+        "source": "multiple"
       },
       {
         "path": "crates/butler-core/src/ipc.rs",
@@ -54,9 +54,38 @@
       {
         "path": "crates/butler-core/src/machine.rs",
         "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/src/pacing.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-core/src/settings.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/tests/pacing.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-core/tests/settings.rs",
+        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/settings_store.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/settings_store.rs"
+        }
+      },
       {
         "locations": [
           {
@@ -71,12 +100,94 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src/components/AnswerPanel.tsx"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/components/AnswerPanel.tsx"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src/components/PacedAnswer.tsx"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
           "kind": "file",
           "path": "apps/desktop/src/components/PacedAnswer.tsx"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src/components/SettingsPanel.tsx"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/components/SettingsPanel.tsx"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src/generated/bindings.ts"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/generated/bindings.ts"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src/state/runtime.ts"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/state/runtime.ts"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src/styles/base.css"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/styles/base.css"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src/test/paced.test.tsx"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src/test/paced.test.tsx"
         }
       },
       {
@@ -93,7 +204,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/pacing.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -102,7 +217,24 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/settings.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/src/settings.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/tests/pacing.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -111,7 +243,24 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/tests/settings.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/tests/settings.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/src/pacing.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -120,7 +269,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/pacing.rs",
+            "span": {
+              "endLine": 155,
+              "startLine": 127
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -129,7 +286,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-core/src/pacing.rs",
+            "span": {
+              "endLine": 74,
+              "startLine": 58
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -168,5 +333,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "c357bb129f27f9b2172a134bdbee4ccabbb0f41f1e3c709718ee87d4b89ba5e9"
+  "shardHash": "a17f14b388b1f932e59e2369aed423d128e21a9cbd92b48a653c0ee613dbac19"
 }

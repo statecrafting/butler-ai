@@ -29,8 +29,25 @@ export interface RuntimeState {
   request: number | null;
   /** Where the answer is in its lifecycle. */
   phase: AnswerPhase;
-  /** The answer so far. Spec 013 appends paced chunks to this. */
+  /** The answer so far: every chunk released in `index` order, joined. */
   answer: string;
+  /**
+   * The released chunks in `index` order (spec 013 §3.3).
+   *
+   * Kept alongside `answer` because the panel fades each chunk in
+   * individually, which needs the seams; `answer` is the same text joined,
+   * for everything that only wants to read it.
+   */
+  chunks: string[];
+  /**
+   * Whether the chunk carrying `is_last` has been applied (spec 013 §3.3).
+   *
+   * The caret is on until this is true. Distinct from `phase === "done"`:
+   * `AnswerDone` says the provider stopped, while this says the pacer
+   * finished releasing what it stopped with, and at a reading pace there are
+   * seconds between the two.
+   */
+  answerComplete: boolean;
   /** Why the answer stopped, when it stopped. */
   stop: string | null;
   /** The failure kind, when it failed. */
@@ -54,6 +71,8 @@ function blank(): RuntimeState {
     request: null,
     phase: "idle",
     answer: "",
+    chunks: [],
+    answerComplete: false,
     stop: null,
     error: null,
     needsPermission: null,
@@ -69,6 +88,27 @@ const [state, setState] = createStore<RuntimeState>(blank());
 export { state };
 
 /**
+ * Chunks that arrived before the one in front of them (spec 013 §3.3).
+ *
+ * Keyed by `index`. Tauri delivers in order, so this is normally empty; the
+ * contract does not promise it, and rendering "world hello" once would be
+ * worse than the code that prevents it.
+ *
+ * Outside the store on purpose: nothing renders from it, and a Solid store
+ * exists to be subscribed to.
+ */
+let pending = new Map<number, { text: string; is_last: boolean }>();
+
+/** The `index` the next chunk must carry to be rendered. */
+let nextIndex = 0;
+
+/** Forget the buffered chunks. Called wherever the answer resets. */
+function resetChunks(): void {
+  pending = new Map();
+  nextIndex = 0;
+}
+
+/**
  * Fold one event into the store (spec 012 §3.4).
  *
  * The `default` arm assigns the event to `never`, which is what actually
@@ -81,6 +121,12 @@ export { state };
  *
  * With the assignment in place a variant added by spec 013 or 010 fails to
  * compile here until it is handled.
+ *
+ * Spec 013 §3.3 attributes the out-of-order buffer to `PacedAnswer`. It is
+ * here instead, because §3.4 gives the overlay exactly one event
+ * subscription and forbids a component from opening its own: a component
+ * cannot buffer an event it never sees. The behaviour §3.3 requires is
+ * unchanged, and in the store it is testable without a DOM (spec 013 D-3).
  */
 export function apply(event: UiEvent): void {
   switch (event.type) {
@@ -88,14 +134,54 @@ export function apply(event: UiEvent): void {
       setState({ status: event });
       return;
     case "answer-started":
+      resetChunks();
       setState({
         request: event.request,
         phase: "streaming",
         answer: "",
+        chunks: [],
+        answerComplete: false,
         stop: null,
         error: null,
       });
       return;
+    case "answer-chunk": {
+      // §3.2: a chunk belongs to one inference. An answer superseded
+      // mid-stream must not bleed into its replacement, and the request id is
+      // what says so. Before `AnswerStarted` there is nothing to compare
+      // against, so the first chunk seen adopts its request.
+      if (state.request !== null && event.request !== state.request) {
+        return;
+      }
+      pending.set(event.index, { text: event.text, is_last: event.is_last });
+
+      // Release the contiguous run starting at the next expected index.
+      // Anything past a gap waits for the chunk that fills it.
+      const ready: string[] = [];
+      let complete = false;
+      for (;;) {
+        const next = pending.get(nextIndex);
+        if (next === undefined) {
+          break;
+        }
+        pending.delete(nextIndex);
+        nextIndex += 1;
+        ready.push(next.text);
+        complete ||= next.is_last;
+      }
+      if (ready.length === 0) {
+        return;
+      }
+
+      const chunks = [...state.chunks, ...ready];
+      setState({
+        request: event.request,
+        chunks,
+        answer: chunks.join(" "),
+        answerComplete: complete,
+      });
+      return;
+    }
     case "answer-done":
       setState({ phase: "done", stop: event.stop });
       return;
@@ -149,10 +235,13 @@ export function setSentinel(sentinel: boolean): void {
  * their way out of being visible to screen sharing.
  */
 export function dismiss(): void {
+  resetChunks();
   setState({
     request: null,
     phase: "idle",
     answer: "",
+    chunks: [],
+    answerComplete: false,
     stop: null,
     error: null,
   });
@@ -160,5 +249,6 @@ export function dismiss(): void {
 
 /** Reset to the initial state. Tests only; the process never does this. */
 export function resetForTest(): void {
+  resetChunks();
   setState(blank());
 }

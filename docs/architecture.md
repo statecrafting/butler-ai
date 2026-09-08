@@ -204,7 +204,7 @@ changing a default.
 | `detection.max_compare_chars` | `6000` |
 | `detection.stability_frames` | `2` |
 | `detection.threshold` | `0.85` |
-| `pacing.words_per_minute` | `300` |
+| `pacing.words_per_minute` | `220` |
 | `privacy.allow_degraded_mode` | `false` |
 | `privacy.diagnostics_level` | `"minimal"` |
 | `privacy.redact_pii` | `false` |

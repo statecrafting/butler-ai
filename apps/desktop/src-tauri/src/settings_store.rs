@@ -419,7 +419,7 @@ monthly_usd = 20.0
 max_input_tokens = 8000
 
 [pacing]
-words_per_minute = 300
+words_per_minute = 220
 
 [shortcuts]
 arm_disarm = \"CmdOrCtrl+Shift+B\"

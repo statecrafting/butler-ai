@@ -139,8 +139,8 @@ fn fr_002_every_documented_range_is_enforced() {
         Case {
             field: "pacing.words_per_minute",
             set: |s, v| s.pacing.words_per_minute = v as u16,
-            min: 60.0,
-            max: 1200.0,
+            min: 120.0,
+            max: 600.0,
             integral: true,
         },
         Case {

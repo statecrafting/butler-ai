@@ -31,8 +31,12 @@
 //! payload types, and they arrive additively, which the version rule above
 //! permits without a major bump:
 //!
-//! - `AnswerChunk`, the paced-output event, is spec 013's.
 //! - `BudgetExhausted` needs `BudgetWindow`, which is spec 010's.
+//!
+//! Spec 013 landed `AnswerChunk`, the paced-output event, on its `refines`
+//! edge over the `answer-chunk-event` aspect. It is the first variant to
+//! carry text the user was reading, which is why [`UiEvent`] stopped
+//! deriving `Debug` (spec 013 D-2).
 //!
 //! Spec 014 landed the settings DTOs (`SettingsUpdated`, `GetSettings`,
 //! `UpdateSettings`), on its `refines` edge over the `settings-dtos` aspect.
@@ -169,7 +173,9 @@ pub enum PermissionKind {
 /// `SettingsUpdated` and carries `f64` fields (opacity, font scale, the
 /// similarity threshold), and floats have no total equality. Nothing needs
 /// `Eq` here; the tests compare with `assert_eq!`, which does not.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Type)]
+///
+/// No derived `Debug` either: see the hand-written one below.
+#[derive(Clone, PartialEq, Serialize, Deserialize, Type)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum UiEvent {
     /// The runtime's current state, emitted on every transition.
@@ -191,6 +197,27 @@ pub enum UiEvent {
     AnswerStarted {
         /// Which request.
         request: u64,
+    },
+    /// A paced piece of the answer (spec 013 §3.2).
+    ///
+    /// Emitted for each `Some(Release)` the pacer hands back, which is the
+    /// only place answer text crosses the boundary. The overlay appends it
+    /// and applies no timing of its own: the reading pace is a pure policy in
+    /// `butler_core::pacing`, so it is testable without a browser and the
+    /// machine knows when rendering is done (spec 013 §1).
+    AnswerChunk {
+        /// Which request the piece belongs to. The overlay drops a chunk
+        /// whose request is not the one it is showing, which is how an
+        /// answer superseded mid-stream cannot bleed into its replacement.
+        request: u64,
+        /// Its position in the sequence, from zero. Spec 013 §3.3: the
+        /// overlay renders in `index` order and buffers anything early.
+        index: u32,
+        /// The words. Whole words only (spec 013 §3.1).
+        text: String,
+        /// Whether the answer is complete after this piece. True only once
+        /// the provider stream ended and the pacer emptied.
+        is_last: bool,
     },
     /// An inference finished.
     AnswerDone {
@@ -306,6 +333,89 @@ pub enum UiCommand {
         /// Boxed, for the reason [`UiEvent::SettingsUpdated`] gives.
         patch: Box<SettingsPatch>,
     },
+}
+
+impl core::fmt::Debug for UiEvent {
+    /// Spec 015 §3.3 and spec 016 §3.1: logs carry ids and kinds, never
+    /// content.
+    ///
+    /// `AnswerChunk` is the first variant to carry text the user was reading,
+    /// and every tracing macro formats its arguments through `Debug`. Spec
+    /// 016's `field!` allowlist has no key that would accept it, but a single
+    /// `?event` anywhere would put the answer in a log file, so the derive
+    /// comes off and the text is replaced by its length. The precedent is
+    /// `UiCommand` below, which redacts a stored secret for the same reason:
+    /// the boundary is a property of the type, not of anyone's diligence
+    /// (spec 011 FR-003).
+    ///
+    /// Everything else prints in full. None of it is content: they are state
+    /// names, ids, error kinds, and a `Settings` that has no secrets in it by
+    /// construction (spec 014 §3.1).
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::RuntimeStatus {
+                state,
+                seq,
+                request,
+                exclusion,
+                last_error,
+                armed_for_ticks,
+            } => f
+                .debug_struct("RuntimeStatus")
+                .field("state", state)
+                .field("seq", seq)
+                .field("request", request)
+                .field("exclusion", exclusion)
+                .field("last_error", last_error)
+                .field("armed_for_ticks", armed_for_ticks)
+                .finish(),
+            Self::AnswerStarted { request } => f
+                .debug_struct("AnswerStarted")
+                .field("request", request)
+                .finish(),
+            Self::AnswerChunk {
+                request,
+                index,
+                text,
+                is_last,
+            } => f
+                .debug_struct("AnswerChunk")
+                .field("request", request)
+                .field("index", index)
+                .field("chars", &text.chars().count())
+                .field("is_last", is_last)
+                .finish(),
+            Self::AnswerDone { request, stop } => f
+                .debug_struct("AnswerDone")
+                .field("request", request)
+                .field("stop", stop)
+                .finish(),
+            Self::AnswerFailed { request, kind } => f
+                .debug_struct("AnswerFailed")
+                .field("request", request)
+                .field("kind", kind)
+                .finish(),
+            Self::NeedsCredential { provider } => f
+                .debug_struct("NeedsCredential")
+                .field("provider", provider)
+                .finish(),
+            Self::NeedsPermission { permission } => f
+                .debug_struct("NeedsPermission")
+                .field("permission", permission)
+                .finish(),
+            Self::SelfTestResult { verdict } => f
+                .debug_struct("SelfTestResult")
+                .field("verdict", verdict)
+                .finish(),
+            Self::SelfTestSentinel { on } => {
+                f.debug_struct("SelfTestSentinel").field("on", on).finish()
+            }
+            Self::SettingsUpdated { settings } => f
+                .debug_struct("SettingsUpdated")
+                .field("settings", settings)
+                .finish(),
+        }
+    }
 }
 
 impl core::fmt::Debug for UiCommand {
@@ -456,6 +566,18 @@ mod tests {
                 armed_for_ticks: 0,
             },
             UiEvent::AnswerStarted { request: 1 },
+            UiEvent::AnswerChunk {
+                request: 1,
+                index: 0,
+                text: "the lead clause,".into(),
+                is_last: false,
+            },
+            UiEvent::AnswerChunk {
+                request: 1,
+                index: 9,
+                text: "and the last one.".into(),
+                is_last: true,
+            },
             UiEvent::AnswerDone {
                 request: 1,
                 stop: StopSummary::EndTurn,
@@ -521,6 +643,7 @@ mod tests {
             match event {
                 UiEvent::RuntimeStatus { .. }
                 | UiEvent::AnswerStarted { .. }
+                | UiEvent::AnswerChunk { .. }
                 | UiEvent::AnswerDone { .. }
                 | UiEvent::AnswerFailed { .. }
                 | UiEvent::NeedsCredential { .. }
@@ -652,6 +775,70 @@ mod tests {
     /// §3.4: the version is what the UI compares at startup. A change to the
     /// major here is a breaking change to every shipped overlay, so it is
     /// asserted rather than left to a reader to notice.
+    /// Spec 013 D-2: the one variant carrying text the user was reading
+    /// prints its length, not its content, so a stray `?event` cannot put an
+    /// answer in a log file.
+    #[test]
+    fn an_answer_chunk_is_redacted_in_debug_output() {
+        let secret_looking = "the deployment key rotates on Thursday";
+        let event = UiEvent::AnswerChunk {
+            request: 7,
+            index: 3,
+            text: secret_looking.into(),
+            is_last: false,
+        };
+
+        for rendered in [format!("{event:?}"), format!("{event:#?}")] {
+            assert!(
+                !rendered.contains(secret_looking),
+                "the answer reached Debug output: {rendered}",
+            );
+            assert!(!rendered.contains("Thursday"), "{rendered}");
+            // Not vacuous: the ids that make a chunk diagnosable are there.
+            assert!(rendered.contains("AnswerChunk"), "{rendered}");
+            assert!(rendered.contains('7'), "{rendered}");
+            assert!(rendered.contains('3'), "{rendered}");
+            assert!(
+                rendered.contains(&secret_looking.chars().count().to_string()),
+                "the length is what replaces the text: {rendered}",
+            );
+        }
+    }
+
+    /// The hand-written `Debug` has to keep printing everything that is not
+    /// content, or a variant silently loses its diagnostics.
+    #[test]
+    fn every_other_event_still_debugs_in_full() {
+        for event in every_event() {
+            let rendered = format!("{event:?}");
+            assert!(!rendered.is_empty());
+            match &event {
+                UiEvent::RuntimeStatus { seq, .. } => {
+                    assert!(rendered.contains("state:"), "{rendered}");
+                    assert!(rendered.contains(&seq.to_string()), "{rendered}");
+                }
+                UiEvent::NeedsCredential { provider } => {
+                    assert!(rendered.contains(provider), "{rendered}");
+                }
+                UiEvent::AnswerStarted { request }
+                | UiEvent::AnswerDone { request, .. }
+                | UiEvent::AnswerFailed { request, .. } => {
+                    assert!(rendered.contains(&request.to_string()), "{rendered}");
+                }
+                UiEvent::SelfTestSentinel { on } => {
+                    assert!(rendered.contains(&on.to_string()), "{rendered}");
+                }
+                // `AnswerChunk` has its own assertion above; the rest carry
+                // nothing this test can name that is not already covered by
+                // the round-trip and wire-shape tests.
+                UiEvent::AnswerChunk { .. }
+                | UiEvent::NeedsPermission { .. }
+                | UiEvent::SelfTestResult { .. }
+                | UiEvent::SettingsUpdated { .. } => {}
+            }
+        }
+    }
+
     #[test]
     fn the_contract_version_is_one_zero() {
         assert_eq!(IPC_CONTRACT_VERSION, (1, 0));
