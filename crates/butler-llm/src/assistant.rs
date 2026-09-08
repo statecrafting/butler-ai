@@ -40,6 +40,50 @@ impl ProviderId {
 ///
 /// Deliberately not `Clone`: a request carries the user's screen, and one
 /// request should have one owner for the same reason a `Frame` does.
+///
+/// # The screen cannot be a `String` (spec 015 FR-003)
+///
+/// [`RedactedText`] is the only type spec 015 lets out of the process, and it
+/// has no public constructor: the only way to make one is
+/// [`butler_core::redaction::redact`]. So a caller who has raw screen text
+/// cannot put it in a request by mistake; the type refuses, at compile time,
+/// rather than a reviewer noticing.
+///
+/// ```compile_fail
+/// use butler_core::machine::RequestId;
+/// use butler_core::settings::{AnswerStyle, Effort};
+/// use butler_llm::assistant::InferenceRequest;
+/// // The raw screen. It must not be constructible into a request.
+/// let _ = InferenceRequest {
+///     request: RequestId(1),
+///     screen_text: "the user's actual screen".to_owned(),
+///     prior_answer: None,
+///     user_note: None,
+///     effort: Effort::Medium,
+///     answer_style: AnswerStyle::Short,
+///     max_output_tokens: 1024,
+/// };
+/// ```
+///
+/// The positive control, so a passing `compile_fail` above cannot be passing
+/// because a path is wrong or a variant was renamed:
+///
+/// ```
+/// use butler_core::machine::RequestId;
+/// use butler_core::redaction::{RedactionPolicy, redact};
+/// use butler_core::settings::{AnswerStyle, Effort};
+/// use butler_llm::assistant::InferenceRequest;
+/// let request = InferenceRequest {
+///     request: RequestId(1),
+///     screen_text: redact("the user's actual screen", &RedactionPolicy::default()),
+///     prior_answer: None,
+///     user_note: None,
+///     effort: Effort::Medium,
+///     answer_style: AnswerStyle::Short,
+///     max_output_tokens: 1024,
+/// };
+/// assert_eq!(request.request, RequestId(1));
+/// ```
 #[derive(Debug)]
 pub struct InferenceRequest {
     /// Which inference this is, for correlating events.
