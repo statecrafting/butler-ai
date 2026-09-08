@@ -131,6 +131,22 @@ windows = { version = "0.62", features = ["Media_Ocr", "Graphics_Imaging", "Glob
 # names it directly (spec 007 D-5).
 windows-future = { version = "0.3" }
 
+# spec 010: the provider client. `rustls` rather than the platform TLS stack so
+# the trust store is the one this build ships with, and no proxy
+# auto-detection: spec 015 §3.3 says the endpoint set is explicit, and a
+# system proxy read from the environment would be an endpoint nobody chose.
+# `keyring` puts the API key in the OS keychain, never in a file.
+# `system-proxy` is deliberately absent, not merely unused: with the feature
+# off, reqwest cannot read a proxy from the environment at all. Spec 015 §3.3
+# says the endpoint set is explicit, and a proxy nobody configured in this
+# app's settings is an endpoint nobody chose.
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "stream", "json", "http2"] }
+# keyring 4 builds the platform credential store in: Keychain on macOS,
+# Credential Manager on Windows. No per-platform feature to select.
+keyring = { version = "4" }
+futures-core = { version = "0.3" }
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,
 # butler-desktop) carry FFI under `#[allow(unsafe_code)]` with a `// SAFETY:`

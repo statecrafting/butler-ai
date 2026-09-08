@@ -1,92 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' crate unit 'butler-llm' does not match any discovered package"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/Cargo.toml' does not exist",
-        "path": "crates/butler-llm/Cargo.toml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/src/lib.rs' does not exist",
-        "path": "crates/butler-llm/src/lib.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/src/assistant.rs' does not exist",
-        "path": "crates/butler-llm/src/assistant.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/src/anthropic.rs' does not exist",
-        "path": "crates/butler-llm/src/anthropic.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/src/sse.rs' does not exist",
-        "path": "crates/butler-llm/src/sse.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/src/prompt.rs' does not exist",
-        "path": "crates/butler-llm/src/prompt.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/src/secrets.rs' does not exist",
-        "path": "crates/butler-llm/src/secrets.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/src/budget.rs' does not exist",
-        "path": "crates/butler-llm/src/budget.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/tests/sse.rs' does not exist",
-        "path": "crates/butler-llm/tests/sse.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' file unit 'crates/butler-llm/tests/prompt.rs' does not exist",
-        "path": "crates/butler-llm/tests/prompt.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' directory unit 'crates/butler-llm/tests/fixtures/' is not a directory",
-        "path": "crates/butler-llm/tests/fixtures/"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' symbol unit 'butler_llm::assistant::Assistant' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' symbol unit 'butler_llm::assistant::InferenceRequest' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' symbol unit 'butler_llm::assistant::Chunk' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' symbol unit 'butler_llm::anthropic::AnthropicAssistant' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' symbol unit 'butler_llm::secrets::SecretStore' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '010-assistant-inference' symbol unit 'butler_llm::budget::SpendGuard' did not resolve"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "005-capture-exclusion",
@@ -98,11 +10,63 @@
       {
         "path": "Cargo.toml",
         "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-llm",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-llm/src/anthropic.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/src/assistant.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/src/budget.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/src/lib.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/src/prompt.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/src/secrets.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/src/sse.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/tests/fixtures/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-llm/tests/prompt.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "crates/butler-llm/tests/sse.rs",
+        "source": "multiple"
       }
     ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -111,7 +75,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/tests/fixtures/"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -120,7 +88,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/Cargo.toml"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -129,7 +101,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/anthropic.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -138,7 +114,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/assistant.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -147,7 +127,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/budget.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -156,7 +140,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/lib.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -165,7 +153,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/prompt.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -174,7 +166,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/secrets.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -183,7 +179,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/sse.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -192,7 +192,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/tests/prompt.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -201,7 +205,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/tests/sse.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -210,7 +218,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/anthropic.rs",
+            "span": {
+              "endLine": 72,
+              "startLine": 67
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -219,7 +235,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/assistant.rs",
+            "span": {
+              "endLine": 191,
+              "startLine": 177
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -228,7 +252,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/assistant.rs",
+            "span": {
+              "endLine": 102,
+              "startLine": 92
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -237,7 +269,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/assistant.rs",
+            "span": {
+              "endLine": 59,
+              "startLine": 44
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -246,7 +286,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/budget.rs",
+            "span": {
+              "endLine": 80,
+              "startLine": 75
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -255,7 +303,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/secrets.rs",
+            "span": {
+              "endLine": 109,
+              "startLine": 109
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -281,5 +337,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "cc7ec5ba7eee3b1f1957b80a6f08b65b4ac5f47ed80d5cea09453d52e8c4a2fa"
+  "shardHash": "2d9c5af561c66efece2a20c1f9821cdde23a1655579bd366e889c2d155c935b8"
 }
