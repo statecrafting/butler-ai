@@ -67,11 +67,23 @@ for wf in "$dir"/*.yml "$dir"/*.yaml; do
         echo "  ? $(basename "$wf") [$job] $ref: metadata not fetched; unverified" >&2
         continue
       fi
-      if printf '%s\n' "$meta" | grep -qE '^[[:space:]]*using:[[:space:]]*"?docker"?[[:space:]]*$'; then
+      # YAML quotes three ways and means one thing: `using: docker`,
+      # `using: "docker"` and `using: 'docker'` are the same declaration.
+      # Matching only the first two missed hadolint-action, which is the
+      # single-quoted form, so the check reported ok on a real violation.
+      if printf '%s\n' "$meta" | grep -qE "^[[:space:]]*using:[[:space:]]*['\"]?docker['\"]?[[:space:]]*\$"; then
         echo "  x $(basename "$wf") [$job] $ref is a Docker container action, but this job targets a non-Linux runner" >&2
         violations=$((violations + 1))
       fi
-    done < <(printf '%s\n' "$body" | sed -n 's/^[[:space:]]*-\{0,1\}[[:space:]]*uses:[[:space:]]*//p' | tr -d '\r')
+    # The trailing `# v1.2.3` on a SHA-pinned `uses:` is part of the line but
+    # not part of the reference. Left in, it lands inside the raw.githubusercontent
+    # URL, every fetch 404s, and the check reports "unverified" for everything
+    # while still exiting 0: a control that passes without checking anything,
+    # which is worse than no control. Strip the comment, then the whitespace.
+    done < <(printf '%s\n' "$body" \
+      | sed -n 's/^[[:space:]]*-\{0,1\}[[:space:]]*uses:[[:space:]]*//p' \
+      | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' \
+      | tr -d '\r')
   done < <(cut -f1 "$tmp" | sort -u)
 done
 

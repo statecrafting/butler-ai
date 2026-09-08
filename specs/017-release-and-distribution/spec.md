@@ -43,6 +43,11 @@ extends:
   - { spec: "007-text-recognition", unit: "crates/butler-ocr/Cargo.toml", nature: additive }
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/Cargo.toml", nature: additive }
   - { spec: "010-assistant-inference", unit: "crates/butler-llm/Cargo.toml", nature: additive }
+  # D-11: pinning every action to a commit SHA put a trailing version comment
+  # on each `uses:` line, which 003's checker read as part of the reference.
+  # Repairing that extractor, and the quote handling the same run exposed, is
+  # a change to 003's file made from this spec's branch.
+  - { spec: "003-governance-ci", unit: "scripts/check-action-runners.sh", nature: additive }
 co_authority:
   # §3: `bump_version.py --check` runs in `make lint`, which specs 001 and 002
   # already share.
@@ -307,6 +312,36 @@ is 004's).
   Found by re-reading the workflow rather than by any check, which is the
   point of D-2's list: no step in it has run.
 
+- **D-11 (2026-09-08, a tag is a mutable pointer).** Every `uses:` in this
+  workflow now names a 40-character commit SHA with its version in a trailing
+  comment. Section 3 was silent on how an action is referenced, and D-2
+  recorded them as resolving "at its pinned tag"; a tag is a name its owner
+  can move. What this protects is the one job that imports a Developer ID
+  certificate and an Authenticode key, the highest-value step in this
+  repository to compromise, so it takes the strongest pin available. The
+  sibling corpora (spec-spine, statecraft-cli) hold the same rule.
+
+  Pinning broke, and then repaired, the very check D-2 cites as the evidence
+  that these references resolve. `scripts/check-action-runners.sh` (spec 003)
+  took each `uses:` line whole, so the trailing ` # v7.0.1` went into the
+  raw.githubusercontent URL, every fetch 404ed, and all six references were
+  reported "unverified" while the script still exited 0. Fixing that surfaced
+  a second defect which predates this change: the Docker test matched
+  `using: docker` and `using: "docker"` but not `using: 'docker'`, the
+  single-quoted form, which is the one hadolint-action uses. Both are fixed
+  under the `extends` edge above, and section 8 now carries a positive control
+  that fails if the check ever stops catching a real violation.
+
+- **D-12 (2026-09-08, an SBOM nobody checked is a claim nobody can stand
+  behind).** D-3 rejected `pnpm sbom` because it prints `undefined` and exits
+  0, attaching an empty file while reporting success. That reasoning was never
+  turned on what replaced it. `cargo cyclonedx` can resolve nothing and still
+  write a well-formed document with an empty `components` array, and `pnpm
+  licenses list` can return an empty object; both exit 0. The workflow now
+  asserts that each half parses as JSON and is non-empty before anything is
+  attested, so a cataloger regression fails the release instead of shipping a
+  supply-chain document that describes nothing.
+
 ## 8. Verification
 
 Every command here runs today. The steps that cannot run without a signing
@@ -337,6 +372,16 @@ grep -q 'tags: \["v\*"\]' .github/workflows/release.yml
 # it starts when a signing secret is absent, rather than building something it
 # cannot sign.
 grep -q "cannot sign a" .github/workflows/release.yml
+# D-11: every action reference is a 40-hex commit SHA, not a tag. The two
+# counts must agree, so a single reference widened back to a tag fails here.
+sh -c 'test "$(grep -cE "^[[:space:]]*-?[[:space:]]*uses:" .github/workflows/release.yml)" = "$(grep -cE "^[[:space:]]*-?[[:space:]]*uses: [^@]+@[0-9a-f]{40} # v" .github/workflows/release.yml)"'
+# D-11: and the checker reading them is not passing vacuously. A Docker
+# container action on a macOS job must be caught. The fixture pins hadolint by
+# SHA, so the metadata under the control cannot change beneath it.
+sh -c 'd=$(mktemp -d); printf "name: c\non:\n  push:\njobs:\n  probe:\n    runs-on: macos-latest\n    steps:\n      - uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0\n" > "$d/c.yml"; ./scripts/check-action-runners.sh "$d" >/dev/null 2>&1; rc=$?; rm -rf "$d"; test "$rc" -eq 1'
+# D-12: both SBOM halves are asserted non-empty before anything is attested,
+# rather than trusted to a zero exit (D-3's failure mode, applied to Rust).
+grep -q "The SBOMs describe something" .github/workflows/release.yml
 # D-8: the job holding the signing certificates cannot also publish.
 sh -c 'awk "/^  build:/,/^  publish:/" .github/workflows/release.yml | grep -q "contents: read"'
 # Section 3's bundle section: the installers a release publishes, and the

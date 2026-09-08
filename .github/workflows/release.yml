@@ -13,6 +13,14 @@
 # has ever been pushed. Spec 017 D-2 lists what an operator must supply and
 # which steps will be exercised for the first time when they do. Read it
 # before the first tag.
+#
+# Every `uses:` here is pinned to a full commit SHA with its version in a
+# trailing comment, not to a tag. A tag is a mutable pointer: whoever can
+# move `v7` can change what runs in the one job that imports a Developer ID
+# certificate and an Authenticode key. That is the highest-value step in this
+# repository to compromise, and pinning is the cheapest thing that closes it.
+# Refresh a pin deliberately (read the diff between the two SHAs); never
+# widen one back to a tag. Sibling projects hold the same rule.
 name: release
 
 on:
@@ -43,7 +51,7 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # FR-003, extended to the tag. Three files agreeing on a number that is
       # not the one on the tag is worse than three files disagreeing: the
@@ -88,15 +96,15 @@ jobs:
           fi
           echo "signing credentials present for ${{ runner.os }}"
 
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
           cache: pnpm
       - name: Toolchain
         run: rustc --version && cargo --version
       - name: Cache cargo
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cargo/registry
@@ -207,18 +215,51 @@ jobs:
           pnpm --filter @butler-ai/desktop licenses list --json \
             > "dist-release/sbom-web-${{ runner.os }}.json"
 
+      # D-3 rejected `pnpm sbom` because it prints `undefined` and exits 0: a
+      # step built on that attaches an empty file and reports success, which
+      # is worse than failing. The failure mode is not unique to pnpm.
+      # `cargo cyclonedx` can regress the same way, since a cataloger that
+      # resolves nothing still writes a well-formed document with an empty
+      # `components` array, and so can `pnpm licenses list`. An SBOM nobody
+      # checked is a supply-chain claim nobody can stand behind, so both
+      # halves are asserted here instead of being trusted to a zero exit.
+      - name: The SBOMs describe something
+        shell: bash
+        run: |
+          set -euo pipefail
+          rust="dist-release/sbom-rust-${{ runner.os }}.cdx.json"
+          web="dist-release/sbom-web-${{ runner.os }}.json"
+          for file in "$rust" "$web"; do
+            jq -e . "$file" >/dev/null 2>&1 || {
+              echo "::error::$file is not valid JSON; the generator printed something else and still exited 0"
+              exit 1
+            }
+          done
+          components="$(jq '.components | length' "$rust")"
+          echo "rust SBOM components: $components"
+          if [ "$components" -eq 0 ]; then
+            echo "::error::$rust lists zero components; cargo-cyclonedx resolved nothing"
+            exit 1
+          fi
+          entries="$(jq 'if type == "array" then length else (to_entries | length) end' "$web")"
+          echo "web licence entries: $entries"
+          if [ "$entries" -eq 0 ]; then
+            echo "::error::$web is empty; pnpm licenses list reported no dependencies"
+            exit 1
+          fi
+
       # FR-001's second half: an attestation `gh attestation verify` accepts,
       # for every installer. The sidecars and SBOMs are covered by the
       # installer's own attestation plus their hashes.
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
         with:
           subject-path: |
             dist-release/*.dmg
             dist-release/*.msi
             dist-release/*.exe
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: release-${{ runner.os }}
           path: dist-release/
@@ -231,8 +272,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/download-artifact@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           path: incoming
           merge-multiple: true
