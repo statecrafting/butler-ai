@@ -32,9 +32,10 @@
 //! permits without a major bump:
 //!
 //! - `AnswerChunk`, the paced-output event, is spec 013's.
-//! - `SettingsUpdated`, `GetSettings` and `UpdateSettings` need
-//!   `SettingsView` and `SettingsPatch`, which are spec 014's.
 //! - `BudgetExhausted` needs `BudgetWindow`, which is spec 010's.
+//!
+//! Spec 014 landed the settings DTOs (`SettingsUpdated`, `GetSettings`,
+//! `UpdateSettings`), on its `refines` edge over the `settings-dtos` aspect.
 //!
 //! See spec 011 D-3.
 
@@ -42,6 +43,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 
 use crate::machine::{ExclusionState, State, StopReason};
+use crate::settings::{Settings, SettingsError, SettingsPatch};
 
 /// The re-exported failure kind (spec 011 §3.1).
 ///
@@ -162,7 +164,12 @@ pub enum PermissionKind {
 }
 
 /// Rust to UI. One channel, one tagged payload (§3.2).
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+///
+/// `PartialEq` but not `Eq`: spec 014's `Settings` reaches this enum through
+/// `SettingsUpdated` and carries `f64` fields (opacity, font scale, the
+/// similarity threshold), and floats have no total equality. Nothing needs
+/// `Eq` here; the tests compare with `assert_eq!`, which does not.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Type)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum UiEvent {
     /// The runtime's current state, emitted on every transition.
@@ -214,14 +221,41 @@ pub enum UiEvent {
         /// What it found.
         verdict: ExclusionSummary,
     },
+    /// The configuration changed and was persisted (spec 014 §3.3).
+    ///
+    /// Broadcast after a successful `UpdateSettings`, and in reply to
+    /// `GetSettings`, so every panel renders one value rather than each
+    /// holding its own copy.
+    SettingsUpdated {
+        /// The whole configuration. Spec 014 §3.1: this is `Settings` minus
+        /// nothing, because there are no secrets in it by construction.
+        ///
+        /// Boxed. `Settings` is an order of magnitude larger than any other
+        /// payload here, and an enum is as big as its largest variant, so
+        /// every `UiEvent` in the process would carry that size. Serde and
+        /// specta both see through a `Box`, so the wire format and the
+        /// generated TypeScript are unchanged.
+        settings: Box<SettingsView>,
+    },
 }
+
+/// What the UI sees of the configuration (spec 014 §3.1).
+///
+/// A type alias rather than a projection, and deliberately: spec 014 §3.1
+/// says "`SettingsView` is `Settings` minus nothing", because a secret cannot
+/// be in `Settings` in the first place (spec 010 puts credentials in the OS
+/// keychain, spec 015 §3.4 keeps them out of the file). A separate struct
+/// here would be a second thing to keep in step, for no gain.
+pub type SettingsView = Settings;
 
 /// UI to Rust. Every command the overlay may issue (§3.2).
 ///
 /// [`Debug`] is implemented by hand rather than derived, so that
 /// [`UiCommand::StoreSecret`]'s argument cannot reach a log through the one
 /// formatting call every logging macro makes (FR-004).
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+///
+/// `PartialEq` but not `Eq`, for the reason [`UiEvent`] gives.
+#[derive(Clone, PartialEq, Serialize, Deserialize, Type)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum UiCommand {
     /// Start watching the screen.
@@ -249,6 +283,19 @@ pub enum UiCommand {
     RunSelfTest,
     /// Read [`IPC_CONTRACT_VERSION`] (§3.4).
     GetContractVersion,
+    /// Ask for the current configuration (spec 014 §3.3).
+    GetSettings,
+    /// Change the configuration (spec 014 §3.3).
+    ///
+    /// The patch is applied to a candidate, the candidate is validated, and
+    /// an invalid one is rejected **whole**: nothing is persisted and the
+    /// previous configuration is untouched.
+    UpdateSettings {
+        /// Only the fields the user changed.
+        ///
+        /// Boxed, for the reason [`UiEvent::SettingsUpdated`] gives.
+        patch: Box<SettingsPatch>,
+    },
 }
 
 impl core::fmt::Debug for UiCommand {
@@ -275,6 +322,11 @@ impl core::fmt::Debug for UiCommand {
                 .finish(),
             Self::RunSelfTest => f.write_str("RunSelfTest"),
             Self::GetContractVersion => f.write_str("GetContractVersion"),
+            Self::GetSettings => f.write_str("GetSettings"),
+            Self::UpdateSettings { patch } => f
+                .debug_struct("UpdateSettings")
+                .field("patch", patch)
+                .finish(),
         }
     }
 }
@@ -332,7 +384,17 @@ ipc_safe!(
     ErrorKind,
     UiEvent,
     UiCommand,
+    // Spec 014's configuration. It carries no screen content and no secret
+    // by construction: credentials live in the OS keychain (spec 010) and
+    // spec 015 §3.4 keeps them out of the settings file, so there is nothing
+    // in `Settings` for the boundary to refuse.
+    Settings,
+    SettingsPatch,
+    SettingsError,
 );
+
+impl<T: IpcSafe> sealed::Sealed for Box<T> {}
+impl<T: IpcSafe> IpcSafe for Box<T> {}
 
 impl<T: IpcSafe> sealed::Sealed for Option<T> {}
 impl<T: IpcSafe> IpcSafe for Option<T> {}
@@ -354,6 +416,7 @@ mod tests {
         UiCommand, UiEvent,
     };
     use crate::machine::{ExclusionState, State, StopReason};
+    use crate::settings::{PrivacyPatch, Settings, SettingsPatch};
 
     /// Every [`UiEvent`] variant, once.
     ///
@@ -400,6 +463,9 @@ mod tests {
             UiEvent::SelfTestResult {
                 verdict: ExclusionSummary::Compromised,
             },
+            UiEvent::SettingsUpdated {
+                settings: Box::new(Settings::default()),
+            },
         ]
     }
 
@@ -418,6 +484,21 @@ mod tests {
             },
             UiCommand::RunSelfTest,
             UiCommand::GetContractVersion,
+            UiCommand::GetSettings,
+            // An empty patch and a populated one take different paths through
+            // `skip_serializing_if`: the first serializes to `{}`.
+            UiCommand::UpdateSettings {
+                patch: Box::new(SettingsPatch::default()),
+            },
+            UiCommand::UpdateSettings {
+                patch: Box::new(SettingsPatch {
+                    privacy: Some(PrivacyPatch {
+                        allow_degraded_mode: Some(true),
+                        ..PrivacyPatch::default()
+                    }),
+                    ..SettingsPatch::default()
+                }),
+            },
         ]
     }
 
@@ -432,7 +513,8 @@ mod tests {
                 | UiEvent::AnswerFailed { .. }
                 | UiEvent::NeedsCredential { .. }
                 | UiEvent::NeedsPermission { .. }
-                | UiEvent::SelfTestResult { .. } => {}
+                | UiEvent::SelfTestResult { .. }
+                | UiEvent::SettingsUpdated { .. } => {}
             }
         }
     }
@@ -448,7 +530,9 @@ mod tests {
                 | UiCommand::SetInteractive { .. }
                 | UiCommand::StoreSecret { .. }
                 | UiCommand::RunSelfTest
-                | UiCommand::GetContractVersion => {}
+                | UiCommand::GetContractVersion
+                | UiCommand::GetSettings
+                | UiCommand::UpdateSettings { .. } => {}
             }
         }
     }

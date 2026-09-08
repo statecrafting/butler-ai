@@ -10,6 +10,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import type { UiEvent } from "../ipc/client";
+import { DEFAULT_SETTINGS } from "../ipc/client";
 import { apply, dismiss, resetForTest, state } from "../state/runtime";
 
 const degraded: UiEvent = {
@@ -47,6 +48,17 @@ describe("the runtime store", () => {
     apply({ type: "answer-failed", request: 7, kind: "network" });
     expect(state.phase).toBe("failed");
     expect(state.error).toBe("network");
+  });
+
+  it("records the configuration the process sent (spec 014)", () => {
+    apply({ type: "settings-updated", settings: DEFAULT_SETTINGS });
+    expect(state.settings?.capture.interval_ms).toBe(
+      DEFAULT_SETTINGS.capture.interval_ms,
+    );
+    // Spec 015 §3.2 and spec 004 §3.2: the two defaults that make this the
+    // product the constitution describes.
+    expect(state.settings?.privacy.redaction_enabled).toBe(true);
+    expect(state.settings?.privacy.allow_degraded_mode).toBe(false);
   });
 
   it("records what the process is waiting on", () => {

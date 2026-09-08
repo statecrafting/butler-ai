@@ -16,13 +16,18 @@ import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 
 import {
   commands,
+  DEFAULT_SETTINGS,
   EVENT_CHANNEL,
   IPC_CONTRACT_VERSION,
+  type Settings,
+  type SettingsPatch,
   type UiEvent,
 } from "../generated/bindings";
 
-export type { UiEvent };
-export { commands, IPC_CONTRACT_VERSION };
+// `Settings` is what spec 014's `SettingsView` alias resolves to: §3.1 says
+// the view is `Settings` minus nothing, so specta exports one type.
+export type { Settings, SettingsPatch, UiEvent };
+export { commands, DEFAULT_SETTINGS, IPC_CONTRACT_VERSION };
 
 /**
  * Subscribe to the one event channel (spec 011 §3.2).

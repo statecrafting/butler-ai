@@ -11,7 +11,7 @@
 
 import { createStore } from "solid-js/store";
 
-import type { UiEvent } from "../ipc/client";
+import type { Settings, UiEvent } from "../ipc/client";
 
 /** The status event, named once so components do not restate the union. */
 export type RuntimeStatus = Extract<UiEvent, { type: "runtime-status" }>;
@@ -41,6 +41,8 @@ export interface RuntimeState {
   needsCredential: string | null;
   /** The most recent self-test verdict, if one has run. */
   selfTest: string | null;
+  /** The current configuration, once the process has sent it (spec 014). */
+  settings: Settings | null;
   /** Whether the exclusion sentinel is mounted (spec 005 drives this). */
   sentinel: boolean;
 }
@@ -57,6 +59,7 @@ function blank(): RuntimeState {
     needsPermission: null,
     needsCredential: null,
     selfTest: null,
+    settings: null,
     sentinel: false,
   };
 }
@@ -68,11 +71,16 @@ export { state };
 /**
  * Fold one event into the store (spec 012 §3.4).
  *
- * `switch` over the tag with **no `default`**, and a return type that makes
- * the compiler check every arm: the generated union is exhaustive, so a
- * variant added by spec 013, 014 or 010 fails to typecheck here until it is
- * handled. That is the point of generating the union rather than writing it,
- * and it is why this does not quietly ignore what it does not recognize.
+ * The `default` arm assigns the event to `never`, which is what actually
+ * makes the compiler check every case. Spec 012 first relied on a `switch`
+ * with no `default` and a `void` return, which does **not** error on an
+ * unhandled variant: TypeScript simply falls through. Adding
+ * `UiEvent::SettingsUpdated` typechecked cleanly against a store that ignored
+ * it, which is the exact silence the generated union exists to prevent
+ * (spec 014 D-3).
+ *
+ * With the assignment in place a variant added by spec 013 or 010 fails to
+ * compile here until it is handled.
  */
 export function apply(event: UiEvent): void {
   switch (event.type) {
@@ -103,6 +111,17 @@ export function apply(event: UiEvent): void {
     case "self-test-result":
       setState({ selfTest: event.verdict });
       return;
+    case "settings-updated":
+      setState({ settings: event.settings });
+      return;
+    default: {
+      // Exhaustiveness. If a new `UiEvent` variant reaches here, `event` is
+      // no longer `never` and this assignment fails to compile.
+      const unhandled: never = event;
+      throw new Error(
+        `spec 011 contract drift: unhandled UiEvent ${JSON.stringify(unhandled)}`,
+      );
+    }
   }
 }
 

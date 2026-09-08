@@ -28,7 +28,11 @@ use tauri::{AppHandle, Manager, Runtime, State};
 
 use crate::app_state::AppState;
 use crate::window::{self, OVERLAY_LABEL};
-use butler_core::ipc::{ErrorKind, IPC_CONTRACT_VERSION};
+use butler_core::ipc::{ErrorKind, IPC_CONTRACT_VERSION, SettingsView};
+use butler_core::settings::SettingsPatch;
+
+use crate::events;
+use crate::settings_store::SettingsStore;
 
 /// The contract version the UI checks at startup (§3.4).
 ///
@@ -154,6 +158,71 @@ pub fn store_secret(provider: String, secret: String) -> Result<(), ErrorKind> {
     Err(ErrorKind::Credential)
 }
 
+/// Read the current configuration (spec 014 §3.3).
+///
+/// Serves from the in-memory copy rather than re-reading the file: the app is
+/// the only writer (spec 014 §3.2), so the file cannot be ahead of memory,
+/// and opening a settings panel should not touch the disk.
+#[tauri::command]
+#[specta::specta]
+#[allow(
+    clippy::needless_pass_by_value,
+    reason = "`#[tauri::command]` hands `State` over by value; the macro does \
+              not generate a call that could pass a reference."
+)]
+#[must_use]
+pub fn get_settings(state: State<'_, AppState>) -> SettingsView {
+    state.settings()
+}
+
+/// Change the configuration (spec 014 §3.3).
+///
+/// Apply, validate, persist, broadcast. The order matters and the failure
+/// behaviour matters more: an invalid patch is rejected **whole**, so nothing
+/// is written and the in-memory copy is untouched. A half-applied
+/// configuration would be one the user never chose and cannot see.
+///
+/// Spec 019 will take a `SettingsChanged` event from here and spec 004 will
+/// re-register the shortcuts when they change. Neither exists yet, so this
+/// stops after the broadcast.
+///
+/// # Errors
+///
+/// [`ErrorKind::Internal`] if the patch does not validate, or if the file
+/// cannot be written. The typed field list is not on the wire: `ErrorKind` is
+/// a closed enum by spec 011 §3.1 and widening it is that spec's call
+/// (spec 014 D-4).
+#[tauri::command]
+#[specta::specta]
+#[allow(
+    clippy::needless_pass_by_value,
+    reason = "`#[tauri::command]` hands `AppHandle` and `State` over by value."
+)]
+pub fn update_settings<R: Runtime>(
+    app: AppHandle<R>,
+    state: State<'_, AppState>,
+    patch: SettingsPatch,
+) -> Result<SettingsView, ErrorKind> {
+    let candidate = state.settings().apply(&patch);
+    candidate.validate().map_err(|_| ErrorKind::Internal)?;
+
+    let store = SettingsStore::platform().map_err(|_| ErrorKind::Internal)?;
+    store.save(&candidate).map_err(|_| ErrorKind::Internal)?;
+
+    state.set_settings(candidate.clone());
+
+    // Best effort: the caller already has the new value as the return, so a
+    // webview that has gone away costs it nothing.
+    let _ = events::emit(
+        &app,
+        &butler_core::ipc::UiEvent::SettingsUpdated {
+            settings: Box::new(candidate.clone()),
+        },
+    );
+
+    Ok(candidate)
+}
+
 /// The one `tauri-specta` builder (§3.2, §3.3).
 ///
 /// Both callers use this function: [`crate::run`] installs
@@ -180,6 +249,8 @@ pub fn builder() -> tauri_specta::Builder<tauri::Wry> {
             dismiss,
             run_self_test,
             store_secret,
+            get_settings,
+            update_settings::<tauri::Wry>,
         ])
         .typ::<butler_core::ipc::UiEvent>()
 }

@@ -27,6 +27,7 @@ pub mod app_state;
 pub mod commands;
 pub mod events;
 pub mod permissions;
+pub mod settings_store;
 pub mod shortcuts;
 pub mod tray;
 pub mod window;
@@ -148,9 +149,27 @@ pub fn run() {
         .setup(|app| {
             let handle = app.handle().clone();
 
-            // §3.1 fixes this order. Logging (016) and settings (014) come
-            // first so that everything after them is observable and
-            // configured; they are no-ops until those specs land.
+            // §3.1 fixes this order. Logging (016) comes first so everything
+            // after it is observable; it is a no-op until that spec lands.
+
+            // 2. Load settings (spec 014). A missing file is the defaults; an
+            //    unreadable one is moved aside and the defaults are used, so
+            //    a bad file cannot stop the app from starting. The outcome is
+            //    reported rather than swallowed: spec 014 §3.2 wants the user
+            //    told once, and until spec 012 has a notice for it, stderr is
+            //    where "told" happens.
+            match settings_store::SettingsStore::platform().and_then(|store| store.load()) {
+                Ok((settings, outcome)) => {
+                    if let settings_store::LoadOutcome::Recovered { backup } = &outcome {
+                        eprintln!(
+                            "settings unreadable; defaults in use, previous file kept at {}",
+                            backup.display()
+                        );
+                    }
+                    handle.state::<AppState>().set_settings(settings);
+                }
+                Err(e) => eprintln!("settings could not be read, using defaults: {e}"),
+            }
 
             // §3.2, FR-004: become an accessory app before any window exists,
             // so a Dock tile never appears even for the moment it would take

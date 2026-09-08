@@ -26,10 +26,36 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use butler_core::ipc::IPC_CONTRACT_VERSION;
+use butler_core::settings::Settings;
 use specta_typescript::{BigIntExportBehavior, Typescript};
 
-/// Where the bindings live, relative to this crate's manifest.
-const OUTPUT: &str = "../src/generated/bindings.ts";
+/// Where the bindings live, relative to the workspace root.
+const OUTPUT: &str = "apps/desktop/src/generated/bindings.ts";
+
+/// A path that only exists at the workspace root, used to recognize it.
+const ROOT_MARKER: &str = "apps/desktop/src-tauri/Cargo.toml";
+
+/// Find the workspace root by walking up from the current directory.
+///
+/// Deliberately not the compile-time manifest-directory macro. Spec 014
+/// FR-005 requires that no environment read appears under `crates/` or
+/// `apps/desktop/src-tauri` outside `build.rs`, so the product has no
+/// environment-variable surface at all. A compile-time path would not be a
+/// configuration surface, but the requirement is checked by grep, and a rule
+/// with an exception is a rule nobody can check. Walking up is also the more
+/// robust of the two: it works from any directory in the tree, where a
+/// hardcoded relative path works from exactly one (spec 014 D-5).
+fn workspace_root() -> Option<PathBuf> {
+    let mut dir = std::env::current_dir().ok()?;
+    loop {
+        if dir.join(ROOT_MARKER).is_file() {
+            return Some(dir);
+        }
+        if !dir.pop() {
+            return None;
+        }
+    }
+}
 
 /// §3.3 fixes this line. It is the first thing anyone opening the file sees,
 /// and it names the file to edit instead.
@@ -41,20 +67,28 @@ fn header() -> String {
     )
 }
 
-/// The contract's two constants, in a fixed order.
+/// The contract's constants, in a fixed order.
 ///
-/// Both are read from Rust, so there is still exactly one source for each:
-/// the channel name from spec 011 §3.2's `EVENT_CHANNEL`, the version from
-/// §3.4's `IPC_CONTRACT_VERSION`. What this function adds over
-/// `Builder::constant` is only the ordering (D-5).
-fn constants() -> String {
+/// Each is read from Rust, so there is exactly one source: the channel name
+/// from spec 011 §3.2's `EVENT_CHANNEL`, the version from §3.4's
+/// `IPC_CONTRACT_VERSION`, and the settings defaults from spec 014's
+/// `Settings::default()`. What this function adds over `Builder::constant` is
+/// only the ordering (spec 011 D-5).
+///
+/// `DEFAULT_SETTINGS` exists so spec 014 §3.4's "Reset to defaults" has a
+/// source. Hand-writing the defaults in TypeScript would be a second copy of
+/// values that live in `settings.rs`, and the first divergence would silently
+/// reset a user's configuration to something nobody chose.
+fn constants() -> Result<String, serde_json::Error> {
     let (major, minor) = IPC_CONTRACT_VERSION;
-    format!(
-        "\n/** contract constants (spec 011 §3.2, §3.4) **/\n\n\
+    let defaults = serde_json::to_string_pretty(&Settings::default())?;
+    Ok(format!(
+        "\n/** contract constants (spec 011 §3.2, §3.4; spec 014 §3.4) **/\n\n\
          export const EVENT_CHANNEL = \"{channel}\" as const;\n\
-         export const IPC_CONTRACT_VERSION = [{major}, {minor}] as const;\n",
+         export const IPC_CONTRACT_VERSION = [{major}, {minor}] as const;\n\
+         export const DEFAULT_SETTINGS: Settings = {defaults};\n",
         channel = butler_desktop::events::EVENT_CHANNEL,
-    )
+    ))
 }
 
 fn main() -> ExitCode {
@@ -77,9 +111,23 @@ fn main() -> ExitCode {
     // LF everywhere, exactly one trailing newline, and no trailing spaces:
     // three things a Windows checkout or a formatter would otherwise vary.
     let body: String = rendered.replace("\r\n", "\n");
-    let contents = format!("{}{}\n{}", header(), body.trim_end(), constants());
+    let constants = match constants() {
+        Ok(constants) => constants,
+        Err(e) => {
+            eprintln!("export-bindings: could not serialize the defaults: {e}");
+            return ExitCode::FAILURE;
+        }
+    };
+    let contents = format!("{}{}\n{}", header(), body.trim_end(), constants);
 
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(OUTPUT);
+    let Some(root) = workspace_root() else {
+        eprintln!(
+            "export-bindings: no workspace root above the current directory \
+             (looked for {ROOT_MARKER})"
+        );
+        return ExitCode::FAILURE;
+    };
+    let path = root.join(OUTPUT);
     if let Some(parent) = path.parent()
         && let Err(e) = fs::create_dir_all(parent)
     {

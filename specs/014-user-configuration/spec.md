@@ -5,7 +5,7 @@ status: approved
 kind: "feature"
 domain: "platform"
 created: "2026-09-01"
-implementation: pending
+implementation: complete
 owner: "butler-ai maintainers"
 risk: medium
 platforms: "all"
@@ -34,6 +34,24 @@ extends:
   - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/Cargo.toml", nature: additive }
   - { spec: "012-overlay-ui", unit: "apps/desktop/src/App.tsx", nature: additive }
   - { spec: "001-workspace-layout", unit: "Cargo.toml", nature: additive }
+  # The settings handle spec 004 §3.1 already names as belonging in `AppState`.
+  - { spec: "004-desktop-shell", unit: "apps/desktop/src-tauri/src/app_state.rs", nature: additive }
+  # §3.3's two commands. `commands.rs` is spec 011's file; the DTOs they carry
+  # are this spec's, on the `refines` edge over `ipc.rs`.
+  - { spec: "011-ipc-contract", unit: "apps/desktop/src-tauri/src/commands.rs", nature: additive }
+  # §3.4's "Reset to defaults" needs the defaults. The exporter emits them
+  # from `Settings::default()` rather than letting the UI keep a second copy
+  # (D-6).
+  - { spec: "011-ipc-contract", unit: "apps/desktop/src-tauri/src/bin/export-bindings.rs", nature: additive }
+  # The generated bindings, which this spec's DTOs and D-6's constant change.
+  # The file is spec 011's output, so every spec that adds to the contract
+  # declares the edge rather than the regeneration being waived at PR time.
+  - { spec: "011-ipc-contract", unit: "apps/desktop/src/generated/bindings.ts", nature: additive }
+  # The overlay's store gains the `SettingsUpdated` case and the client
+  # re-exports the settings types; the store test covers the new case.
+  - { spec: "012-overlay-ui", unit: "apps/desktop/src/state/runtime.ts", nature: additive }
+  - { spec: "012-overlay-ui", unit: "apps/desktop/src/ipc/client.ts", nature: additive }
+  - { spec: "012-overlay-ui", unit: "apps/desktop/src/test/store.test.ts", nature: additive }
 refines:
   - { aspect: "settings-dtos", unit: "crates/butler-core/src/ipc.rs" }
 summary: >
@@ -150,3 +168,130 @@ The credential entry lives in `CredentialPanel` (012), not here.
 ## 6. Out of scope
 
 - Secrets (010). Profiles or per-app settings. Cloud sync.
+
+## 7. Resolved decisions
+
+- **D-1 (2026-09-07, `PacingSettings` stands where §3.1 names
+  `PacingPolicy`).** §3.1 types the pacing field as spec 013's
+  `PacingPolicy`, which is phase 4 and does not exist. The summary says what
+  the *user-facing* setting is, "pacing (words per minute)", and that is what
+  `PacingSettings` carries.
+
+  The two are different concerns and the split is worth keeping: this struct
+  is the tunable the panel shows and the file stores, and 013's policy is the
+  algorithm that reads it. When 013 lands it either constructs its policy from
+  this or absorbs it, and that is 013's call, not this spec's.
+
+- **D-2 (2026-09-07, FR-002's table found a flaw in itself).** The range table
+  drives every field through `f64` so one row shape covers all of them. For
+  `detection.stability_frames`, range 1..=5, the computed step was 0.04, so
+  "above max" was 5.04, which is **5** once cast to `u8`. The row then asserted
+  that a valid value must be rejected, and failed.
+
+  A row per integer type would have hidden it. Instead each row now declares
+  whether its field is integral, and an integral field steps by one. Recorded
+  because the failure looked like a validator bug and was a test bug, and the
+  next person to widen this table needs to know which it was.
+
+- **D-3 (2026-09-07, spec 012's exhaustiveness claim was not true).** Spec 012
+  D-5 says the overlay's store has "no `default` arm and returns `void`, so
+  013's `AnswerChunk` and 014's `SettingsUpdated` will fail to typecheck until
+  each is handled". **That is wrong.** TypeScript does not error on an
+  unhandled case in a `void`-returning `switch`; it falls through.
+
+  Adding `SettingsUpdated` typechecked cleanly against a store that ignored
+  it, which is exactly the silence the generated union exists to prevent. The
+  store now has a `default` arm that assigns the event to `never`, which is
+  what actually makes the compiler check every case. Verified by deleting a
+  handled case and watching `tsc` report
+  `Type '{ type: "self-test-result"; ... }' is not assignable to type 'never'`.
+
+  Spec 012's D-5 is left as written: it records what that branch believed, and
+  this entry records what turned out to be true. Amending it retroactively
+  would hide that the guard was absent for one commit.
+
+- **D-4 (2026-09-07, the typed field list is not on the wire yet).** §3.3 says
+  a failed validation "returns `ErrorKind::Internal` with the field list in
+  the typed error". `ErrorKind` is a **closed** enum by spec 011 §3.1 and
+  carries no payload, so there is nowhere in the current contract to put the
+  list.
+
+  `update_settings` therefore returns `ErrorKind::Internal` and the panel says
+  "Rejected; nothing was changed", which is true and actionable but less
+  precise than §3.3 wants. Widening the error type is spec 011's call: it owns
+  `ErrorKind` and its `constrains` edge makes a retype a major bump. `Vec<SettingsError>`
+  already exists, derives the wire traits, and is `IpcSafe`, so the change is
+  a small one when 011 makes it. **Owed to spec 011.**
+
+- **D-5 (2026-09-07, FR-005 and the exporter).** FR-005 is checked by grep:
+  `std::env::var` and `env!` must appear nowhere under `crates/` or
+  `apps/desktop/src-tauri` except `build.rs`. Spec 011's `export-bindings`
+  binary used the compile-time manifest-directory macro to find its output,
+  which the grep catches.
+
+  A compile-time path is not an environment-variable *surface*, so an
+  exemption would have been defensible. It was not taken: a rule with an
+  exception is a rule nobody can check, and the exemption would have had to
+  live in FR-005, which is this spec's requirement to satisfy rather than to
+  soften. The exporter now walks up from the working directory to find the
+  workspace root, which uses no environment read at all and is the more robust
+  of the two: it works from any directory in the tree, where the previous
+  relative path worked from exactly one.
+
+- **D-6 (2026-09-07, `DEFAULT_SETTINGS` is generated, not written).** §3.4's
+  "Reset to defaults" needs the defaults, and the UI had no source for them:
+  `GetSettings` returns the *current* configuration. Hand-writing them in
+  TypeScript would have been a second copy of values that live in
+  `settings.rs`, and the first divergence would have quietly reset a user's
+  configuration to something nobody chose.
+
+  The exporter emits `DEFAULT_SETTINGS` from `Settings::default()` into
+  `bindings.ts`, beside the two constants spec 011 D-5 already writes there.
+  It is a constant, not a command, so the IPC contract is unchanged and no
+  version bump is involved.
+
+- **D-7 (2026-09-07, boxing the settings payloads, and the `Eq` that went with
+  them).** `Settings` is an order of magnitude larger than any other IPC
+  payload, and an enum is as large as its largest variant, so every `UiEvent`
+  value in the process would have carried that size. `clippy::large_enum_variant`
+  said so. Both settings payloads are boxed; serde and specta see through a
+  `Box`, so the wire format and the generated TypeScript are byte-identical
+  (checked: `updateSettings(patch: SettingsPatch)` and
+  `{ type: "settings-updated"; settings: Settings }` are unchanged).
+
+  `UiEvent` and `UiCommand` also lost their `Eq` derives, because `Settings`
+  carries `f64` fields (opacity, font scale, the similarity threshold) and
+  floats have no total equality. Nothing needed `Eq`: the tests compare with
+  `assert_eq!`, which does not.
+
+## 8. Verification
+
+```verify:cli
+# AC-1 and FR-001, FR-002, FR-004's model half, plus the patch semantics.
+cargo test -p butler-core --locked --test settings
+# AC-1's second half and FR-003's golden: the store, its atomic write, its
+# recovery from an unreadable file, and 0600.
+cargo test -p butler-desktop --locked settings_store
+# AC-2: docs/architecture.md §8 is generated from `Settings::default()` and
+# diffed. The test above includes it; this names it so a failure is legible.
+cargo test -p butler-core --locked --test settings ac_002
+# FR-005: no environment surface anywhere in the product, `build.rs` aside.
+sh -c '! grep -rnE "std::env::var|env!\(" crates apps/desktop/src-tauri --include="*.rs" | grep -v "src-tauri/build.rs"'
+# §3.3: the two commands reach the overlay, and D-6's defaults with them.
+grep -q "async getSettings" apps/desktop/src/generated/bindings.ts
+grep -q "async updateSettings" apps/desktop/src/generated/bindings.ts
+grep -q "DEFAULT_SETTINGS" apps/desktop/src/generated/bindings.ts
+# D-3: the overlay's store checks exhaustiveness with an assignment to
+# `never`. Without it a new contract variant is silently ignored.
+grep -q "const unhandled: never = event" apps/desktop/src/state/runtime.ts
+# §3.4 and AC-1: the panel typechecks, lints and its store case is tested.
+pnpm --filter @butler-ai/desktop typecheck
+pnpm --filter @butler-ai/desktop lint
+pnpm --filter @butler-ai/desktop test
+# §3.2: the write is atomic. A plain write would leave a truncated file that
+# the next launch cannot parse, which is how a configuration is lost.
+grep -q "fs::rename" apps/desktop/src-tauri/src/settings_store.rs
+grep -q "sync_all" apps/desktop/src-tauri/src/settings_store.rs
+# Territory: every unit this spec claims resolves.
+sh -c 'spec-spine index render | grep "W-001" | grep -q "014-user-configuration" && exit 1 || exit 0'
+```
