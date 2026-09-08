@@ -10,9 +10,13 @@
 
 use tauri::menu::{Menu, MenuEvent, MenuItem, PredefinedMenuItem, Submenu};
 use tauri::tray::TrayIconBuilder;
-use tauri::{AppHandle, Runtime};
+use tauri::{AppHandle, Manager as _, Runtime};
+
+use butler_core::ipc::ExclusionSummary;
 
 use crate::AppError;
+use crate::app_state::AppState;
+use crate::diagnostics::DiagnosticsBundle;
 use crate::shortcuts::ShortcutReport;
 
 /// What the tray icon is currently saying.
@@ -123,11 +127,48 @@ fn on_menu_event<R: Runtime>(app: &AppHandle<R>, event: &MenuEvent) {
         // from here would be correct today.
         ids::TOGGLE_OVERLAY => {}
 
-        // Spec 014's settings panel, spec 005's self-test, spec 016's bundle.
-        ids::SETTINGS | ids::SELF_TEST | ids::DIAGNOSTICS => {}
+        // Spec 016 §3.2. Written to a fixed path under the log directory
+        // rather than through a save dialog: the dialog needs a `dialog`
+        // plugin grant, and spec 015's constraint on `capabilities/` forbids
+        // adding one without a spec that amends it. That amendment is a
+        // human act, so the bundle lands somewhere predictable and its path
+        // is reported (spec 016 D-4).
+        ids::DIAGNOSTICS => write_diagnostics_bundle(app),
+
+        // Spec 014's settings panel and spec 005's self-test.
+        ids::SETTINGS | ids::SELF_TEST => {}
 
         // An id no build of this menu produces.
         _ => {}
+    }
+}
+
+/// Write a diagnostics bundle and say where it went (spec 016 §3.2).
+///
+/// Failures are reported and never fatal: a user asking for diagnostics is
+/// already having a bad time, and taking the app down would remove the tray
+/// they asked from.
+fn write_diagnostics_bundle<R: Runtime>(app: &AppHandle<R>) {
+    let state = app.state::<AppState>();
+    let Ok(directory) = crate::logging::log_directory() else {
+        eprintln!("diagnostics: no log directory on this platform");
+        return;
+    };
+
+    // The transition ring buffer and the live exclusion status arrive with
+    // specs 019 and 005. Until then the bundle carries the log, the settings
+    // and the platform facts, which is three of its four members.
+    let bundle = DiagnosticsBundle::collect(
+        &directory,
+        state.settings(),
+        Vec::new(),
+        ExclusionSummary::Unknown,
+    );
+
+    let path = directory.join("butler-diagnostics.zip");
+    match bundle.write(&path) {
+        Ok(()) => println!("diagnostics bundle written to {}", path.display()),
+        Err(e) => eprintln!("diagnostics bundle failed: {e}"),
     }
 }
 

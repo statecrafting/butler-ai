@@ -39,6 +39,11 @@ thiserror = { workspace = true }
 # spec 014: the on-disk settings format and where it lives.
 toml = { workspace = true }
 dirs = { workspace = true }
+# spec 016: tracing, its rolling file appender, and the bundle's archive.
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-appender = { workspace = true }
+zip = { workspace = true }
 
 # Spec 004 section 3.2: the macOS window level and collection behaviour have no
 # Tauri equivalent, so this crate does that one piece of FFI itself. Spec 001
