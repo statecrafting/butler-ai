@@ -13,6 +13,10 @@
         "source": "spec-edge"
       },
       {
+        "path": "apps/desktop/src-tauri/src/runtime.rs",
+        "source": "spec-edge"
+      },
+      {
         "path": "apps/desktop/src-tauri/tauri.conf.json",
         "source": "spec-edge"
       },
@@ -41,8 +45,16 @@
         "source": "spec-edge"
       },
       {
+        "path": "crates/butler-llm/src/assistant.rs",
+        "source": "spec-edge"
+      },
+      {
         "path": "crates/butler-llm/src/secrets.rs",
         "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-llm/tests/egress.rs",
+        "source": "multiple"
       },
       {
         "path": "crates/butler-ocr/src/recognized.rs",
@@ -50,6 +62,19 @@
       }
     ],
     "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/runtime.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/runtime.rs"
+        }
+      },
       {
         "locations": [
           {
@@ -100,6 +125,32 @@
         "unit": {
           "kind": "file",
           "path": "crates/butler-core/tests/redaction.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-llm/src/assistant.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-llm/src/assistant.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-llm/tests/egress.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-llm/tests/egress.rs"
         }
       },
       {
@@ -258,5 +309,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "00190876c7e58bb48d7c4ef94c7e4d832d25c6229a24bf8f9098cbf55a1a2cdc"
+  "shardHash": "ae6ed84f070aa30aa1bbb8a39bcff1146436a423f817aee571fa35550691c026"
 }

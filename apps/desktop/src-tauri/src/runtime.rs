@@ -873,6 +873,32 @@ mod tests {
     /// outside (spec 019 D-4).
     static TRACE_CAPTURE: std::sync::OnceLock<Buffer> = std::sync::OnceLock::new();
 
+    /// Held for as long as a test is reading its slice of the capture.
+    ///
+    /// The buffer is process-wide and `cargo test` runs tests in parallel, so
+    /// without this a second test's lines land inside the first's window.
+    /// FR-006 failed exactly that way when FR-004's mock started logging:
+    /// its "every character is an id character" assertion tripped over
+    /// somebody else's event. Serialising the readers is the fix; making the
+    /// capture thread-local is not, because the event loop runs on a tokio
+    /// worker (D-4).
+    /// Async-aware, because two of the three readers are `#[tokio::test]` and
+    /// hold this across `await`. A `std::sync::Mutex` there blocks a runtime
+    /// worker while the guard is live, which is what
+    /// `clippy::await_holding_lock` is warning about; the lint is right even
+    /// though these tests would survive it.
+    static CAPTURE_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
+    /// Take the capture for the duration of one async test.
+    async fn capture_lock() -> tokio::sync::MutexGuard<'static, ()> {
+        CAPTURE_LOCK.lock().await
+    }
+
+    /// The same, from a test that is not async.
+    fn capture_lock_blocking() -> tokio::sync::MutexGuard<'static, ()> {
+        CAPTURE_LOCK.blocking_lock()
+    }
+
     fn trace_capture() -> &'static Buffer {
         TRACE_CAPTURE.get_or_init(|| {
             use tracing_subscriber::layer::SubscriberExt as _;
@@ -898,6 +924,7 @@ mod tests {
     /// FR-006 (AC-2). A full cycle's trace output contains ids only.
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn fr_006_trace_records_name_ids_only() {
+        let _serialised = capture_lock().await;
         let capture = trace_capture();
         let before = capture.0.lock().expect("buf").len();
 
@@ -940,6 +967,232 @@ mod tests {
                 "a trace line carries something other than an id: {line}"
             );
         }
+    }
+
+    // --------------------------------------------- spec 015 FR-004
+
+    /// Mock screen text. Nonsense on purpose: a real sentence shares words
+    /// with the code's own log messages, and the assertion would then be
+    /// measuring the English language rather than this pipeline.
+    const MOCK_SCREEN: &str = "vorplex quandiff zebrulon-42 marrowsend";
+    /// The mock answer the provider would stream back.
+    const MOCK_ANSWER: &str = "thrandible perigost, wexforth grumbly.";
+    /// The mock credential.
+    const MOCK_SECRET: &str = "sk-ant-hollowgrind-treblitz-9x8y7z";
+
+    /// Every token that must never reach a log line.
+    fn forbidden() -> Vec<&'static str> {
+        MOCK_SCREEN
+            .split_whitespace()
+            .chain(MOCK_ANSWER.split_whitespace())
+            .chain(std::iter::once(MOCK_SECRET))
+            .map(|word| word.trim_end_matches([',', '.']))
+            .collect()
+    }
+
+    /// Ports that hold the user's screen, an answer and a credential while
+    /// the pipeline runs, and log the way a careless call site would.
+    ///
+    /// Spec 015 FR-004 asks for a whole-pipeline test with mock traits and a
+    /// capturing subscriber. The mocks are these; the pipeline is the real
+    /// `Runtime` and the real reducer; the subscriber is the global capture
+    /// above. What is deliberately *not* careful here is the logging: the
+    /// `?event` in `emit_chunk` is exactly the call a reviewer would write
+    /// without thinking, and the point is that it cannot leak, because
+    /// `UiEvent`'s `Debug` prints the chunk's length rather than its text
+    /// (spec 013 D-2). A mock that logged carefully would prove only that
+    /// this file is careful.
+    struct ContentPorts {
+        log: Arc<Log>,
+        answer: String,
+        secret: String,
+    }
+
+    impl ContentPorts {
+        fn new(log: Arc<Log>) -> Self {
+            Self {
+                log,
+                answer: MOCK_ANSWER.to_owned(),
+                secret: MOCK_SECRET.to_owned(),
+            }
+        }
+    }
+
+    impl Ports for ContentPorts {
+        fn capture(&self, seq: Seq, _monitor: MonitorTarget) -> Result<(), ErrorKind> {
+            self.log.push(format!("capture:{}", seq.0));
+            tracing::info!(seq = seq.0, "frame captured");
+            Ok(())
+        }
+        fn recognize(&self, seq: Seq) -> Result<(usize, f32), ErrorKind> {
+            // The screen text exists here, which is the whole point: a
+            // recognizer that logged what it read would leak here and nowhere
+            // else. Only its length crosses into the event.
+            let recognized = MOCK_SCREEN;
+            self.log.push(format!("recognize:{}", seq.0));
+            tracing::info!(
+                seq = seq.0,
+                count = recognized.chars().count(),
+                "text recognized"
+            );
+            Ok((recognized.chars().count(), 0.94))
+        }
+        fn evaluate(&self, seq: Seq, _force: bool) -> Verdict {
+            self.log.push(format!("evaluate:{}", seq.0));
+            Verdict::Changed
+        }
+        fn start_inference(
+            &self,
+            request: RequestId,
+            _seq: Seq,
+            _cancel: &CancellationToken,
+        ) -> Result<StopReason, (ErrorKind, bool)> {
+            // The credential and the prompt are both in scope in the real
+            // provider at this point, and both are in scope here: `self`
+            // holds them for the whole call. What crosses into the log is an
+            // id and a provider name, which is what production writes.
+            //
+            // `Secret`'s own redaction is spec 010's and is tested there
+            // (`secrets.rs` has the `compile_fail` blocks for `Debug`,
+            // `Display` and `Clone`); butler-llm is not a dependency of this
+            // crate and adding one for a test would be the wrong trade.
+            // Not decorative: FR-004 is only meaningful if the credential is
+            // genuinely live while the pipeline logs, and this is the call
+            // that would hold it in the real adapter.
+            assert!(
+                !self.secret.is_empty() && !MOCK_SCREEN.is_empty(),
+                "the credential and the screen must be in scope here"
+            );
+            self.log.push(format!("infer:{}", request.0));
+            tracing::info!(
+                request = request.0,
+                provider = "anthropic",
+                "inference started"
+            );
+            // A real adapter releases chunks from inside this call, as the
+            // provider stream yields them; `Effect::EmitChunk` reaches
+            // `emit_chunk` the same way. Doing it here rather than waiting
+            // for spec 019 to wire 010 is what puts the answer text on the
+            // path FR-004 is measuring.
+            self.emit_chunk(request);
+            Ok(StopReason::EndTurn)
+        }
+        fn emit_chunk(&self, request: RequestId) {
+            let event = UiEvent::AnswerChunk {
+                request: request.0,
+                index: 0,
+                text: self.answer.clone(),
+                is_last: true,
+            };
+            self.log.push(format!("chunk:{}", request.0));
+            tracing::info!(?event, "chunk released");
+            self.emit(&event);
+        }
+        fn release_frame(&self, seq: Seq) {
+            self.log.push(format!("release:{}", seq.0));
+        }
+        fn reset_detector(&self) {
+            self.log.push("reset");
+        }
+        fn run_self_test(&self) {
+            self.log.push("self-test");
+        }
+        fn emit(&self, event: &UiEvent) {
+            tracing::debug!(?event, "ui event");
+            self.log.events.lock().expect("events").push(event.clone());
+            let _ = &self.secret;
+        }
+        fn jitter_pct(&self) -> i8 {
+            0
+        }
+    }
+
+    /// FR-004 (spec 015). A whole cycle with the screen, an answer and a
+    /// credential in scope produces no log line containing any of them.
+    ///
+    /// This is the half spec 016 D-3 owed to phase 4. The half it could build
+    /// then covered `logging.rs`'s own calls; what it could not check was
+    /// that no *other* module logs something it should not, because the other
+    /// modules did not exist. They do now, and this drives them.
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn fr_004_no_log_line_carries_the_screen_the_answer_or_the_secret() {
+        let _serialised = capture_lock().await;
+        let capture = trace_capture();
+        let before = capture.0.lock().expect("buf").len();
+
+        let log = Arc::new(Log::default());
+        {
+            let runtime = Runtime::spawn(ContentPorts::new(Arc::clone(&log)), config());
+            let handle = runtime.handle();
+            handle.send(Event::Arm).await;
+            handle
+                .send(Event::ExclusionChanged {
+                    status: ExclusionState::Verified,
+                })
+                .await;
+            handle.send(Event::ForceCapture).await;
+            settle().await;
+            handle.send(Event::Disarm).await;
+            runtime.shutdown().await.expect("join");
+        }
+
+        let output = {
+            let buf = capture.0.lock().expect("buf");
+            String::from_utf8(buf[before..].to_vec()).expect("utf-8")
+        };
+
+        // Non-vacuity, twice over: the subscriber captured something, and the
+        // pipeline actually ran the stages that hold the content. Without
+        // both, "no line contains the secret" is true of an empty string.
+        assert!(
+            !output.trim().is_empty(),
+            "nothing was logged, so the assertions below are vacuous"
+        );
+        let stages = log.calls();
+        for stage in ["recognize:", "infer:", "chunk:"] {
+            assert!(
+                stages.iter().any(|e| e.starts_with(stage)),
+                "the pipeline never reached `{stage}`, so the content was \
+                 never in scope: {stages:?}"
+            );
+        }
+        assert!(
+            output.contains("inference started") && output.contains("chunk released"),
+            "the stages that hold the content logged nothing: {output}"
+        );
+
+        for token in forbidden() {
+            assert!(
+                !output.contains(token),
+                "a log line carries `{token}`, which is the user's screen, \
+                 answer or credential (spec 015 FR-004):\n{output}"
+            );
+        }
+    }
+
+    /// FR-004's control. The assertion above is only worth anything if the
+    /// same capture *would* report a leak, so this one puts the forbidden
+    /// tokens through the subscriber deliberately and asserts they are found.
+    ///
+    /// Without it, a capture that silently stopped recording would make every
+    /// leak invisible and the test permanently green.
+    #[test]
+    fn fr_004_has_a_positive_control() {
+        let _serialised = capture_lock_blocking();
+        let capture = trace_capture();
+        let before = capture.0.lock().expect("buf").len();
+
+        tracing::info!(leaked = MOCK_SCREEN, "deliberate leak");
+
+        let output = {
+            let buf = capture.0.lock().expect("buf");
+            String::from_utf8(buf[before..].to_vec()).expect("utf-8")
+        };
+        assert!(
+            forbidden().iter().any(|token| output.contains(token)),
+            "the capture does not see content even when it is logged on \
+             purpose, so the FR-004 test above proves nothing: {output}"
+        );
     }
 
     /// §3.2: shutdown cancels an inference in flight rather than letting it

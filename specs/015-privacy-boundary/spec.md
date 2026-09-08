@@ -5,7 +5,7 @@ status: approved
 kind: "constraint"
 domain: "platform"
 created: "2026-09-01"
-implementation: in-progress
+implementation: complete
 owner: "butler-ai maintainers"
 risk: critical
 platforms: "all"
@@ -26,6 +26,13 @@ extends:
   # declares it. The module is a pure pass (section 3), so it adds no
   # dependency and touches no manifest.
   - { spec: "009-pipeline-state-machine", unit: "crates/butler-core/src/lib.rs", nature: additive }
+  # D-4: the three requirements that waited for later phases. FR-003 is a
+  # compile-fail test on the request type (spec 010's), FR-005 is an egress
+  # test beside it, and FR-004 is a whole-pipeline test that needs the runtime
+  # (spec 019's) to drive mock ports.
+  - { spec: "010-assistant-inference", unit: "crates/butler-llm/src/assistant.rs", nature: additive }
+  - { spec: "010-assistant-inference", unit: "crates/butler-llm/tests/egress.rs", nature: additive }
+  - { spec: "019-runtime-host", unit: "apps/desktop/src-tauri/src/runtime.rs", nature: additive }
 constrains:
   - flavor: invariant-freeze
     unit: "crates/butler-capture/src/frame.rs"
@@ -239,10 +246,65 @@ there is nothing secret in them) and is written only where the user chooses.
   way and are what the coupling gate reads. What remains here is unchanged
   from D-1: the seven forward units and FR-003 to FR-005.
 
-## 8. Verification
+- **D-4 (2026-09-07, the three requirements that waited, and this spec
+  closes).** D-1 and D-3 left exactly two things outstanding: the seven
+  forward `constrains` units, and FR-003 to FR-005. Phases 2 to 4 have landed,
+  so all seven units exist and `make burndown` shows zero for this spec. The
+  three requirements are now built, each with a control that would catch it
+  going quiet.
 
-AC-1 is deliberately not checkable yet: it asserts ownership of the seven
-constrained units "once they exist", and phases 2 to 4 create them (D-1).
+  **FR-003** is a `compile_fail` doctest on `InferenceRequest`, showing that a
+  `String` screen does not typecheck where a `RedactedText` is required, with
+  a positive control beside it. The control earned its place immediately: the
+  first version of the `compile_fail` block passed because `Effort` and
+  `AnswerStyle` were imported from the wrong module, so it was failing to
+  compile for a reason that had nothing to do with the property. A
+  `compile_fail` block with no positive control is a test that passes when the
+  code around it rots.
+
+  **FR-004** is a whole-pipeline test: mock `Ports` that hold the screen text,
+  an answer and a credential for the length of the run, driven through the
+  real `Runtime` and the real reducer, with the process-wide capturing
+  subscriber. The mock logs the way a careless call site would (`?event` on
+  the chunk it releases), because a mock that logged carefully would prove
+  only that the mock is careful. Two negative controls were run while writing
+  it: leaking the screen text from `recognize` fails on `vorplex`, and
+  un-redacting `UiEvent::AnswerChunk`'s `Debug` fails on `thrandible`. The
+  second is the interesting one, because it shows what is actually holding
+  that path: spec 013 D-2's hand-written `Debug`, not any discipline at the
+  call site.
+
+  This is the half spec 016 D-3 owed to phase 4. What that decision could
+  build then covered `logging.rs`'s own calls; what it could not check was
+  whether some *other* module logs something it should not. Now it does.
+
+  **FR-005** is measured on two loopback listeners rather than against a
+  network: one stands in for the provider, the other is the "denying egress
+  proxy", and the test asserts which one the client opened a socket to. The
+  TLS handshake fails, which does not matter: the question is which host was
+  contacted, and that is answered before the handshake starts. Nothing reaches
+  the internet, so the result is the same on a laptop and on a runner with no
+  egress. Removing `.no_proxy()` from the client makes it fail.
+
+  The proxy environment is set on a **child** invocation of the test binary.
+  `std::env::set_var` is `unsafe` in edition 2024 and spec 001 forbids
+  `unsafe` in `butler-llm` outright, and a process-wide mutation would race
+  every other test in the binary in any case.
+
+  **One defect the work surfaced**, in this repository rather than in the
+  spec: the process-wide trace capture is shared, `cargo test` runs tests in
+  parallel, and FR-004's mock logging landed inside spec 019 FR-006's window,
+  breaking a test that had nothing to do with this change. The readers are
+  serialised on a mutex now. Making the capture thread-local is not the fix:
+  spec 019 D-4 records why it has to be global, since the event loop runs on
+  a tokio worker.
+
+  **What remains owed elsewhere, unchanged by this spec:** spec 004 FR-006
+  asks for a denying proxy around a *running app*, asserting zero connections
+  from the **webview** process. That is a different measurement from this one,
+  004 D-11 already records it as unwritten, and it is 004's to close.
+
+## 8. Verification
 
 ```verify:cli
 # FR-001 and FR-002, plus determinism, idempotence and totality.
@@ -258,4 +320,24 @@ sh -c '! grep -rnE "sk-ant-api03-[A-Za-z0-9]{90,}" crates/butler-core/tests/'
 sh -c 'for c in Pixels Answer Secret Settings Diagnostics; do grep -q "^| $c |" docs/architecture.md || exit 1; done'
 # Section 3.2: redaction is pure. No clock, filesystem or network.
 sh -c '! grep -nE "std::(time|fs|net)" crates/butler-core/src/redaction.rs'
+# FR-003: an `InferenceRequest` cannot be built from a `String` screen. The
+# doctest carries a positive control, and it earned it: the compile_fail block
+# first passed on a private-import error rather than on the type (D-4).
+cargo test -p butler-llm --locked --doc
+# FR-004: a whole cycle with the screen, an answer and a credential in scope,
+# through the real runtime and reducer, produces no log line carrying any of
+# them. The positive control in the same module asserts the capture reports a
+# leak when one is made on purpose.
+cargo test -p butler-desktop --locked --lib runtime::tests::fr_004
+# FR-005: exactly one destination host, measured on two loopback listeners,
+# and a proxy in the environment is not it.
+cargo test -p butler-llm --locked --test egress
+# FR-005 and section 3.3: the client refuses a proxy from the environment. If
+# this call goes, the egress test above fails on its non-vacuity assertion
+# rather than silently measuring nothing.
+grep -q "no_proxy()" crates/butler-llm/src/anthropic.rs
+# AC-1: this spec owns all seven constrained units, and they exist.
+sh -c 'for u in crates/butler-capture/src/frame.rs crates/butler-ocr/src/recognized.rs crates/butler-llm/src/anthropic.rs crates/butler-llm/src/secrets.rs apps/desktop/src-tauri/src/logging.rs apps/desktop/src-tauri/tauri.conf.json; do test -e "$u" || exit 1; done'
+test -d apps/desktop/src-tauri/capabilities
+sh -c 'spec-spine index render | grep "W-001" | grep -q "015-privacy-boundary" && exit 1 || exit 0'
 ```
