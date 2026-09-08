@@ -49,6 +49,10 @@
       {
         "path": "scripts/bump_version.py",
         "source": "spec-edge"
+      },
+      {
+        "path": "scripts/check-action-runners.sh",
+        "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
@@ -70,8 +74,8 @@
           {
             "file": ".github/workflows/release.yml",
             "span": {
-              "endLine": 226,
-              "startLine": 31
+              "endLine": 267,
+              "startLine": 39
             }
           }
         ],
@@ -88,8 +92,8 @@
           {
             "file": ".github/workflows/release.yml",
             "span": {
-              "endLine": 274,
-              "startLine": 227
+              "endLine": 315,
+              "startLine": 268
             }
           }
         ],
@@ -106,8 +110,8 @@
           {
             "file": ".github/workflows/release.yml",
             "span": {
-              "endLine": 21,
-              "startLine": 18
+              "endLine": 29,
+              "startLine": 26
             }
           }
         ],
@@ -124,8 +128,8 @@
           {
             "file": ".github/workflows/release.yml",
             "span": {
-              "endLine": 26,
-              "startLine": 24
+              "endLine": 34,
+              "startLine": 32
             }
           }
         ],
@@ -231,6 +235,19 @@
       {
         "locations": [
           {
+            "file": "scripts/check-action-runners.sh"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "scripts/check-action-runners.sh"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": "apps/desktop/src-tauri/tauri.conf.json"
           }
         ],
@@ -277,5 +294,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "65c2b4bfc32bdb76e1416784611ce0e3b6fefe54c610279758f39dc036a2c868"
+  "shardHash": "5821a414aa743e15fa7a81d755cb34c1828ae8acfd9466e7dea39214f8d5cd20"
 }
