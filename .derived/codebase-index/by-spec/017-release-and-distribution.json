@@ -70,7 +70,7 @@
           {
             "file": ".github/workflows/release.yml",
             "span": {
-              "endLine": 209,
+              "endLine": 219,
               "startLine": 31
             }
           }
@@ -88,8 +88,8 @@
           {
             "file": ".github/workflows/release.yml",
             "span": {
-              "endLine": 257,
-              "startLine": 210
+              "endLine": 267,
+              "startLine": 220
             }
           }
         ],
@@ -277,5 +277,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "dd4fbbe382dce40331bfefd66b67c23c00147a8d048a112423ba044301572df4"
+  "shardHash": "3ee139e4b12683c351df46c7e7ce24e6b2bd6a42554196d4aa1797275c52fd79"
 }

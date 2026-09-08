@@ -287,6 +287,26 @@ is 004's).
 
   AC-2 and FR-003 are met and verified in §8.
 
+- **D-10 (2026-09-07, the release would have shipped an empty window).**
+  `tauri.conf.json` had no `build.beforeBuildCommand`, so `cargo tauri build`
+  packages `frontendDist` exactly as it finds it. What it would have found is
+  spec 004 D-3's placeholder `dist/`, written by `build.rs` so the Rust crate
+  could compile before the overlay package existed.
+
+  The result would have been a signed, notarized, attested installer whose
+  webview renders nothing, with every check in this spec passing: the
+  artifacts exist, the hashes match, the attestations verify. Nothing in the
+  pipeline looks at what is inside the bundle.
+
+  The hook is `pnpm build`, and it is in `tauri.conf.json` rather than as a
+  workflow step so that a developer running `cargo tauri build` locally gets
+  the same guarantee. Both build steps run in `apps/desktop`, which is the
+  Tauri app directory: the CLI finds `src-tauri/` from there and the hook runs
+  there. §8 asserts the hook through the parser.
+
+  Found by re-reading the workflow rather than by any check, which is the
+  point of D-2's list: no step in it has run.
+
 ## 8. Verification
 
 Every command here runs today. The steps that cannot run without a signing
@@ -323,6 +343,11 @@ sh -c 'awk "/^  build:/,/^  publish:/" .github/workflows/release.yml | grep -q "
 # `active` flag without which the bundler emits nothing. Asserted through the
 # parser rather than by grep, so a key in a comment cannot satisfy it.
 python3 -c "import json; c = json.load(open('apps/desktop/src-tauri/tauri.conf.json')); assert c['bundle']['active'] is True; assert sorted(c['bundle']['targets']) == ['dmg', 'msi', 'nsis'], c['bundle']['targets']"
+# D-10: the bundler packages `frontendDist` as it finds it, and what it would
+# find without a build hook is spec 004 D-3's placeholder. Every other check
+# in this spec passes on an installer whose webview renders nothing, because
+# nothing else looks inside the bundle.
+python3 -c "import json; c = json.load(open('apps/desktop/src-tauri/tauri.conf.json')); assert c['build']['beforeBuildCommand'] == 'pnpm build', c['build']"
 # D-4: the updater is absent, which is section 3's default. Adding it needs a
 # keypair and an amendment to spec 015's single-destination rule.
 sh -c '! grep -q "updater" apps/desktop/src-tauri/tauri.conf.json'

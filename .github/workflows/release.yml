@@ -108,6 +108,14 @@ jobs:
       - name: Install the Tauri CLI
         run: cargo install tauri-cli --version "^2" --locked
 
+      # Both build steps run in `apps/desktop`, which is the Tauri app
+      # directory: the CLI locates `src-tauri/` from there, and
+      # `beforeBuildCommand` (`pnpm build`) runs there too. Without that hook
+      # the bundler would package spec 004 D-3's placeholder `dist/` and the
+      # release would install an app whose webview shows nothing. The build
+      # artifacts still land in the workspace `target/` at the repository
+      # root, which is where the next step looks.
+      #
       # macOS: Developer ID Application, hardened runtime, notarize with
       # notarytool, staple. The Tauri bundler does all four when these
       # variables are set, which is why there is no separate `codesign` step.
@@ -120,7 +128,8 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: cargo tauri build --config apps/desktop/src-tauri/tauri.conf.json
+        working-directory: apps/desktop
+        run: cargo tauri build
 
       # Windows: import the PFX into the user store, read back its thumbprint,
       # and hand it to the bundler, which drives `signtool` with the timestamp
@@ -132,6 +141,7 @@ jobs:
       # because it is the operator's certificate that decides which applies.
       - name: Build and sign (Windows)
         if: runner.os == 'Windows'
+        working-directory: apps/desktop
         shell: pwsh
         env:
           WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
