@@ -25,18 +25,30 @@
 
 pub mod app_state;
 pub mod commands;
+pub mod diagnostics;
 pub mod events;
+pub mod logging;
 pub mod permissions;
 pub mod settings_store;
 pub mod shortcuts;
 pub mod tray;
 pub mod window;
 
+use butler_core::settings::DiagnosticsLevel;
 use tauri::{AppHandle, Manager, Runtime};
 use tauri_plugin_global_shortcut::{Shortcut, ShortcutState};
 
 pub use app_state::AppState;
 pub use window::{OVERLAY_LABEL, OverlayGeometry, OverlayWindowConfig, create_overlay_window};
+
+/// Keeps the logging guard alive for the process's lifetime.
+///
+/// Managed rather than dropped on the floor: dropping the guard stops the
+/// non-blocking writer's thread, and the log would go quiet with no error
+/// anywhere. Wrapping it makes that a type Tauri holds rather than a local
+/// that a future edit could shorten the life of.
+#[derive(Debug)]
+pub struct LogHandle(pub Option<logging::Guard>);
 
 /// What can go wrong in the shell itself.
 ///
@@ -149,8 +161,24 @@ pub fn run() {
         .setup(|app| {
             let handle = app.handle().clone();
 
-            // §3.1 fixes this order. Logging (016) comes first so everything
-            // after it is observable; it is a no-op until that spec lands.
+            // §3.1 fixes this order.
+
+            // 1. Logging (spec 016), before anything else, so everything
+            //    after it is observable. The level is the shipped default
+            //    here rather than the user's: settings have not been read
+            //    yet, and reading them first would mean the read itself was
+            //    unobservable. A level change takes effect next launch.
+            let log_guard = match logging::init(DiagnosticsLevel::default()) {
+                Ok(guard) => {
+                    logging::install_panic_hook();
+                    Some(guard)
+                }
+                Err(e) => {
+                    eprintln!("logging unavailable, continuing without it: {e}");
+                    None
+                }
+            };
+            handle.manage(LogHandle(log_guard));
 
             // 2. Load settings (spec 014). A missing file is the defaults; an
             //    unreadable one is moved aside and the defaults are used, so

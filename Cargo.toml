@@ -92,6 +92,15 @@ tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
 toml = { version = "1" }
 dirs = { version = "6" }
 
+# spec 016: structured, content-free tracing and the diagnostics bundle.
+# `json` for the line format §3.1 fixes, `env-filter` deliberately NOT
+# enabled: the level comes from settings, and an environment filter would be
+# exactly the environment-variable surface spec 014 FR-005 forbids.
+tracing = { version = "0.1" }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt", "json", "std", "registry"] }
+tracing-appender = { version = "0.2" }
+zip = { version = "8", default-features = false, features = ["deflate"] }
+
 [workspace.lints.rust]
 # `deny`, not `forbid`: the platform crates (butler-capture, butler-ocr,
 # butler-desktop) carry FFI under `#[allow(unsafe_code)]` with a `// SAFETY:`

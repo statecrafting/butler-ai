@@ -21,11 +21,6 @@
         "code": "W-001",
         "message": "spec '015-privacy-boundary' file unit 'crates/butler-llm/src/secrets.rs' does not exist",
         "path": "crates/butler-llm/src/secrets.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '015-privacy-boundary' file unit 'apps/desktop/src-tauri/src/logging.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/logging.rs"
       }
     ]
   },
@@ -36,6 +31,10 @@
     "implementingPaths": [
       {
         "path": "apps/desktop/src-tauri/capabilities/",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/logging.rs",
         "source": "spec-edge"
       },
       {
@@ -173,7 +172,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/logging.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "constrains",
         "unit": {

@@ -1,27 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '016-diagnostics-and-logging' file unit 'apps/desktop/src-tauri/src/logging.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/logging.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '016-diagnostics-and-logging' file unit 'apps/desktop/src-tauri/src/diagnostics.rs' does not exist",
-        "path": "apps/desktop/src-tauri/src/diagnostics.rs"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '016-diagnostics-and-logging' symbol unit 'butler_desktop::logging::init' did not resolve"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '016-diagnostics-and-logging' symbol unit 'butler_desktop::diagnostics::DiagnosticsBundle' did not resolve"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "004-desktop-shell"
@@ -36,7 +13,19 @@
         "source": "spec-edge"
       },
       {
+        "path": "apps/desktop/src-tauri/src/diagnostics.rs",
+        "source": "multiple"
+      },
+      {
         "path": "apps/desktop/src-tauri/src/lib.rs",
+        "source": "spec-edge"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/logging.rs",
+        "source": "multiple"
+      },
+      {
+        "path": "apps/desktop/src-tauri/src/tray.rs",
         "source": "spec-edge"
       }
     ],
@@ -68,7 +57,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/diagnostics.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -90,7 +83,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/logging.rs"
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -99,7 +96,28 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/tray.rs"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/src/tray.rs"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/diagnostics.rs",
+            "span": {
+              "endLine": 94,
+              "startLine": 85
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -108,7 +126,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "apps/desktop/src-tauri/src/logging.rs",
+            "span": {
+              "endLine": 181,
+              "startLine": 178
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -121,5 +147,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "88b914e1e49475b81dc59d0b9278e6b1956c8ff08be3cd3b8f00a1eb5f34d645"
+  "shardHash": "fee26548d83e8d6ea1f2a645e280a569456aeb830551db3b94de8864ce1fd8ff"
 }
