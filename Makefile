@@ -10,7 +10,7 @@ SHELL := /bin/sh
 
 # The spec-spine version CI installs (spec 003 §3.1) and `make setup` installs.
 # Bump both here; the workflow reads this file.
-SPEC_SPINE_VERSION ?= 0.15.0
+SPEC_SPINE_VERSION ?= 0.17.0
 SPEC_SPINE ?= $(shell command -v spec-spine 2>/dev/null || echo "$(HOME)/.cargo/bin/spec-spine")
 BASE ?= origin/main
 

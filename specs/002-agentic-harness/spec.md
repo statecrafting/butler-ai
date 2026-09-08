@@ -32,6 +32,7 @@ references:
   - { unit: { kind: file, path: ".claude/rules/orchestrator-rules.md" }, role: "floor rule (owned by 000)" }
   - { unit: { kind: file, path: ".claude/rules/governed-artifact-reads.md" }, role: "floor rule (owned by 000)" }
   - { unit: { kind: file, path: ".claude/rules/adversarial-prompt-refusal.md" }, role: "floor rule (owned by 000)" }
+  - { unit: { kind: file, path: ".claude/rules/derived-artifacts-are-compiler-output.md" }, role: "floor rule (owned by 000)" }
 summary: >
   The governed-development loop for agents working in this repository: the
   cross-agent session protocol (AGENTS.md), the Claude Code skills (`/init`,
@@ -42,7 +43,7 @@ summary: >
   deterministic hooks in `.claude/settings.json`, and the Makefile targets the
   skills call. Adapted from the spec-spine kit (spec-spine spec 029) and
   specialized to butler-ai's stack and its specify-first workflow. Owns the
-  harness surface; the three floor rules stay with spec 000.
+  harness surface; the four floor rules stay with spec 000.
 ---
 
 # 002: Agentic engineering harness
@@ -74,14 +75,15 @@ change to what an agent may do.
 - `.claude/skills/`: thirteen skills (§3.2).
 - `.claude/agents/`: six agents (§3.3).
 - `.claude/rules/{spec-authoring,rust-crates,overlay-frontend,build-commands}.md`:
-  paths-scoped context rules. The three floor rules are spec 000's.
+  paths-scoped context rules. The four floor rules are spec 000's.
 
 ## 3. Behavior
 
 ### 3.1 Session protocol (`AGENTS.md` § New Sessions)
 
 `/init` MUST read the protocol from `AGENTS.md` and execute it, never
-duplicate it. The protocol MUST: load the three floor rules first; dispatch the
+duplicate it. The protocol MUST: load the unconditional floor rules first (the
+fourth is paths-scoped and loads on contact); dispatch the
 parallel reads (`CLAUDE.md`, `README.md`, contract, constitution, `spec-spine
 compile --check`, `spec-spine index check`, `registry status-report`,
 `registry list --ids-only`, the burn-down via `index render`, surface listings,
@@ -143,9 +145,9 @@ Paths-scoped rules auto-load when an agent touches a matching file:
 
 | Hook | Matcher | Behavior |
 |---|---|---|
-| `SessionStart` | startup, resume, clear, compact | report registry (`compile --check`) and index freshness; never write |
+| `SessionStart` | startup, resume, clear, compact | establish the binary understands `compile --check` before reading its exit code, then report registry and index freshness; never write |
 | `PostToolUse` | `Edit`, `Write` | after a `spec.md` edit, recompile; after any hashed-input edit, `index check` |
-| `PreToolUse` | `Bash` | refuse a `git push` targeting `main`; on `gh pr create` run `spec-spine couple`, block without a waiver, block if the index is stale or `.derived/` is dirty |
+| `PreToolUse` | `Bash` | refuse a `git push` that would update `main` (a tag push is not one); on `gh pr create` run `spec-spine couple`, block without a waiver, block if the index is stale or `.derived/` is dirty |
 | `Stop` | `*` | report a stale index; never regenerate it |
 
 Hooks MUST read and MUST NOT write, with one exception: the `PostToolUse`
@@ -227,8 +229,13 @@ block this session did not author.
 - **FR-007.** `spec-spine verify <id>` exits 0 and reports `passed` for every
   spec at `implementation: complete`, and reports `not-declared` for no such
   spec.
-- **FR-008.** The `PreToolUse` hook refuses a `git push` that targets `main`,
-  whichever branch the session is on.
+- **FR-008.** The `PreToolUse` hook refuses a `git push` that would update
+  `main`, whichever branch the session is on. A push that updates no branch is
+  not such a push: a tag push (`git push origin v1.2.3`) is allowed from `main`,
+  because spec 017's release process cuts one from `main` immediately after the
+  release PR merges. The match is anchored on the invocation of the push verb,
+  never a substring test over the whole command, so a command that merely
+  names the verb in an argument is not refused.
 
 ## 5. Acceptance criteria
 
@@ -247,7 +254,7 @@ block this session did not author.
 
 ## 6. Out of scope
 
-- The three floor rules (spec 000).
+- The four floor rules (spec 000).
 - CI workflows, CODEOWNERS, merge driver (spec 003).
 - Any product behavior. The harness is how butler-ai is built, not what it is.
 
@@ -328,6 +335,41 @@ block this session did not author.
   spine` keeps the four gates it had. What 050 is used for here is reading:
   `make burndown` takes the typed `index diagnostics` instead of grepping
   `index render` (FR-006), and gains a per-spec count for free.
+- **D-8 (2026-09-08, pin bump).** `SPEC_SPINE_VERSION` moves from 0.15.0 to
+  0.17.0 (`Makefile`; CI reads it from there). Byte-compatibility was verified
+  the way D-2 and D-4 verified theirs, and this time it did not hold cleanly,
+  which is the point of checking: 0.17.0's `compile --check` and `index check`
+  both report fresh against shards written by 0.15.0, but `lint --fail-on-warn`
+  exits 1 with 67 `L-008` warnings. `L-008` (spec-spine spec 057) is new and
+  names every claimed path that contributes to no content hash. It found a real
+  defect here, not a false alarm: spec 000 D-2 has the measurement and the fix,
+  and D-3 declares the remainder. What the bump buys beyond that is `[meta]
+  required_version` (spec-spine 062, taken up in 000 D-4), the version probe and
+  exit-3 usage mapping (063), the anchored push gate (071, D-9 below), and the
+  fourth floor rule (068, 000 D-5). `--fail-on-unresolved` stays off: D-7's
+  reasoning is about what this corpus is, not about how much of it is built, and
+  the burn-down reaching zero does not retire it.
+- **D-9 (2026-09-08, two hook defects the kit had already fixed).** The four
+  hooks are re-taken from the kit at v0.17.0, carrying D-5's two project facts
+  forward unchanged (the `$HOME/.cargo/bin/spec-spine` fallback after `PATH`,
+  and the `PostToolUse` glob list, which is butler-ai's hashed inputs and moves
+  with them: §3.5 requires the two to be equal, so 000 D-2's additions appear in
+  both). Two behaviors change:
+
+  1. `SessionStart` asks whether the binary understands `compile --check`
+     before reading its exit code (spec-spine spec 063). An older CLI rejects
+     the unknown flag with exit 2, which is the code this tool spends on
+     staleness, so the hook reported phantom drift and a session acting on it
+     would regenerate and commit shards that were already correct.
+  2. The push gate is anchored on the invocation of the push verb and, on
+     `main`, refuses only a push that would actually update `main`
+     (spec-spine spec 071). The old form was a substring test over the whole
+     command, so it refused anything merely *containing* the text, and on
+     `main` it refused every push including a tag push. FR-008 above is
+     amended: the requirement was already "targets `main`", and the old
+     implementation was broader than the requirement it served, but the spec
+     was silent on tag pushes and spec 017 cuts a release tag from `main`, so
+     the carve-out is written down rather than left to be rediscovered.
 
 ## 8. Verification
 
@@ -348,6 +390,20 @@ sh -c '! test -e scripts/verify-spec.sh'
 sh -c 'test "$(jq -r ".hooks.Stop[].hooks[].command" .claude/settings.json | grep -o "index [a-z]*" | sort -u | tr "\n" ",")" = "index check,"'
 # FR-008 + AC-6: the push gate exists.
 sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "push-gate"'
+# FR-008 + D-9: it is anchored on the invocation of the verb, not a substring
+# test, and it carves out the tag push spec 017 cuts from `main`. That this
+# command can name the verb at all is the regression the anchoring fixed.
+sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "A tag push such as"'
+sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "Anchored on the command that actually invokes"'
+# The positional-argument walk is what distinguishes "would update main" from
+# "runs from main": without it the gate refuses a tag push too.
+sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "npos"'
+# D-9: SessionStart establishes the binary understands the flag before reading
+# its exit code (spec-spine spec 063).
+sh -c 'jq -r ".hooks.SessionStart[].hooks[].command" .claude/settings.json | grep -q -- "compile --check --help"'
+# §3.5: the PostToolUse glob list equals `[index] extra_hashed_inputs`. Both
+# are owned (the config by 000, the hook here), so they move in one PR.
+sh -c 'jq -r ".hooks.PostToolUse[].hooks[].command" .claude/settings.json | grep -q "githooks"'
 # FR-006: burndown reads the typed diagnostics, not a grep over `index render`.
 sh -c 'grep -q "index diagnostics" Makefile && ! grep -q "index render | grep" Makefile'
 ```

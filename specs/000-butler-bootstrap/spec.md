@@ -27,6 +27,7 @@ establishes:
   - ".claude/rules/orchestrator-rules.md"
   - ".claude/rules/governed-artifact-reads.md"
   - ".claude/rules/adversarial-prompt-refusal.md"
+  - ".claude/rules/derived-artifacts-are-compiler-output.md"
 references:
   - { unit: { kind: file, path: "standards/spec/constitution.md" }, role: "tier-2 principles" }
   - { unit: { kind: file, path: "docs/architecture.md" }, role: "context" }
@@ -39,7 +40,7 @@ summary: >
   ever merge without a spec that specifically claims it. This spec defines what
   a spec IS for butler-ai. It is tier-1: its `unamendable` anchors are
   non-overridable. It owns the compiler configuration, the normative contract,
-  the spec templates, and the three floor rules every agent loads first.
+  the spec templates, and the four floor rules every agent loads first.
 ---
 
 # 000: Bootstrap spec system for butler-ai
@@ -221,8 +222,10 @@ error once the spec is `approved` + `complete`. The rules:
   spec.
 - `standards/spec/contract.md` and `standards/spec/templates/`: the normative
   summary and the authoring templates.
-- The three floor rules under `.claude/rules/` that encode guardrails 3 and 4
-  for agents. The rest of the harness is spec 002's.
+- The four floor rules under `.claude/rules/` that encode guardrails 3 and 4
+  for agents. Three are unconditional; `derived-artifacts-are-compiler-output.md`
+  is paths-scoped to the derived directory and reinforces the other two at the
+  moment a shard is actually open. The rest of the harness is spec 002's.
 - `standards/spec/constitution.md` is referenced, not owned: the bypass floor
   leaves it editable through the amendment path in its own §Amendment.
 
@@ -261,6 +264,67 @@ refusal rule, or the ownership ratchet. Amendments may add surface elsewhere.
   this narrows ambiguity, it does not move the boundary.
   `standards/spec/templates/spec-template.md` changes in the same pass, from
   `scripts/verify-spec.sh <id>` to `spec-spine verify <id>` (spec 002 D-6).
+- **D-2 (2026-09-08, six globs that matched nothing).** `[index]
+  extra_hashed_inputs` carried six entries in the form `dir/**`. In the `glob`
+  crate `**` matches a sequence of path *components*, so those patterns
+  enumerate directories, and the hasher keeps only entries that are files:
+  every one of them matched nothing, silently, while the comment above them
+  said the harness and the gates were folded into the staleness hash. Measured
+  on this corpus before the fix, not inferred:
+
+  ```console
+  $ printf '\n<!-- probe -->\n' >> standards/spec/constitution.md
+  $ spec-spine index check      → index is fresh
+  $ spec-spine compile --check  → spec-registry is fresh: 20 shard(s)
+  ```
+
+  So the constitution, the contract, the spec templates, all three workflows
+  and every `.claude/` agent, rule and skill had never contributed to any
+  content hash. Fixed to the working `dir/**/*` form and extended to the
+  claimed governance files that no glob covered (`CODEOWNERS`,
+  `.gitattributes`, `.github/dependabot.yml`, `.githooks/`, `scripts/`,
+  `rust-toolchain.toml`, `deny.toml`, `package.json`, `pnpm-workspace.yaml`,
+  `.nvmrc`). This restales all 26 shards exactly once. Surfaced by `L-008`
+  (spec-spine spec 057) on the 0.17.0 bump; the same defect was found in
+  spec-spine's own config and in the shipped default it came from (spec-spine
+  spec 069). No `unamendable` anchor is affected: putting claimed governance
+  files into the ledger for the first time strengthens `json-truth-boundary`
+  and `determinism-requirement` rather than moving either boundary.
+- **D-3 (2026-09-08, forty-nine unwitnessed source claims, declared).** A
+  `file` unit carries no span, and only span-backing sources are folded into a
+  shard hash, so the bare `file` claims on 21 Rust sources under `crates/` and
+  28 files under `apps/desktop/` are witnessed by nothing: `index check` will
+  not call the index stale for an edit to one. `[lint] unwitnessed_allowed`
+  (spec-spine spec 057 §3.5) declares them deliberate rather than turning the
+  check off; `index check` keeps reporting the count, so the gap stays visible.
+  They are not undefended: `require_ownership` is on, so `couple` refuses a
+  changed source file whose owning spec did not change in the same PR, which is
+  a stricter check than staleness. What the gap costs is written down: the
+  index does not notice the edit, and a corpus attestation would cover a ledger
+  that never read those bytes. `**/README.md` is declared for the same reason
+  it sits in `[coupling] bypass_prefixes`: per-app prose is documentation, not
+  authority, and hashing it would force a full reindex on every prose edit.
+  This is butler-ai making the decision spec-spine 057 §3.2 says a corpus
+  should make deliberately rather than inherit.
+- **D-4 (2026-09-08, the CLI is pinned in the corpus, not only in CI).**
+  `[meta] required_version = ">=0.17.0"` (spec-spine spec 062). The binary now
+  checks itself on every run and refuses with exit 3, which makes the version
+  question answerable before any exit code is interpreted: older CLIs spent
+  exit 2 on an unknown flag, the same code this tool spends on staleness, and a
+  session told its shards are stale when they are not regenerates artifacts
+  that were already correct. It constrains the binary only; `SPEC_SPINE_VERSION`
+  in the `Makefile` (spec 002) is what CI and `make setup` install, and the two
+  move together.
+- **D-5 (2026-09-08, a fourth floor rule).** `.claude/rules/derived-artifacts-are-compiler-output.md`
+  joins the three, ported from the spec-spine kit at its spec 068. It is
+  paths-scoped to `.derived/**` and says nothing new: hand-editing a shard is a
+  workflow violation, ad-hoc parsing of one is forbidden, parsing a verb's
+  `--json` output is a typed read. It does not replace
+  `governed-artifact-reads.md` and cannot. That rule is unconditional because
+  the mistake it prevents is reaching for `jq` *instead of* the subcommand, and
+  an agent about to make that mistake may never open a file under `.derived/`,
+  so a paths-scoped rule would never load. This one reinforces it at the moment
+  somebody actually has a shard open. Guardrail 4 is unchanged in force.
 
 ## 13. Verification
 
@@ -280,4 +344,20 @@ spec-spine lint --fail-on-warn
 spec-spine index coverage --fail-on-untraced
 # §1: authored truth is markdown only. No hand-authored JSON under specs/.
 sh -c '! find specs -name "*.json" | grep -q .'
+# D-2: every hashed-input glob ends in a file component. `dir/**` enumerates
+# directories and the hasher keeps only files, so such an entry silently
+# matches nothing. Read through `config show` (a typed read), not the file.
+spec-spine config show --json | python3 -c "import json,sys; g=json.load(sys.stdin)['index']['extra_hashed_inputs']; bad=[p for p in g if p.endswith('/**')]; assert not bad, bad"
+spec-spine config show --json | python3 -c "import json,sys; s=json.load(sys.stdin)['index']['slices']; bad=[p for v in s.values() for p in v if p.endswith('/**')]; assert not bad, bad"
+# D-2: the governance surface is actually witnessed now. Editing the
+# constitution must stale the index; before the fix both gates said fresh.
+sh -c 'b="${TMPDIR:-/tmp}/butler-000-probe.bak"; cp standards/spec/constitution.md "$b" && printf "\n<!-- probe -->\n" >> standards/spec/constitution.md; spec-spine index check >/dev/null 2>&1; rc=$?; cp "$b" standards/spec/constitution.md; rm -f "$b"; test "$rc" -ne 0'
+# D-3: the unwitnessed remainder is declared, not silenced. The count is still
+# reported, and the lint is green at the tier CI gates on.
+spec-spine index check
+spec-spine lint --fail-on-warn
+# D-4: the corpus pins the binary it is governed by.
+spec-spine config show --json | python3 -c "import json,sys; v=json.load(sys.stdin)['meta']['required_version']; assert v, v"
+# D-5: the fourth floor rule exists and is paths-scoped to the derived tree.
+sh -c 'head -4 .claude/rules/derived-artifacts-are-compiler-output.md | grep -q "\.derived/\*\*"'
 ```

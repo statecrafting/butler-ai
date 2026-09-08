@@ -263,6 +263,19 @@
       {
         "locations": [
           {
+            "file": ".claude/rules/derived-artifacts-are-compiler-output.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": ".claude/rules/derived-artifacts-are-compiler-output.md"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": ".claude/rules/governed-artifact-reads.md"
           }
         ],
@@ -291,5 +304,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "004db1093ac5f4b43c98d1a42b56c3a1e816f6c059ff32f2790c8348f0145eb8"
+  "shardHash": "687a50518f053a3fedd58f675045ef93621458b89e771d2fb0323e4bce7e6c27"
 }

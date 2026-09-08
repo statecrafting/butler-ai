@@ -69,15 +69,29 @@ check` exits non-zero, include "Codebase index: stale, run `spec-spine index`".
 compares against the committed shards **without writing**. Read the exit code:
 
 - **`0` (fresh):** the lifecycle counts reflect the current frontmatter.
-- **`2` (stale):** check stderr first. A real staleness report names shards:
-  report "Spec registry: stale, run `spec-spine compile` and commit" and say
-  the counts come from the stale committed ledger. An older CLI rejects the
-  flag with exit 2 too (`error: unexpected argument '--check'`): that is a
-  version problem, not drift; run `/setup`.
+- **`2` (stale):** a real staleness report names the shards. Report "Spec
+  registry: stale, run `spec-spine compile` and commit" and say the counts come
+  from the stale committed ledger.
 - **`1` (validation failed):** the corpus is broken. Surface the violations and
   report the counts as unverified.
+- **`3` (usage or version):** not drift. Read stderr: a `required_version`
+  refusal names the pin and the running version (run `/setup`); anything else is
+  a malformed invocation.
 - **any other non-zero:** treat freshness as unknown, report stderr verbatim,
   continue. Never report "fresh" for a code you did not recognize.
+
+> **Ask `spec-spine --version` before believing any exit code.** Every binary
+> ever released answers it, and it exits 0. A binary that predates a flag
+> rejects it, and older CLIs spent **exit 2** on that: the same code this tool
+> spends on staleness. Reporting a version problem as spec drift sends someone
+> chasing a phantom, and a session told its shards are stale when they are not
+> will regenerate and commit artifacts that were already correct. Since
+> spec-spine spec 063 a usage error maps to exit 3, so exit 2 means staleness
+> and nothing else, but the binary that reports the wrong code is by definition
+> the old one, so a procedure that may be talking to one cannot lean on that.
+> This corpus also sets `[meta] required_version` in `spec-spine.toml`
+> (spec-spine spec 062), so a conforming CLI checks itself on every run and
+> refuses with exit 3 rather than answering wrongly.
 
 Do **not** substitute a plain `spec-spine compile` here: writing repairs the
 tree as a side effect of reading it and hides that the committed copy was
