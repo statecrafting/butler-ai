@@ -223,6 +223,27 @@ same string (FR-002).
   FR-001's latency, which needs the reference hardware §7 of
   `docs/architecture.md` still does not name.
 
+- **D-5 (2026-09-07, the Windows engine, checked without a Windows machine).**
+  The first Windows implementation did not compile, and CI told me so twenty
+  minutes later. Four things were wrong: `IAsyncOperation` has no blocking
+  `get`, the error type in a `map_err` chain was ambiguous,
+  `CreateCopyFromBuffer2` does not exist, and `windows_future` is not
+  re-exported by the `windows` crate and has to be a direct dependency.
+
+  **`cargo check --target x86_64-pc-windows-msvc` works for this crate**, and
+  so does `cargo clippy` for that target. The workspace as a whole cannot be
+  cross-checked (Tauri's tree needs a C toolchain this host lacks), but a
+  crate whose Windows dependency is pure bindings can be, and this one is.
+  Both were run before this landed.
+
+  The absence of a blocking accessor turned out to be an improvement.
+  `windows-future` expects an executor, and this crate's trait is synchronous
+  because the runtime already calls it from a blocking task (spec 019). Polling
+  `Status` with a deadline is the supported way to wait without one, and it
+  makes §3.1's 1500 ms budget a **real deadline** rather than a check made
+  after the engine had already taken as long as it liked, which is what the
+  macOS path still does.
+
 ## 8. Verification
 
 ```verify:cli

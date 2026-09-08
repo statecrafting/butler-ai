@@ -40,6 +40,7 @@ objc2-core-foundation = { workspace = true }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows = { workspace = true }
+windows-future = { workspace = true }
 
 [lints]
 workspace = true

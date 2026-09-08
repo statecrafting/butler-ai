@@ -109,6 +109,6 @@
     "summary": "The `butler-ocr` crate: a `TextRecognizer` trait that turns a `FrameView` into `Recognized` text with per-line geometry and confidence, backed by the operating system's own OCR engine (Apple Vision `VNRecognizeTextRequest` on macOS, `Windows.Media.Ocr` on Windows) so no model ships with the app and no pixels leave the process; plus a deterministic normalization pass that turns engine output into the stable, layout-ordered string the change detector (008) compares and the assistant (010) reads. Recognition runs entirely on device.\n",
     "title": "Text recognition: native on-device OCR with a normalized text output"
   },
-  "shardHash": "b35cdad43f2b8c84d55925abef8df1c6e755e1e19933cc91c7452156e394bcf0",
+  "shardHash": "66c55519e6bad088d38fb8abe5f5aa7edf1a12a38d760481550a7f183c9f7606",
   "specVersion": "1.1.0"
 }
