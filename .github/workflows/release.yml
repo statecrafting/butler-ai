@@ -160,11 +160,18 @@ jobs:
       # Windows; neither runner has both, so pick whichever is there rather
       # than assume.
       - name: Collect artifacts and write sidecars
-        id: collect
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p dist-release
+          # Checked before the find rather than after: under `set -e`, `find`
+          # on a missing directory exits 1 on its own and the explicit message
+          # below never prints, which is the one failure an operator most
+          # needs to read.
+          if [ ! -d target/release/bundle ]; then
+            echo "::error::the bundler wrote no target/release/bundle; it did not run or it failed silently"
+            exit 1
+          fi
           find target/release/bundle -type f \
             \( -name '*.dmg' -o -name '*.msi' -o -name '*.exe' \) \
             -exec cp {} dist-release/ \;
