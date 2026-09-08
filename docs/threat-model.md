@@ -79,8 +79,50 @@ cannot hide behind it in tests.
   and shipped with SHA-256 sidecars and SBOMs.
 - The updater is off by default; when on it verifies the manifest signature
   with an embedded key and installs only after the user confirms.
-- Signing-key custody and rotation: to be recorded here before the first
-  release (spec 017 AC-2).
+### Signing-key custody and rotation (spec 017 AC-2)
+
+Four secrets can produce something users will install as butler-ai. They are
+the highest-value assets in this project: an attacker holding any one of them
+can ship a build that does everything the real product does, including reading
+the screen, while being invisible to screen sharing. Nothing else in this
+threat model has that reach.
+
+| Key | What it signs | Where it lives |
+|---|---|---|
+| Apple Developer ID Application certificate and private key | the `.app` and `.dmg` | one custodian's login keychain, marked non-exportable, plus one offline backup |
+| Apple notarization credential (App Store Connect API key, or an app-specific password) | nothing; authorizes notarization | the same custodian |
+| Windows code-signing certificate and private key | the `.msi` and `.exe` | on a hardware token or cloud HSM if the certificate is EV; otherwise a PFX beside the Apple backup |
+| Tauri updater signing key | `latest.json`, which decides what every installed copy downloads next | offline only; never on a laptop |
+
+Rules, and the reasoning for each:
+
+- **One named custodian per key, recorded here by name before the first
+  release.** Shared custody means no custody: nobody can say who used a key or
+  when, so a compromise cannot be scoped and a rotation cannot be verified.
+- **GitHub Actions secrets are the only online copy.** They are scoped to this
+  repository, and `jobs.build` is the only job that reads them. No key is
+  pasted into a shell, a chat, an issue, or a laptop that also runs untrusted
+  code.
+- **The updater key never touches a runner.** It signs `latest.json`, so it
+  decides what every installed copy downloads next; the release workflow
+  publishes a manifest that was signed elsewhere. A signing certificate lets
+  an attacker ship one bad build to whoever installs it, and the updater key
+  lets them ship one to everybody who already did.
+- **Rotation is scheduled, not reactive.** Each certificate is replaced at the
+  earlier of its expiry minus 60 days and 24 months of use. A key nobody has
+  ever rotated is a key nobody knows how to rotate, and the first attempt
+  should not be the one made under pressure.
+- **On suspected compromise**: revoke the certificate with its issuer, unpublish
+  every release signed after the last known-good build, publish an advisory
+  naming the affected versions and their hashes, and rotate. Revocation alone
+  does not help a user who already installed: Authenticode and Gatekeeper both
+  accept a timestamped signature from a certificate revoked later, which is
+  the point of timestamping and also its cost.
+- **Every release carries a build-provenance attestation** (spec 017 FR-001),
+  so a signature alone is not the only evidence. `gh attestation verify` ties
+  an artifact to the workflow, repository and commit that produced it, which a
+  stolen certificate cannot forge without also holding a GitHub OIDC identity
+  for this repository.
 
 ## 7. Platforms
 

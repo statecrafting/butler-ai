@@ -110,6 +110,10 @@ endif
 	@test -n "$(HAS_CARGO)$(HAS_PNPM)" || echo "[test] no workspace manifests yet; nothing to test"
 
 lint:
+	@# Spec 017 FR-003: the product version lives in three files and they must
+	@# agree. Cheap, has no prerequisites, and catches a release cut from a
+	@# half-finished bump, so it runs before the expensive gates.
+	python3 scripts/bump_version.py --check
 ifneq ($(wildcard crates/*/Cargo.toml),)
 	cargo fmt --all --check
 	cargo clippy --workspace --all-targets --locked -- -D warnings

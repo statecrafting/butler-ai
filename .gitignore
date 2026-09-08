@@ -38,3 +38,9 @@ node_modules/
 .vscode/
 .env
 .env.*
+
+# Spec 017 §3: `cargo cyclonedx` writes an SBOM beside each manifest it is
+# pointed at. The release workflow generates them per run and attaches them to
+# the release; a copy committed from a local run would be a stale inventory
+# claiming to describe a build it did not come from.
+*.cdx.json

@@ -1,34 +1,4 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '017-release-and-distribution' section unit 'on' not found in .github/workflows/release.yml",
-        "path": ".github/workflows/release.yml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '017-release-and-distribution' section unit 'permissions' not found in .github/workflows/release.yml",
-        "path": ".github/workflows/release.yml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '017-release-and-distribution' section unit 'jobs.build' not found in .github/workflows/release.yml",
-        "path": ".github/workflows/release.yml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '017-release-and-distribution' section unit 'jobs.publish' not found in .github/workflows/release.yml",
-        "path": ".github/workflows/release.yml"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '017-release-and-distribution' file unit 'scripts/bump_version.py' does not exist",
-        "path": "scripts/bump_version.py"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "003-governance-ci",
@@ -37,7 +7,15 @@
     ],
     "implementingPaths": [
       {
+        "path": ".github/workflows/release.yml",
+        "source": "spec-edge"
+      },
+      {
         "path": "Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "Makefile",
         "source": "spec-edge"
       },
       {
@@ -45,13 +23,41 @@
         "source": "spec-edge"
       },
       {
+        "path": "apps/desktop/src-tauri/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
         "path": "apps/desktop/src-tauri/tauri.conf.json",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-capture/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-core/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-llm/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "crates/butler-ocr/Cargo.toml",
+        "source": "spec-edge"
+      },
+      {
+        "path": "scripts/bump_version.py",
         "source": "spec-edge"
       }
     ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "scripts/bump_version.py"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -60,7 +66,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": ".github/workflows/release.yml",
+            "span": {
+              "endLine": 209,
+              "startLine": 31
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -70,7 +84,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": ".github/workflows/release.yml",
+            "span": {
+              "endLine": 257,
+              "startLine": 210
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -80,7 +102,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": ".github/workflows/release.yml",
+            "span": {
+              "endLine": 21,
+              "startLine": 18
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -90,7 +120,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": ".github/workflows/release.yml",
+            "span": {
+              "endLine": 26,
+              "startLine": 24
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -128,6 +166,71 @@
       {
         "locations": [
           {
+            "file": "apps/desktop/src-tauri/Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "apps/desktop/src-tauri/Cargo.toml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-capture/Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-capture/Cargo.toml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-core/Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-core/Cargo.toml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-llm/Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-llm/Cargo.toml"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "crates/butler-ocr/Cargo.toml"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "kind": "file",
+          "path": "crates/butler-ocr/Cargo.toml"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": "apps/desktop/src-tauri/tauri.conf.json"
           }
         ],
@@ -136,6 +239,24 @@
         "unit": {
           "kind": "file",
           "path": "apps/desktop/src-tauri/tauri.conf.json"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 116,
+              "startLine": 112
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "co_authority",
+        "unit": {
+          "anchor": "lint",
+          "file": "Makefile",
+          "kind": "section"
         }
       },
       {
@@ -156,5 +277,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "00af29194be97ed2a26b671ad0b620fb9692a73c976863e8b7ce93ebb1bfed39"
+  "shardHash": "dd4fbbe382dce40331bfefd66b67c23c00147a8d048a112423ba044301572df4"
 }

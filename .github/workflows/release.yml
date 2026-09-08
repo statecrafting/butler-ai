@@ -1,0 +1,257 @@
+# Spec: specs/017-release-and-distribution/spec.md
+#
+# A tagged commit becomes something a user can install and trust. Spec 017 §1:
+# a capture-excluding overlay is exactly the kind of software that must be
+# verifiably what it claims to be, so signing, notarization and provenance are
+# not polish, they are the product's trustworthiness.
+#
+# `on`, `permissions`, `jobs.build` and `jobs.publish` are section units owned
+# by spec 017, which is why they are named exactly that.
+#
+# NOTHING HERE HAS RUN. There is no signing identity in this repository's
+# secrets, so the credential guard below refuses before the build and no tag
+# has ever been pushed. Spec 017 D-2 lists what an operator must supply and
+# which steps will be exercised for the first time when they do. Read it
+# before the first tag.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+# Read by default; the two jobs that need more take it at the job level, which
+# is spec 017 §3's rule and keeps the publish credentials out of the build.
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      # `actions/attest-build-provenance` mints a Sigstore certificate from
+      # the job's OIDC identity and records the attestation against the
+      # repository (FR-001).
+      id-token: write
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+
+      # FR-003, extended to the tag. Three files agreeing on a number that is
+      # not the one on the tag is worse than three files disagreeing: the
+      # release would ship 0.1.0 binaries under a v0.2.0 tag with matching
+      # provenance attestations, and everything downstream would look
+      # consistent.
+      - name: The tag and the tree agree
+        shell: bash
+        run: python3 scripts/bump_version.py --check --expect "${GITHUB_REF_NAME#v}"
+
+      # §1: an unsigned build of this product is indistinguishable from
+      # malware, to an endpoint agent and to a user. Refusing to build is the
+      # correct behaviour when it cannot be signed; producing an unsigned
+      # artifact and publishing it anyway is not.
+      - name: Require signing credentials
+        shell: bash
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          set -u
+          case "${{ runner.os }}" in
+            macOS)   required="APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_SIGNING_IDENTITY APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID" ;;
+            Windows) required="WINDOWS_CERTIFICATE WINDOWS_CERTIFICATE_PASSWORD" ;;
+            *)       echo "::error::unexpected runner ${{ runner.os }}"; exit 1 ;;
+          esac
+          missing=""
+          for name in $required; do
+            eval "value=\${$name:-}"
+            [ -n "$value" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::cannot sign a ${{ runner.os }} build: missing secret(s)$missing"
+            echo "::error::spec 017 §1 forbids publishing an unsigned artifact; see spec 017 D-2 for what each secret is"
+            exit 1
+          fi
+          echo "signing credentials present for ${{ runner.os }}"
+
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Toolchain
+        run: rustc --version && cargo --version
+      - name: Cache cargo
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: release-cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install web dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install the Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+
+      # macOS: Developer ID Application, hardened runtime, notarize with
+      # notarytool, staple. The Tauri bundler does all four when these
+      # variables are set, which is why there is no separate `codesign` step.
+      - name: Build and sign (macOS)
+        if: runner.os == 'macOS'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: cargo tauri build --config apps/desktop/src-tauri/tauri.conf.json
+
+      # Windows: import the PFX into the user store, read back its thumbprint,
+      # and hand it to the bundler, which drives `signtool` with the timestamp
+      # URL and digest algorithm from `tauri.conf.json`.
+      #
+      # This is the OV / software-certificate path. An EV or cloud-HSM
+      # certificate cannot be imported this way and needs
+      # `bundle.windows.signCommand` instead: spec 017 D-2 records the fork,
+      # because it is the operator's certificate that decides which applies.
+      - name: Build and sign (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $pfx = Join-Path $env:RUNNER_TEMP "signing.pfx"
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE))
+          $password = ConvertTo-SecureString -String $env:WINDOWS_CERTIFICATE_PASSWORD -AsPlainText -Force
+          $cert = Import-PfxCertificate -FilePath $pfx -CertStoreLocation Cert:\CurrentUser\My -Password $password
+          Remove-Item $pfx -Force
+          $config = @{ bundle = @{ windows = @{ certificateThumbprint = $cert.Thumbprint } } } | ConvertTo-Json -Depth 6 -Compress
+          cargo tauri build --config $config
+
+      # FR-001's first half. `shasum` on macOS, `sha256sum` in Git Bash on
+      # Windows; neither runner has both, so pick whichever is there rather
+      # than assume.
+      - name: Collect artifacts and write sidecars
+        id: collect
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist-release
+          find target/release/bundle -type f \
+            \( -name '*.dmg' -o -name '*.msi' -o -name '*.exe' \) \
+            -exec cp {} dist-release/ \;
+          if [ -z "$(ls -A dist-release)" ]; then
+            echo "::error::the bundler produced no installer; nothing to sign, hash or publish"
+            exit 1
+          fi
+          if command -v sha256sum >/dev/null 2>&1; then
+            hash() { sha256sum "$1"; }
+          else
+            hash() { shasum -a 256 "$1"; }
+          fi
+          cd dist-release
+          for file in *; do
+            case "$file" in *.sha256) continue ;; esac
+            hash "$file" > "$file.sha256"
+          done
+          ls -la
+
+      # §3's SBOM line. `cargo cyclonedx --top-level` emits one CycloneDX
+      # document for the shipped binary's dependency graph, beside its
+      # manifest. The JavaScript half is `pnpm licenses list`, not `pnpm
+      # sbom`, which is not a pnpm command (spec 017 D-3).
+      - name: SBOMs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo install cargo-cyclonedx --locked
+          cargo cyclonedx --manifest-path apps/desktop/src-tauri/Cargo.toml \
+            --format json --top-level
+          cp apps/desktop/src-tauri/butler-desktop.cdx.json \
+            "dist-release/sbom-rust-${{ runner.os }}.cdx.json"
+          pnpm --filter @butler-ai/desktop licenses list --json \
+            > "dist-release/sbom-web-${{ runner.os }}.json"
+
+      # FR-001's second half: an attestation `gh attestation verify` accepts,
+      # for every installer. The sidecars and SBOMs are covered by the
+      # installer's own attestation plus their hashes.
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: |
+            dist-release/*.dmg
+            dist-release/*.msi
+            dist-release/*.exe
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: release-${{ runner.os }}
+          path: dist-release/
+          if-no-files-found: error
+
+  publish:
+    name: publish
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v6
+        with:
+          path: incoming
+          merge-multiple: true
+
+      # A release that is missing one platform is worse than no release: users
+      # on the other one are told the version exists and cannot install it.
+      - name: Both platforms are present
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -la incoming
+          test -n "$(find incoming -name '*.dmg' -print -quit)" \
+            || { echo "::error::no macOS installer in the artifacts"; exit 1; }
+          test -n "$(find incoming \( -name '*.msi' -o -name '*.exe' \) -print -quit)" \
+            || { echo "::error::no Windows installer in the artifacts"; exit 1; }
+
+      # The sidecars are only worth publishing if they are true. Recomputing
+      # them here also proves the artifacts survived the upload and download
+      # unchanged.
+      - name: Sidecars match
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd incoming
+          for sidecar in *.sha256; do
+            sha256sum -c "$sidecar"
+          done
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag \
+            incoming/*

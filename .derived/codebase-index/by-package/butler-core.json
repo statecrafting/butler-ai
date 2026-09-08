@@ -3,9 +3,8 @@
     "kind": "rust-lib",
     "name": "butler-core",
     "path": "crates/butler-core",
-    "specRef": "009-pipeline-state-machine",
-    "version": "0.1.0"
+    "specRef": "009-pipeline-state-machine"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "105ca89c65962a0cd6bd52e7b1da6d3bd648228786179eb25dd6faf9e715c462"
+  "shardHash": "b5c1fce3a3b92b89c6bfc4aaf609173db634809e9279255f32a2dcc24e60c3bf"
 }

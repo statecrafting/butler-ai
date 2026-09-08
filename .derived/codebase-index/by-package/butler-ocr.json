@@ -3,9 +3,8 @@
     "kind": "rust-lib",
     "name": "butler-ocr",
     "path": "crates/butler-ocr",
-    "specRef": "007-text-recognition",
-    "version": "0.1.0"
+    "specRef": "007-text-recognition"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "a765a5c23bbcd01a01e5a9349fc6a1b14d25e93dd788a8d03e282285b2285b9f"
+  "shardHash": "ffced43cd73d554feea76f27a712c2de6c012e4f22e56b7bc89e9b94f98e0723"
 }

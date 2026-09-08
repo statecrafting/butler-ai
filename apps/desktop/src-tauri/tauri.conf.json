@@ -18,10 +18,30 @@
     "macOSPrivateApi": true
   },
   "bundle": {
-    "active": false,
-    "targets": "all",
+    "active": true,
+    "targets": [
+      "dmg",
+      "msi",
+      "nsis"
+    ],
     "icon": [
       "icons/icon.png"
-    ]
+    ],
+    "publisher": "statecrafting",
+    "copyright": "Copyright (c) 2026 butler-ai contributors",
+    "category": "Productivity",
+    "shortDescription": "A private, capture-excluded screen assistant",
+    "longDescription": "butler-ai watches the screen you are already looking at, recognizes the text on it locally, and answers questions about it in an always-on-top overlay that screen sharing and recording cannot see.",
+    "license": "AGPL-3.0-only",
+    "licenseFile": "../../../LICENSE",
+    "homepage": "https://github.com/bartekus/butler-ai",
+    "windows": {
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "http://timestamp.digicert.com"
+    },
+    "macOS": {
+      "minimumSystemVersion": "13.0",
+      "hardenedRuntime": true
+    }
   }
 }
