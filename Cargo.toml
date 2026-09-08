@@ -97,7 +97,7 @@ tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
 # only: spec 009 §2 keeps the file format and the filesystem out of
 # `butler-core`, which is why FR-003's golden lives with the store.
 toml = { version = "1" }
-dirs = { version = "6" }
+dirs = { version = "7" }
 
 # spec 016: structured, content-free tracing and the diagnostics bundle.
 # `json` for the line format §3.1 fixes, `env-filter` deliberately NOT
