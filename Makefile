@@ -130,9 +130,14 @@ spec-new:
 # prerequisite. Both run from `apps/desktop`, the app directory the Tauri CLI
 # discovers `src-tauri/` from, which is the same directory 017 D-10 pinned the
 # build hook to.
+# `--bin butler-desktop` is required, not tidiness. The crate has two binary
+# targets and `cargo run` refuses to choose ("could not determine which binary
+# to run"), so `make dev` fails outright without it. Same root cause as the
+# bundler shipping the wrong binary (spec 020 D-4); here it fails loudly, which
+# is the better of the two failures.
 dev:
 	sh scripts/local_app.sh --check-toolchain
-	cd apps/desktop && cargo tauri dev
+	cd apps/desktop && cargo tauri dev -- --bin butler-desktop
 
 # Spec 020 §3.2: build, ad-hoc sign, verify, install. Needs no credential and
 # produces nothing publishable; releases are 017's, from a tag, signed.

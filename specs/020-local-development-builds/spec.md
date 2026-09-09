@@ -259,11 +259,18 @@ rather than let the developer discover them as bugs:
   script then compares the two files byte for byte, before signing rewrites
   them, and refuses to install on a mismatch.
 
+  `make dev` has the same root cause and the opposite manners: `cargo run`
+  refuses to choose between two binaries and says so ("could not determine
+  which binary to run"), so the target does not start at all. `cargo tauri dev
+  -- --bin butler-desktop` fixes it, and unlike the build path the flag is
+  honoured, because `dev` runs `cargo run` rather than `cargo build --bins`.
+
   This is a workaround in this spec's territory, not a fix. The fix is to stop
   the exporter being an auto-discovered binary, with `required-features` on a
-  `[[bin]]` table in 004's manifest or by moving it out of `src/bin/`. Both are
-  other specs' territory and would change how 011's bindings are generated, so
-  neither is made here.
+  `[[bin]]` table in 004's manifest, by moving it out of `src/bin/`, or at
+  minimum a `default-run` key, which is what cargo's own error message
+  suggests. All are other specs' territory and would change how 011's bindings
+  are generated, so none is made here.
 
   **This is not only this spec's problem, and it is not fixed here.**
   `.github/workflows/release.yml` lines 140 and 165 run `cargo tauri build`
@@ -357,6 +364,9 @@ grep -qi "quarantine" docs/local-install.md
 # §3.1 and §3.2: both targets exist and `app` delegates to the script.
 sh -c 'awk "/^app:/,/^\$/" Makefile | grep -q "scripts/local_app.sh"'
 sh -c 'awk "/^dev:/,/^\$/" Makefile | grep -q "tauri"'
+# D-4 again, on the other target: with two binary targets `cargo run` refuses
+# to choose, so `dev` does not start at all without the flag.
+sh -c 'awk "/^dev:/,/^\$/" Makefile | grep -q -- "--bin butler-desktop"'
 # Territory: every unit this spec claims resolves.
 sh -c 'spec-spine index render | grep "W-001" | grep -q "020-local-development-builds" && exit 1 || exit 0'
 ```
