@@ -1,0 +1,91 @@
+{
+  "diagnostics": {
+    "errors": [],
+    "warnings": [
+      {
+        "code": "W-001",
+        "message": "spec '020-local-development-builds' file unit 'scripts/local_app.sh' does not exist",
+        "path": "scripts/local_app.sh"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '020-local-development-builds' file unit 'docs/local-install.md' does not exist",
+        "path": "docs/local-install.md"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '020-local-development-builds' section unit 'dev' not found in Makefile",
+        "path": "Makefile"
+      },
+      {
+        "code": "W-001",
+        "message": "spec '020-local-development-builds' section unit 'app' not found in Makefile",
+        "path": "Makefile"
+      }
+    ]
+  },
+  "mapping": {
+    "dependsOn": [
+      "004-desktop-shell",
+      "013-output-pacing"
+    ],
+    "implementingPaths": [],
+    "resolvedUnits": [
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "docs/local-install.md"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "scripts/local_app.sh"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "anchor": "app",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "anchor": "dev",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/threat-model.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "specId": "020-local-development-builds",
+    "specStatus": "approved"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "cf0131209f1aae1997ec3d09cef4241c397f7f1bafdee2abc7718d8ae085fb42"
+}

@@ -42,9 +42,10 @@
       },
       {
         "kind": "sequencing-plan",
-        "note": "Phase 5: signed, attested releases. Requires phase 4.",
+        "note": "Phase 5: getting the built product onto a machine. 020 reaches the developer's own Mac and needs no credential; 017 reaches a stranger's and stops at one. Both require phase 4; neither requires the other.",
         "target_specs": [
-          "017-release-and-distribution"
+          "017-release-and-distribution",
+          "020-local-development-builds"
         ]
       }
     ],
@@ -84,6 +85,6 @@
     "summary": "The build order for butler-ai as a sequencing plan over the product specs, expressed with spec-scoped `constrains` edges so the plan is part of the authority graph rather than a README. Five phases, each with an entry condition, an exit criterion (the phase's specs at zero `W-001` and flipped to `implementation: complete`), and the parallelism an orchestrator may use within it. The `phase` frontmatter key on every product spec mirrors this plan, and so does its `depends_on` (R-007); all three MUST agree.\n",
     "title": "Implementation sequencing: the phased build order for agentic development"
   },
-  "shardHash": "48bcea903eb34286ee9747835dbb6d24a260041eee110c18a51990c5ac873eb6",
+  "shardHash": "34270ab9dcf65c73fc962623e4c6278dbe270cd8ee3615bf73a3fd890cc45731",
   "specVersion": "1.2.0"
 }

@@ -26,8 +26,8 @@ constrains:
     target_specs: ["010-assistant-inference", "013-output-pacing"]
     note: "Phase 4: inference and pacing. Requires phases 1 to 3; the first end-to-end answer is this phase's exit criterion."
   - kind: sequencing-plan
-    target_specs: ["017-release-and-distribution"]
-    note: "Phase 5: signed, attested releases. Requires phase 4."
+    target_specs: ["017-release-and-distribution", "020-local-development-builds"]
+    note: "Phase 5: getting the built product onto a machine. 020 reaches the developer's own Mac and needs no credential; 017 reaches a stranger's and stops at one. Both require phase 4; neither requires the other."
 references:
   - { unit: { kind: file, path: "docs/architecture.md" }, role: "context" }
 summary: >
@@ -60,7 +60,7 @@ spec-scoped `constrains`).
 | 2 | 004, 011, 012, 014, 016, 019 | phase 1 | app launches on both platforms to a transparent, click-through overlay showing `Disarmed`; bindings fresh in CI | 004 first; then 011 (the contract and its generated bindings), then 012 (the UI that imports them), then 014; 016 in parallel once 004 is complete; 019 last, since the runtime emits 011's events and 016's traces |
 | 3 | 006, 007, 005 | phase 2 | arming runs the self-test and reports `Verified` on both platforms; a static screen yields `Unchanged` cycles | 006 and 007 in parallel; 005 after 006 |
 | 4 | 010, 013 | phase 3 | a question on screen produces a paced answer end to end; 015 FR-004/005 pass | 013's pure policy may start with phase 1; wiring after 010 |
-| 5 | 017 | phase 4 | `v0.1.0` release with signed artifacts | n/a |
+| 5 | 017, 020 | phase 4 | 020: `make app` installs a launchable local build. 017: `v0.1.0` release with signed artifacts | 020 and 017 are independent; 020 needs no credential and 017 stops at one (D-3) |
 
 ## 3. Rules
 
@@ -234,3 +234,28 @@ spec-scoped `constrains`).
   acceptance criteria, not this plan's own exit column, so it does not reach
   that row. It does not bind until phase 2 ends, which is after 019, and it is
   left for the maintainer rather than folded into this amendment.
+
+- **D-6 (2026-09-09, amendment, approved by the maintainer in session).**
+  Phase 5 gained 020, local development builds. The plan had described how the
+  product reaches a stranger (017: signed, notarized, attested) and never how
+  it reaches the person writing it. That was not an oversight in 017, whose
+  §1 reasoning about unsigned artifacts is sound and unchanged; it was a gap
+  between the specs, and gaps between specs are this plan's business.
+
+  Its practical effect is that the corpus stopped being buildable-but-unrunnable.
+  Every route from a checkout to a launchable app went through
+  `.github/workflows/release.yml`, which refuses without the eight credentials
+  in 017 D-2, so a maintainer with no Developer ID could compile all twenty
+  specs and never see the overlay. 020 needs no credential because it
+  distributes nothing.
+
+  Phase 5 rather than a phase of its own: 020 `depends_on` 013, the phase 4
+  leaf, for the reason 017 D-1 gives (installing a build only means something
+  once the product answers end to end), and it shares 017's domain. The two
+  are independent of each other and R-002's ordering is satisfied by both.
+
+  **What this does not do.** It does not relax 017, whose criteria stay handed
+  over to an operator per D-9 there, and it does not make a local artifact
+  releasable: 020 §3.2 forbids the script from naming a release credential or
+  writing the release workflow, and 020 FR-003 requires the bundle's signature
+  to remain visibly ad-hoc.
