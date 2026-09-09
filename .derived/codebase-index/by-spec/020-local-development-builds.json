@@ -22,19 +22,6 @@
       {
         "locations": [
           {
-            "file": "docs/local-install.md"
-          }
-        ],
-        "ownership": true,
-        "sourceField": "establishes",
-        "unit": {
-          "kind": "file",
-          "path": "docs/local-install.md"
-        }
-      },
-      {
-        "locations": [
-          {
             "file": "scripts/local_app.sh"
           }
         ],
@@ -43,6 +30,60 @@
         "unit": {
           "kind": "file",
           "path": "scripts/local_app.sh"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/local-install.md",
+            "span": {
+              "endLine": 108,
+              "startLine": 88
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "gatekeeper-and-quarantine",
+          "file": "docs/local-install.md",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/local-install.md",
+            "span": {
+              "endLine": 53,
+              "startLine": 41
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "give-it-screen-recording",
+          "file": "docs/local-install.md",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/local-install.md",
+            "span": {
+              "endLine": 87,
+              "startLine": 54
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "the-rebuild-re-prompt-and-how-to-stop-it",
+          "file": "docs/local-install.md",
+          "kind": "section"
         }
       },
       {
@@ -99,5 +140,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "2da60e796aff1e49c66ee2a054f10344c51ab763822b945289fec6083da8b13b"
+  "shardHash": "d46b6e2c92b43c3fa73ebdf4254fb61bebb6e9713f43e9c917e48233692e2138"
 }

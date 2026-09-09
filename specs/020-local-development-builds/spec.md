@@ -18,7 +18,16 @@ depends_on:
   - "013-output-pacing"
 establishes:
   - "scripts/local_app.sh"
-  - "docs/local-install.md"
+  # The document is claimed by section, not as a file. A bare `file` claim on a
+  # docs page is witnessed by nothing (`L-008`): its contents could change
+  # without staling any shard. These three are the sections AC-2 requires, so
+  # each is hashed through its span and an edit to one stales this spec's shard
+  # alone. Folding `docs/` into `[index] extra_hashed_inputs` was the other
+  # option and is wrong here for the reason the config already gives for
+  # `**/README.md`: it restamps every shard in the corpus on any prose edit.
+  - { kind: section, file: "docs/local-install.md", anchor: "give-it-screen-recording" }
+  - { kind: section, file: "docs/local-install.md", anchor: "the-rebuild-re-prompt-and-how-to-stop-it" }
+  - { kind: section, file: "docs/local-install.md", anchor: "gatekeeper-and-quarantine" }
 extends:
   # Two new Makefile targets. The file is 002's; a target inside it is a
   # section unit claimed additively, never a second `establishes` on the file.
@@ -284,6 +293,24 @@ rather than let the developer discover them as bugs:
   this shape, and here the row waits on no later spec, only on an operator
   looking at their own screen. The spec stays `implementation: in-progress`
   until that signature, as 017 D-9 stays open for its own handed-over rows.
+
+- **D-6 (2026-09-09, the first document in this corpus claimed by section).**
+  Claiming `docs/local-install.md` as a `file` unit turned the gate red with
+  `L-008`: no glob in `[index] extra_hashed_inputs` covers `docs/`, so the
+  claim was witnessed by nothing and the page could be rewritten without
+  staling a single shard. It is the gap `[lint] unwitnessed_allowed` documents
+  for the forty-nine source files, arriving on a file that has no `couple`
+  protection behind it either, because `docs/` is on the bypass floor.
+
+  Widening `extra_hashed_inputs` was the wrong half of the lint's advice here,
+  for the reason `spec-spine.toml` already writes out beside `**/README.md`: an
+  entry there restamps the global scalar, so every prose edit would restale
+  every shard in the corpus. It is also 000's file.
+
+  So the three sections AC-2 names are claimed instead. Each is hashed through
+  its span, an edit to one stales this spec's shard alone, and the parts of the
+  page that are only orientation stay unclaimed, which is what they are. The
+  anchors are heading slugs and the indexer resolves all three.
 
 ## 8. Verification
 

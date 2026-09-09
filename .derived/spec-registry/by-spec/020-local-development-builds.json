@@ -12,8 +12,19 @@
         "path": "scripts/local_app.sh"
       },
       {
-        "kind": "file",
-        "path": "docs/local-install.md"
+        "anchor": "give-it-screen-recording",
+        "file": "docs/local-install.md",
+        "kind": "section"
+      },
+      {
+        "anchor": "the-rebuild-re-prompt-and-how-to-stop-it",
+        "file": "docs/local-install.md",
+        "kind": "section"
+      },
+      {
+        "anchor": "gatekeeper-and-quarantine",
+        "file": "docs/local-install.md",
+        "kind": "section"
       }
     ],
     "extends": [
@@ -75,6 +86,6 @@
     "summary": "The route from this checkout to a running Butler on the developer's own Mac, which no spec claimed: a `make dev` hot-reload loop and a `make app` that produces an ad-hoc signed `Butler.app` and installs it. It needs no Developer ID, no notarization and no repository secret, because nothing it produces is published: the artifact carries no authority in its signature and says so. Spec 017 is untouched and still governs anything a stranger downloads. The costs an ad-hoc signature imposes, chiefly that macOS re-asks for Screen Recording after every rebuild, are written down rather than papered over.\n",
     "title": "Local development builds: run and install Butler on your own machine without a signing identity"
   },
-  "shardHash": "7d3e4f8415a6d0b7511f717189fdeeb282c930adf4ebc5ba3e9cdbea9c7b683b",
+  "shardHash": "e7d30ec06c60d407a2a93d61123586598f279f05d61bfe0b66fca40ec027ed31",
   "specVersion": "1.2.0"
 }
