@@ -16,7 +16,14 @@
 # that rejection as staleness sends a session to regenerate shards that were
 # already correct. Keep this in lockstep with `SPEC_SPINE_VERSION` in the
 # Makefile, which is what CI and `make setup` install.
-required_version = ">=0.17.0"
+#
+# 0.18.0 is the floor because the whole gate chain now goes through one
+# freshness verb, `spec-spine check` (spec-spine spec 075): the Makefile, both
+# CI workflows and all four hooks call it, and every release before 0.18.0
+# rejects it as an unknown subcommand. Spec-spine spec 080 made the PR gate
+# read that refusal as exit 3, "the read was not performed", rather than as
+# staleness; this floor is what keeps it from ever having to.
+required_version = ">=0.18.0"
 
 [manifest]
 # Cargo: `[package.metadata.butler].spec = "NNN-slug"`

@@ -159,5 +159,5 @@
     "title": "Release and distribution: signed, notarized, attested desktop builds with an opt-in updater"
   },
   "shardHash": "b42a41f02af63a1a1fb81e8b493847a918179ec4f2450460fc07b0dd9ac374b1",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

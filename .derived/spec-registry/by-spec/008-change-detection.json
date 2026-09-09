@@ -116,5 +116,5 @@
     "title": "Change detection: fire inference only when the screen's text has meaningfully changed"
   },
   "shardHash": "32a764f369d70e7d44b13f9527abe59bdf788d90924b9aaf8e1e0c1a9ba930a6",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

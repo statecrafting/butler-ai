@@ -113,5 +113,5 @@
     "title": "Workspace layout: one Cargo workspace, one pnpm workspace, pinned toolchains"
   },
   "shardHash": "1979bc1d18c58e237e4af16b3aeb2b02e66ed2ace661ae0e48b019dbfa7d502e",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

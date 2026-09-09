@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working in this
-repository. Run `/init` first in every session; it executes the protocol in
+repository. Run `/prime` first in every session; it executes the protocol in
 `AGENTS.md`.
 
 ## What this is
@@ -26,9 +26,12 @@ rediscover commands by grepping manifests.
 
 ```sh
 make setup       # install the pinned spec-spine, compile, index, verify the loop
-make spine       # compile --check → index check → lint --fail-on-warn → coverage --fail-on-untraced
-make ci          # spine + build + test + lint (what CI runs)
-make pr-prep     # spec-spine index, then couple --base origin/main --head HEAD
+make gate        # check → lint --fail-on-warn → coverage --fail-on-untraced → couple  (read-only)
+make refresh     # spec-spine compile then index  (the writing half; commit the shards)
+make verify SPEC=NNN-slug        # one spec's declared acceptance, via spec-spine verify
+make spine       # alias for gate (the pre-0.18.0 name)
+make ci          # gate + build + test + lint (what CI runs)
+make pr-prep     # make refresh, then couple --base $(BASE) --head HEAD
 make burndown    # unresolved owning units (W-001) per spec: the build to-do list
 make coverage    # spec-spine index coverage
 SLUG=my-feature make spec-new   # scaffold specs/NNN-my-feature/spec.md
@@ -37,7 +40,16 @@ make build test lint            # language gates (no-ops until Cargo.toml / pnpm
 
 Rust: toolchain pinned in `rust-toolchain.toml` (1.92.0, edition 2024); always
 `--locked`. Web: pnpm, Node 22. Exit codes of `spec-spine` are a contract:
-`0` ok, `1` validation/drift, `2` stale, `3` I/O/config.
+`0` ok, `1` validation/drift, `2` stale, `3` I/O/config. `BASE` is resolved from
+the repository, not assumed (`$SPEC_SPINE_DEFAULT_BRANCH`, then the remote's own
+HEAD, then `main`).
+
+Freshness is one verb since spec-spine 0.18.0: `spec-spine check` asks about
+both committed shard trees, reports them on separate lines, and returns the
+more severe verdict (`3`, then `1`, then `2`, then `0`). It replaced the
+`compile --check` and `index check` pair; `spec-spine.toml [meta]
+required_version` pins the floor at `>=0.18.0` because the Makefile, both CI
+workflows and all four hooks call it.
 
 ## Governance (spec-spine)
 
@@ -54,17 +66,20 @@ Rust: toolchain pinned in `rust-toolchain.toml` (1.92.0, edition 2024); always
   assistant | ui | distribution; `kind` ∈ constitutional-bootstrap | feature |
   tooling | constraint | plan. `platforms` and `phase` are required on product
   specs (`frontmatter.extra_known_keys`).
-- **The gate chain** (`make spine` + `couple`) runs in CI on every PR
-  (`.github/workflows/spec-spine.yml`, spec 003): `compile --check`, `index
-  check`, `lint --fail-on-warn`, `index coverage --fail-on-untraced`, `couple`.
+- **The gate chain** (`make gate`) runs in CI on every PR: `check
+  --fail-on-warn`, `lint --fail-on-warn`, `index coverage --fail-on-untraced`,
+  `couple`. Two workflows run it. `.github/workflows/spec-spine.yml` is the
+  reusable one `ci.yml` folds into the single required `ci-gate` check (spec
+  003 §3.1); `.github/workflows/govern.yml` is the spec-spine kit's own
+  workflow, kept green alongside it so a kit update stays a copy, not a merge.
   `C-001` = owned code changed without its spec; `C-002` = a changed source
   file no spec specifically claims (`require_ownership = true`, on from day
   one, never to be turned off: spec 000 anchor `ownership-ratchet`).
 - **`.derived/` is committed** (shard trees; `build-meta.json` is gitignored).
   After any change to a spec, a manifest, or a hashed input (`spec-spine.toml
   [index] extra_hashed_inputs`: standards, workflows, the harness, `AGENTS.md`,
-  `CLAUDE.md`, `Makefile`, the Tauri security surface), run `spec-spine compile
-  && spec-spine index` and commit the shards. The hooks in
+  `CLAUDE.md`, `Makefile`, the Tauri security surface), run `make refresh`
+  (`spec-spine compile && spec-spine index`) and commit the shards. The hooks in
   `.claude/settings.json` do this for you and block `gh pr create` on a red gate.
 - **Refusal rule**: never edit a spec to make the gate pass on code that
   contradicts it. Surface the contradiction. Waive with a cited
@@ -75,7 +90,7 @@ Rust: toolchain pinned in `rust-toolchain.toml` (1.92.0, edition 2024); always
 | status / implementation | unresolved owned unit |
 |---|---|
 | `draft`, or `approved` + `pending`/`in-progress` | `W-001` warning (counted, never skipped) |
-| `approved` + `complete` | hard `I-00x` error, `index check` fails |
+| `approved` + `complete` | hard `I-00x` error, `spec-spine check` fails |
 
 Only a human sets `status: approved`. A spec flips to `implementation:
 complete` only when `make burndown` shows zero for it. `make burndown` is the

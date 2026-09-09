@@ -106,5 +106,5 @@
     "title": "Screen capture: snapshot polling of one monitor through the compositor"
   },
   "shardHash": "650b9910e7b4e88fe740dfd76f16485922c917c4bb7fd940d3e391174d834eae",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

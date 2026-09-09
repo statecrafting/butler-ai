@@ -13,11 +13,11 @@ if [ ! -x "$sc" ]; then
   echo "[pre-commit] spec-spine not found; run 'make setup' (or commit with --no-verify)" >&2
   exit 1
 fi
-if ! "$sc" compile --check >/dev/null 2>&1; then
-  echo "[pre-commit] spec registry is stale or invalid: run 'spec-spine compile' and stage .derived/" >&2
-  exit 1
-fi
-if ! "$sc" index check >/dev/null 2>&1; then
-  echo "[pre-commit] codebase index is stale: run 'spec-spine index' and stage .derived/" >&2
+# Spec-spine spec 075: one verb, both committed trees, read-only. The report
+# lines name which tree moved, which the composed exit code cannot, so they are
+# printed rather than summarized away.
+if ! out="$("$sc" check 2>&1)"; then
+  echo "$out" >&2
+  echo "[pre-commit] a committed shard tree is stale or invalid: run 'make refresh' and stage .derived/" >&2
   exit 1
 fi

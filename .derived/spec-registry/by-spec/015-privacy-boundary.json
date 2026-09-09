@@ -185,5 +185,5 @@
     "title": "Privacy boundary: what may leave the process, what may touch disk, and what may be logged"
   },
   "shardHash": "d41aed48fea42e67b806b28acd118a263a1f7f863c8be38dc011c308950fef6a",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

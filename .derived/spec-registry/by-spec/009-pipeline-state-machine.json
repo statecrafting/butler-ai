@@ -96,5 +96,5 @@
     "title": "Pipeline state machine: a pure reducer that encloses capture → OCR → evaluate → infer → render"
   },
   "shardHash": "719d0bec12bb1bc8b3a68fb7e8da3a7135ee80c1ef0a68b68172a0245eeec003",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

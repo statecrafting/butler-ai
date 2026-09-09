@@ -182,5 +182,5 @@
     "title": "IPC contract: typed commands and events between the Rust runtime and the overlay, with generated bindings"
   },
   "shardHash": "c79f433db5d764a1e0f058a66702cf34ca0f42c2f2c2ea361715ba24f5251ffb",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

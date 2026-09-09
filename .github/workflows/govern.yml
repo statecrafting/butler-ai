@@ -1,0 +1,79 @@
+# Spec: specs/003-governance-ci/spec.md
+#
+# The spec-spine kit's governed-loop workflow (kit v18.0.0, `kit/govern.yml`),
+# adopted so butler-ai runs the same `make gate` chain CI-side that a session
+# runs locally: the gate has one definition rather than two that drift.
+#
+# TWO DELIBERATE DEVIATIONS FROM THE KIT FILE, both recorded in spec 003.
+#
+# 1. The kit's `probe` and `build` jobs are not copied. They run `make build
+#    test fmt clippy` on `ubuntu-latest`, and butler-ai's workspace includes
+#    the Tauri app crate, which does not build on Linux. butler-ai's language
+#    gates are spec 003's Windows and macOS matrix in `ci.yml`; duplicating
+#    them here would either fail or cost a second matrix to say the same thing.
+#    What is kept is the half the kit exists to standardize: the governed loop.
+#
+# 2. spec-spine is installed at the version pinned in the Makefile (spec 003
+#    §3.1), not at whatever `install.sh` last published. A gate governed by an
+#    unpinned binary is a gate whose verdict can change without a commit.
+#
+# This publishes its own status check and therefore duplicates the `govern` job
+# `ci.yml` already folds into `ci-gate`. That is intentional: `ci-gate` stays
+# the single check branch protection requires, and this workflow is the kit
+# artifact, green on its own, so a kit update is a copy rather than a merge.
+name: govern
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  govern:
+    name: govern (make gate)
+    runs-on: ubuntu-latest
+    steps:
+      # `fetch-depth: 0` because the coupling gate compares a base to a head,
+      # and a shallow clone has neither.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install spec-spine (pinned in Makefile)
+        run: |
+          set -euo pipefail
+          ver="$(sed -n 's/^SPEC_SPINE_VERSION ?= //p' Makefile)"
+          echo "installing spec-spine v${ver}"
+          curl -fsSL https://raw.githubusercontent.com/statecrafting/spec-spine/main/install.sh \
+            | SPEC_SPINE_VERSION="v${ver}" SPEC_SPINE_BIN_DIR="$HOME/.local/bin" sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/spec-spine" --version
+
+      # Read-only. `spec-spine check` compares the committed shards to the
+      # corpus without writing, so a stale tree is reported rather than
+      # repaired: a gate that writes hides the defect it exists to find.
+      - name: Governed loop
+        if: github.event_name != 'pull_request'
+        run: make gate BASE=origin/${{ github.event.repository.default_branch }}
+
+      # The coupling gate needs a base and a head, so the PR form runs the
+      # chain directly to reach `--pr-body`. The body goes to a file: a body
+      # containing a `Spec-Drift-Waiver:` line has no safe shell quoting, and a
+      # file has no quoting at all. The SHAs are the event's frozen ones, never
+      # the merge ref.
+      - name: Governed loop (pull request)
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          printf '%s' "${PR_BODY:-}" > "$RUNNER_TEMP/pr-body.txt"
+          spec-spine check --fail-on-warn
+          spec-spine lint --fail-on-warn
+          spec-spine index coverage --fail-on-untraced
+          spec-spine couple --base "$BASE_SHA" --head "$HEAD_SHA" --pr-body "$RUNNER_TEMP/pr-body.txt"

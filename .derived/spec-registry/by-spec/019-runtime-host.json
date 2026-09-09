@@ -85,5 +85,5 @@
     "title": "Runtime host: the effect executor that drives the pure reducer from inside the desktop crate"
   },
   "shardHash": "84f2af4a468714e5b55e97668619ab190df6d389b2634ff3904bcb84e2f07909",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

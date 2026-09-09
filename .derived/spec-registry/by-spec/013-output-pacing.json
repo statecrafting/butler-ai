@@ -191,5 +191,5 @@
     "title": "Output pacing: deliver the answer in chunks at a human reading rate"
   },
   "shardHash": "0603754eaca782fa5a37c8756dffd9ccebe5dcd373d385e28912ad7b8e617a93",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

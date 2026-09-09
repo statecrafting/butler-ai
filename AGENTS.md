@@ -3,7 +3,7 @@
 This file is the cross-agent session-init protocol authority, read by Claude
 Code, Codex CLI, Cursor, and GitHub Copilot via the AAIF/Linux Foundation
 AGENTS.md standard. It is the single source for the init protocol: tooling that
-runs `/init` reads the `## New Sessions` section to derive its plan.
+runs `/prime` reads the `## New Sessions` section to derive its plan.
 
 Governance is provided by `spec-spine` (installed on your `PATH` by
 `make setup`). All governed reads of compiled artifacts go through its CLI.
@@ -18,12 +18,12 @@ to-do list (`make burndown`), and the build order is
 
 ## New Sessions
 
-Run `/init` as the first action of every new session. It reads this section to
+Run `/prime` as the first action of every new session. It reads this section to
 derive its execution plan dynamically: any item added here is automatically
 picked up on the next init.
 
 > AGENTS.md is loaded implicitly as the protocol source; its contents are the
-> protocol, so `/init` does not list AGENTS.md as a parallel identity read in
+> protocol, so `/prime` does not list AGENTS.md as a parallel identity read in
 > Step 1 (avoiding the self-reference loop).
 
 **Init protocol:**
@@ -38,8 +38,11 @@ picked up on the next init.
    - `README.md`: what butler-ai is
    - `standards/spec/contract.md`: the short normative spec contract
    - `standards/spec/constitution.md`: durable principles (§III specify-first, §V privacy)
-   - `spec-spine compile --check`: registry freshness (non-fatal; see **Registry freshness**)
-   - `spec-spine index check`: codebase index staleness (non-fatal)
+   - `spec-spine --version`: the running binary. **Read this before believing any
+     exit code below**; the CLI-version note further down is the reasoning, and
+     this is the step that performs it.
+   - `spec-spine check`: freshness of **both** committed trees, the spec registry
+     and the codebase index, in one read (non-fatal; see **Freshness**)
    - `spec-spine registry status-report --json --nonzero-only`: lifecycle counts
    - `spec-spine registry list --ids-only`: spec inventory (latest-spec detection)
    - `spec-spine registry plan`: the ready set (spec-spine 038): which specs can be worked on now and what blocks the rest; `/next` applies the approval and in-flight rules on top of it
@@ -50,7 +53,7 @@ picked up on the next init.
    - `git log --oneline -10`: recent history
    - `git diff --stat HEAD~1`: last change summary
 
-2. **Emit** an `## initialized: butler-ai` summary block: a layer overview
+2. **Emit** an `## primed: butler-ai` summary block: a layer overview
    (governance, pipeline crates, desktop app, overlay), recent activity, a
    `## lifecycle:` sub-section from the `status-report` output, a
    `## burndown:` sub-section (unresolved units per spec, the active phase
@@ -61,29 +64,35 @@ directly (no `python`, `jq`, `awk`, `sed` against compiled artifacts). All
 structural and lifecycle data comes from `spec-spine` subcommands; the
 burn-down is read from the `index render` projection.
 
-**Staleness surface:** both committed artifacts have their own gate, and neither
-is fatal to `/init`: report it in the summary and continue. If `spec-spine index
-check` exits non-zero, include "Codebase index: stale, run `spec-spine index`".
+**Freshness:** `spec-spine check` (spec-spine spec 075) asks about both
+committed shard trees in one call. It compiles in memory and compares against
+the committed shards **without writing**, reports each tree on its own line
+(`spec-registry:` and `codebase-index:`), and returns the more severe of the two
+verdicts in the order **`3`, then `1`, then `2`, then `0`**. It is non-fatal to
+`/prime`: report it in the summary and continue.
 
-**Registry freshness:** `spec-spine compile --check` compiles in memory and
-compares against the committed shards **without writing**. Read the exit code:
+The composed exit code cannot say *which* tree moved; the report lines can, so
+read them rather than inferring from the code.
 
-- **`0` (fresh):** the lifecycle counts reflect the current frontmatter.
-- **`2` (stale):** a real staleness report names the shards. Report "Spec
-  registry: stale, run `spec-spine compile` and commit" and say the counts come
-  from the stale committed ledger.
+- **`0` (both fresh):** the lifecycle counts reflect the current frontmatter.
+- **`2` (stale):** a real staleness report names the tree and its shards. Report
+  "run `spec-spine compile` and commit" or "run `spec-spine index`" as the
+  output directs, and say the counts come from the stale committed ledger.
 - **`1` (validation failed):** the corpus is broken. Surface the violations and
-  report the counts as unverified.
-- **`3` (usage or version):** not drift. Read stderr: a `required_version`
-  refusal names the pin and the running version (run `/setup`); anything else is
-  a malformed invocation.
+  report the counts as unverified. This outranks `2`: staleness is not
+  meaningful against a corpus that does not validate.
+- **`3` (usage, version, or I/O):** not drift, and not an answer. Read stderr: a
+  `required_version` refusal names the pin and the running version (run
+  `/setup`); a binary predating the `check` verb rejects it as an unknown
+  subcommand. Treat freshness as unknown for both trees.
 - **any other non-zero:** treat freshness as unknown, report stderr verbatim,
   continue. Never report "fresh" for a code you did not recognize.
 
 > **Ask `spec-spine --version` before believing any exit code.** Every binary
-> ever released answers it, and it exits 0. A binary that predates a flag
-> rejects it, and older CLIs spent **exit 2** on that: the same code this tool
-> spends on staleness. Reporting a version problem as spec drift sends someone
+> ever released answers it, and it exits 0. A binary that predates a verb or a
+> flag rejects it, and older CLIs spent **exit 2** on that: the same code this
+> tool spends on staleness. `spec-spine check` is the case that matters here:
+> every release before 0.18.0 rejects it as an unknown subcommand. Reporting a version problem as spec drift sends someone
 > chasing a phantom, and a session told its shards are stale when they are not
 > will regenerate and commit artifacts that were already correct. Since
 > spec-spine spec 063 a usage error maps to exit 3, so exit 2 means staleness
@@ -93,9 +102,10 @@ compares against the committed shards **without writing**. Read the exit code:
 > (spec-spine spec 062), so a conforming CLI checks itself on every run and
 > refuses with exit 3 rather than answering wrongly.
 
-Do **not** substitute a plain `spec-spine compile` here: writing repairs the
-tree as a side effect of reading it and hides that the committed copy was
-stale. `/init` reports; it does not silently mutate.
+Do **not** substitute a plain `spec-spine compile` or `spec-spine index` here:
+writing repairs the tree as a side effect of reading it and hides that the
+committed copy was stale. `/prime` reports; it does not silently mutate, and
+`spec-spine check` carries the same never-writes contract.
 
 **CLI missing:** if `spec-spine --version` fails, run `/setup`. Do NOT fall back
 to ad-hoc parsing of `.derived/**/*.json`.
@@ -131,11 +141,23 @@ ready spec of the lowest open phase.
    unclaimed source file; a `// Spec:` header is the other claim). Touching
    a unit another spec owns requires an `extends` edge on that spec's unit.
    Never edit `.derived/` by hand.
-5. **Run the gate before every commit.** `make ci` (`make spine`: `compile
-   --check`, `index check`, `lint --fail-on-warn`, `coverage
-   --fail-on-untraced`; then `build`, `test`, `lint`) and `make pr-prep`
-   (`spec-spine index`, then `couple --base origin/main`). All must exit 0.
-   Commit the regenerated shards with the code they describe.
+5. **Run the gate before every commit.** `make ci` (`make gate`: `check
+   --fail-on-warn`, `lint --fail-on-warn`, `index coverage
+   --fail-on-untraced`, `couple --base $(BASE) --head HEAD`; then `build`,
+   `test`, `lint`), and `make pr-prep` (`make refresh`, then `couple`) before
+   the PR. All must exit 0. Commit the regenerated shards with the code they
+   describe.
+
+   `check` is the one freshness verb; it replaced the `compile --check` and
+   `index check` pair in spec-spine 0.18.0. `--fail-on-unresolved` is
+   deliberately not passed: this corpus is specified before it is built, so an
+   approved spec whose code has not landed is the normal state and its
+   unresolved units are the counted `W-001` burn-down (spec 002 D-4).
+
+   `BASE` is resolved from the repository, never assumed to be `origin/main`
+   (spec-spine spec 072): `$SPEC_SPINE_DEFAULT_BRANCH`, then the remote's own
+   HEAD, then `main`. The same three steps resolve the branch the push gate
+   protects.
 6. **Satisfy the spec's acceptance criteria verbatim.** `/verify <id>` runs
    the spec's `## Verification` block through `spec-spine verify <id>`. If a
    criterion cannot be satisfied, keep `implementation: in-progress`, add a
@@ -164,31 +186,28 @@ plan/explore/implement/review cycle, and two specialists know this project:
 
 Skills live in `.claude/skills/`:
 
-- `/init`: initialize a session (this protocol).
+- `/prime`: prime a session (this protocol).
 - `/setup`: one-time contributor setup; installs the pinned spec-spine and verifies the governed loop.
 - `/next`: the next ready spec from `registry plan`, minus drafts, with in-flight specs and honest blockers. Read-only.
 - `/build <id>`: one spec start to finish per "Working the backlog".
 - `/verify <id>`: run a spec's `verify:cli` blocks locally through `spec-spine verify`.
 - `/spec`: author the next spec from the template at the next free ordinal, born `draft`; taxonomy from `spec-spine.toml`, phase from spec 018.
 - `/burndown`: what is left to build, per spec and per phase; proposes the next unit of work (this repository's own).
-- `/implement-plan`: execute a cross-cutting plan file step by step with checkpoints.
-- `/validate-and-fix`: run `make ci` and fix discovered issues by severity.
 - `/code-review`: review the working diff for correctness bugs, spec drift, and illegitimate mid-build spec edits.
 - `/commit`: create a git commit with an impact-focused conventional message, spec ordinal as scope.
 - `/ship`: run the gate, review, commit on a feature branch, open a PR.
 - `/shepherd`: watch the PR's checks by head sha, remediate through the gate, merge, confirm on disk.
-- `/cleanup`: dead-code and duplicate detection with ownership-aware recommendations.
-- `/research`: deep research with parallel sub-agents.
-- `/refactor-claude-md`: tighten and restructure `CLAUDE.md`.
 
-The fifteen (all but `/burndown`) are the spec-spine kit's, byte for byte
-(spec-spine spec 048). Twelve match the kit at the pinned release;
-`/verify`, `/spec` and `/validate-and-fix` are taken from the kit's `main`,
-where spec-spine spec 051 moved them onto `spec-spine verify` (spec 002 D-6).
-The project layer the skills read lives in this file
-(the pin in `Makefile`, `make ci` and `make pr-prep` as the gate, the default
-branch) and in the path-scoped rules; do not edit a skill to add a project
-fact, add it here.
+Ten of the eleven are the spec-spine kit's, byte for byte at kit v18.0.0
+(spec-spine specs 048 and 081); `/burndown` is this repository's own. Spec-spine
+spec 081 cut the kit to the loop and the two skills the loop calls, so
+`/implement-plan`, `/validate-and-fix`, `/cleanup`, `/research` and
+`/refactor-claude-md` are gone: nothing in the loop invoked them and each
+restated a neighbour (spec 002 D-5).
+
+The project layer the skills read lives in this file (the pin in `Makefile`,
+`make ci` and `make pr-prep` as the gate, the resolved default branch) and in
+the path-scoped rules; do not edit a skill to add a project fact, add it here.
 
 ## Conventions
 
@@ -203,5 +222,7 @@ fact, add it here.
 - Implementation follows `specs/018-implementation-sequencing`: one spec per
   branch named `NNN-slug`; a spec flips to `implementation: complete` only at
   zero `W-001`.
-- The Makefile is the command contract (`make setup | spine | ci | pr-prep |
-  burndown | coverage | spec-new | build | test | lint`).
+- The Makefile is the command contract (`make setup | gate | refresh | verify |
+  ci | pr-prep | burndown | coverage | spec-new | build | test | lint`). `gate`,
+  `refresh` and `verify` are the spec-spine kit's names for the governed loop;
+  `spine` remains as an alias for `gate`.

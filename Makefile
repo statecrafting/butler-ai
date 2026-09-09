@@ -10,22 +10,32 @@ SHELL := /bin/sh
 
 # The spec-spine version CI installs (spec 003 §3.1) and `make setup` installs.
 # Bump both here; the workflow reads this file.
-SPEC_SPINE_VERSION ?= 0.17.0
+SPEC_SPINE_VERSION ?= 0.18.0
 SPEC_SPINE ?= $(shell command -v spec-spine 2>/dev/null || echo "$(HOME)/.cargo/bin/spec-spine")
-BASE ?= origin/main
+# Spec-spine spec 072 §3.3: the coupling base follows the branch this
+# repository actually has, resolved with the same three steps the push gate in
+# `.claude/settings.json` uses, in the same order: $SPEC_SPINE_DEFAULT_BRANCH
+# (make imports the environment, so `?=` leaves an exported value alone), then
+# the remote's own HEAD, then `main` as the compatibility floor. An explicit
+# `BASE=` on the command line still wins.
+SPEC_SPINE_DEFAULT_BRANCH ?= $(shell git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
+BASE ?= origin/$(or $(SPEC_SPINE_DEFAULT_BRANCH),main)
 
 HAS_CARGO := $(wildcard Cargo.toml)
 HAS_PNPM  := $(wildcard pnpm-workspace.yaml)
 
-.PHONY: help setup spine ci pr-prep burndown coverage spec-new build test lint fmt clean
+.PHONY: help setup gate refresh verify spine ci pr-prep burndown coverage spec-new build test lint fmt clean
 
 help:
 	@printf '%s\n' \
 	  'butler-ai targets:' \
 	  '  setup      install spec-spine $(SPEC_SPINE_VERSION), compile, index, verify the loop' \
-	  '  spine      compile --check → index check → lint --fail-on-warn → coverage --fail-on-untraced' \
-	  '  ci         spine + build + test + lint (what CI runs)' \
-	  '  pr-prep    spec-spine index, then couple --base $(BASE) --head HEAD' \
+	  '  gate       read-only: check → lint --fail-on-warn → coverage --fail-on-untraced → couple' \
+	  '  refresh    writing: spec-spine compile then index (commit the shards)' \
+	  '  verify     SPEC=<id>, run the declared acceptance of one spec' \
+	  '  spine      alias for gate (the pre-0.18.0 name)' \
+	  '  ci         gate + build + test + lint (what CI runs)' \
+	  '  pr-prep    refresh, then couple --base $(BASE) --head HEAD' \
 	  '  burndown   unresolved owning units (W-001) per spec' \
 	  '  coverage   spec-spine index coverage' \
 	  '  spec-new   SLUG=<slug> [DOMAIN=…] [KIND=…] [PHASE=…] make spec-new' \
@@ -42,19 +52,46 @@ setup:
 	"$(SPEC_SPINE)" --version
 	"$(SPEC_SPINE)" compile
 	"$(SPEC_SPINE)" index
-	$(MAKE) spine
-	@echo "[setup] governed loop verified; run /init"
+	$(MAKE) gate
+	@echo "[setup] governed loop verified; run /prime"
 
-spine:
-	"$(SPEC_SPINE)" compile --check
-	"$(SPEC_SPINE)" index check
+# The governed loop, read-only throughout (spec-spine spec 046: a gate that
+# writes repairs what it is meant to judge). `check` is the one freshness verb
+# spec-spine spec 075 added; it asks about both committed shard trees in one
+# call and never writes.
+#
+# `--fail-on-unresolved` is deliberately NOT passed. butler-ai is specified
+# before it is built, so an approved spec whose code has not landed yet is the
+# normal state and its unresolved units are counted W-001 warnings that drive
+# `make burndown`. The lifecycle already hard-errors on the real defect: an
+# unresolved unit on an `approved` + `complete` spec is `I-00x` and fails the
+# freshness check. Turning the flag on would redden the gate the moment a human
+# approves a spec, which is the workflow it would be protecting (spec 002 D-4).
+gate:
+	"$(SPEC_SPINE)" check --fail-on-warn
 	"$(SPEC_SPINE)" lint --fail-on-warn
 	"$(SPEC_SPINE)" index coverage --fail-on-untraced
+	"$(SPEC_SPINE)" couple --base "$(BASE)" --head HEAD
 
-ci: spine build test lint
-
-pr-prep:
+# The writing half, for a live session that has edited a spec and can commit
+# the regenerated shards with the change that made them stale.
+refresh:
+	"$(SPEC_SPINE)" compile
 	"$(SPEC_SPINE)" index
+
+# One spec's declared acceptance (spec-spine spec 049). It runs code the corpus
+# declares, which is why it is deliberately not part of `gate`.
+verify:
+	@test -n "$(SPEC)" || { echo "usage: make verify SPEC=<id>"; exit 3; }
+	"$(SPEC_SPINE)" verify $(SPEC)
+
+# The pre-0.18.0 name for `gate`, kept so existing muscle memory, scripts and
+# the docs that have not been reread still work.
+spine: gate
+
+ci: gate build test lint
+
+pr-prep: refresh
 	"$(SPEC_SPINE)" couple --base "$(BASE)" --head HEAD
 
 burndown:

@@ -46,7 +46,7 @@ summary: >
 
 Agents build fastest when the next unit of work is unambiguous and its
 verification is mechanical. This plan gives an orchestrator (a human, or
-`/implement-plan`) exactly that: which specs to implement in which order, what
+`/build`) exactly that: which specs to implement in which order, what
 can run in parallel, and how a phase is known to be done. It owns no code; its
 authority is over the *order* of the other specs (spec-spine spec 018's
 spec-scoped `constrains`).
