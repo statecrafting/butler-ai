@@ -43,7 +43,7 @@
       ]
     },
     "id": "020-local-development-builds",
-    "implementation": "pending",
+    "implementation": "in-progress",
     "kind": "tooling",
     "owner": "butler-ai maintainers",
     "references": [
@@ -74,6 +74,6 @@
     "summary": "The route from this checkout to a running Butler on the developer's own Mac, which no spec claimed: a `make dev` hot-reload loop and a `make app` that produces an ad-hoc signed `Butler.app` and installs it. It needs no Developer ID, no notarization and no repository secret, because nothing it produces is published: the artifact carries no authority in its signature and says so. Spec 017 is untouched and still governs anything a stranger downloads. The costs an ad-hoc signature imposes, chiefly that macOS re-asks for Screen Recording after every rebuild, are written down rather than papered over.\n",
     "title": "Local development builds: run and install Butler on your own machine without a signing identity"
   },
-  "shardHash": "a866120e8011b5671a432fbfe58c043aa34c10ccaab673cb68443073ac0faaf0",
+  "shardHash": "8556fc345692f72720fc12b962d21ebcaa9be74a0c720f0c4d49bae5d3f8d859",
   "specVersion": "1.2.0"
 }

@@ -5,7 +5,7 @@ status: approved
 kind: "tooling"
 domain: "distribution"
 created: "2026-09-09"
-implementation: pending
+implementation: in-progress
 owner: "butler-ai maintainers"
 risk: medium
 platforms: ["macos"]
