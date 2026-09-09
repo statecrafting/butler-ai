@@ -142,9 +142,9 @@
     ],
     "specPath": "specs/002-agentic-harness/spec.md",
     "status": "approved",
-    "summary": "The governed-development loop for agents working in this repository: the cross-agent session protocol (AGENTS.md), the Claude Code skills (`/init`, `/setup`, `/spec-new`, `/burndown`, `/implement-plan`, `/validate-and-fix`, `/code-review`, `/commit`, `/ship`, `/shepherd`, `/cleanup`, `/research`, `/refactor-claude-md`), the pipeline agents plus two domain specialists (`spec-author`, `tauri-expert`), the paths-scoped context rules, the deterministic hooks in `.claude/settings.json`, and the Makefile targets the skills call. Adapted from the spec-spine kit (spec-spine spec 029) and specialized to butler-ai's stack and its specify-first workflow. Owns the harness surface; the four floor rules stay with spec 000.\n",
+    "summary": "The governed-development loop for agents working in this repository: the cross-agent session protocol (AGENTS.md), the Claude Code skills (`/prime`, `/setup`, `/next`, `/build`, `/verify`, `/ship`, `/shepherd`, `/spec`, `/commit`, `/code-review`, `/burndown`), the pipeline agents plus two domain specialists (`spec-author`, `tauri-expert`), the paths-scoped context rules, the deterministic hooks in `.claude/settings.json`, and the Makefile targets the skills call. Adapted from the spec-spine kit (spec-spine spec 029) and specialized to butler-ai's stack and its specify-first workflow. Owns the harness surface; the four floor rules stay with spec 000.\n",
     "title": "Agentic engineering harness: skills, agents, rules, hooks, and the session protocol"
   },
-  "shardHash": "7180b1310ce39c5c1e9ebdb6edb4da3950b7ef1f450d790aa22b3d846bcb0bab",
-  "specVersion": "1.1.0"
+  "shardHash": "9f7e6e643e5a71fde5a9bff0dcbaafea49e179a24b20676a0cb9d2453175d05a",
+  "specVersion": "1.2.0"
 }

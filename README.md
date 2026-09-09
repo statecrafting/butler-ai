@@ -26,7 +26,7 @@ governs both. The code arrives phase by phase under those specs.
   warning in the index. `make burndown` lists them; that list is the build
   to-do list. `specs/018-implementation-sequencing` is the order.
 - `AGENTS.md` and `.claude/` are the harness: a session protocol, skills
-  (`/init`, `/spec-new`, `/burndown`, `/implement-plan`, `/ship`, `/shepherd`,
+  (`/prime`, `/next`, `/build`, `/verify`, `/burndown`, `/ship`, `/shepherd`,
   …), agents, rules, and hooks that keep the derived artifacts fresh and block
   a PR on a red gate.
 
@@ -38,10 +38,11 @@ Start with [`docs/architecture.md`](docs/architecture.md) and
 ```sh
 make setup      # installs the pinned spec-spine, compiles, indexes, verifies the loop
 make burndown   # what remains to be built, per spec
-make spine      # the governance gate chain (what CI runs)
+make gate       # the governance gate chain (what CI runs), read-only
+make refresh    # recompute the committed shard trees, then commit them
 ```
 
-In Claude Code: `/setup`, then `/init`.
+In Claude Code: `/setup`, then `/prime`.
 
 ## The specs
 

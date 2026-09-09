@@ -123,5 +123,5 @@
     "title": "Assistant inference: a provider-agnostic streaming client, the Claude reference provider, prompt contract, secrets, and spend guard"
   },
   "shardHash": "e7d95c4ba9a2369abe094eb9dddfdb6c7cc1208b3558eb7a8a30b127d1545b3c",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

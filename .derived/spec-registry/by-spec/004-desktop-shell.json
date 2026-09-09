@@ -155,5 +155,5 @@
     "title": "Desktop shell: the Tauri v2 app crate, the transparent always-on-top overlay window, shortcuts, tray, and permission onboarding"
   },
   "shardHash": "3fe1341ce9c547d820910471d091ab70e60df470e3c6601b66d4e6d04d2635be",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

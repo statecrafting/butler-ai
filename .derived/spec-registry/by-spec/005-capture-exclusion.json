@@ -188,5 +188,5 @@
     "title": "Capture exclusion: keep the overlay out of the OS frame buffer, and verify it"
   },
   "shardHash": "e4f484a1648efe072e421754ed4097d37147fb02ad4697b917129529647b6c65",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

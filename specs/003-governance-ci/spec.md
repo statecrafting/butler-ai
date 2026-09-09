@@ -17,6 +17,9 @@ establishes:
   - { kind: section, file: ".github/workflows/spec-spine.yml", anchor: "on" }
   - { kind: section, file: ".github/workflows/spec-spine.yml", anchor: "permissions" }
   - { kind: section, file: ".github/workflows/spec-spine.yml", anchor: "jobs.govern" }
+  - { kind: section, file: ".github/workflows/govern.yml", anchor: "on" }
+  - { kind: section, file: ".github/workflows/govern.yml", anchor: "permissions" }
+  - { kind: section, file: ".github/workflows/govern.yml", anchor: "jobs.govern" }
   - { kind: section, file: ".github/workflows/ci.yml", anchor: "on" }
   - { kind: section, file: ".github/workflows/ci.yml", anchor: "permissions" }
   - { kind: section, file: ".github/workflows/ci.yml", anchor: "jobs.preflight" }
@@ -31,9 +34,10 @@ establishes:
   - { kind: directory, path: ".githooks/" }
 summary: >
   Makes the governance model enforceable: a `spec-spine` workflow that runs the
-  full gate chain (`compile --check`, `index check`, `lint --fail-on-warn`,
+  full gate chain (`check --fail-on-warn`, `lint --fail-on-warn`,
   `index coverage --fail-on-untraced`, `couple` against the PR's frozen base
-  and head SHAs with the PR-body waiver) on every pull request; a `ci` workflow
+  and head SHAs with the PR-body waiver) on every pull request; the spec-spine
+  kit's own `govern` workflow running the same chain through `make gate`; a `ci` workflow
   for the language gates that activates itself when the workspace lands; a
   single `ci-gate` status check for branch protection; CODEOWNERS for the
   load-bearing paths; LF normalization and the opt-in merge driver for the
@@ -60,6 +64,7 @@ the claim overrides the floor for exactly those blocks:
 
 - `.github/workflows/spec-spine.yml`: `on`, `permissions`, `jobs.govern`,
   `jobs.gate`.
+- `.github/workflows/govern.yml`: `on`, `permissions`, `jobs.govern`.
 - `.github/workflows/ci.yml`: `on`, `permissions`, `jobs.rust`, `jobs.web`.
 
 Whole files: `.github/dependabot.yml`, `CODEOWNERS`, `.gitattributes`, and the
@@ -80,24 +85,29 @@ pre-commit staleness check).
 - `jobs.govern` MUST, in order, on `ubuntu-latest` with `fetch-depth: 0`:
   1. install the pinned `spec-spine` (the version in `Makefile`'s
      `SPEC_SPINE_VERSION`), verifying the release checksum;
-  2. `spec-spine compile --check` (validation + registry freshness; exit 1
-     invalid, 2 stale);
-  3. `spec-spine index check` (exit 2 stale);
-  4. `spec-spine lint --fail-on-warn`;
-  5. `spec-spine index coverage --fail-on-untraced` (spec 000 §7.5);
-  6. on `pull_request` only: `spec-spine couple --base <base.sha> --head
+  2. `spec-spine check --fail-on-warn`: freshness of **both** committed shard
+     trees in one read (spec-spine spec 075), returning the more severe of the
+     two verdicts (`3`, then `1`, then `2`, then `0`). `--fail-on-unresolved`
+     is deliberately absent: this corpus is specified before it is built, so
+     unresolved units on an approved-but-pending spec are the counted `W-001`
+     burn-down, not a CI failure (spec 002 D-7 and D-10);
+  3. `spec-spine lint --fail-on-warn`;
+  4. `spec-spine index coverage --fail-on-untraced` (spec 000 §7.5);
+  5. on `pull_request` only: `spec-spine couple --base <base.sha> --head
      <head.sha> --pr-body <file>` with the PR body written to a file. Both
      endpoints are the event's frozen SHAs, never the merge ref.
-  Nothing in the job writes to `.derived/`; a writing `compile` before
-  `--check` would make the check pass unconditionally.
+  Nothing in the job writes to `.derived/`; a writing `compile` or `index`
+  before the freshness read would make that read pass unconditionally.
   This workflow publishes no aggregate status of its own; `ci.yml`'s
   `jobs.ci-gate` is the only required check (§3.2).
 
 ### 3.2 `ci.yml` (the single CI entry point)
 
 - Triggers on `pull_request` and `push` to `main`, plus `merge_group` (inert
-  until a merge queue is enabled), with read-only permissions. This is the only
-  workflow in the repository with event triggers.
+  until a merge queue is enabled), with read-only permissions. It is the only
+  workflow that produces a **required** status check: `spec-spine.yml` is
+  reusable and has no triggers of its own, `govern.yml` (§3.5) publishes its own
+  advisory check, and `release.yml` (spec 017) triggers on a `v*` tag.
 - `jobs.rust` runs on a matrix of `windows-latest` and `macos-latest`: `cargo
   build --workspace --locked`, `cargo test --workspace --locked`, `cargo clippy
   --workspace --all-targets --locked -- -D warnings`, `cargo fmt --all --check`,
@@ -127,8 +137,9 @@ pre-commit staleness check).
   assign `merge=spec-spine-derived-regen` to the three shard globs.
 - `.githooks/merge-derived-index.sh` and `enable-merge-driver.sh` are the
   spec-spine spec 020 driver, verbatim except for the binary lookup; opt-in per
-  clone. `.githooks/pre-commit` refuses a commit when `spec-spine index check`
-  reports stale; opt-in via `git config core.hooksPath .githooks`.
+  clone. `.githooks/pre-commit` refuses a commit when `spec-spine check`
+  reports either committed tree stale or invalid; opt-in via `git config
+  core.hooksPath .githooks`.
 - `CODEOWNERS` MUST name a reviewer for `/specs/`, `/standards/`,
   `/spec-spine.toml`, `/.claude/`, `/.github/`, `/.githooks/`, `/AGENTS.md`,
   `/CLAUDE.md`, and `/apps/desktop/src-tauri/capabilities/` (the Tauri grants).
@@ -160,12 +171,37 @@ This section exists so the class does not recur as later phases add gates.
   check is this repository's. It is static, so it fires when the reference is
   written, not when a guard opens.
 
+### 3.5 `govern.yml` (the spec-spine kit's workflow)
+
+The spec-spine kit ships its own governed-loop workflow (kit v18.0.0,
+`kit/govern.yml`), and this repository runs it so the kit half stays a copy
+rather than a merge. It triggers on `pull_request` and `push` to `main`, takes
+`contents: read`, and runs the same chain through `make gate`, so the gate has
+one definition rather than two that drift.
+
+- It publishes its own status check. That check is **advisory**: `ci-gate`
+  remains the single required context (§3.2), and `jobs.govern` there is what a
+  merge waits on. The duplication is the price of running the kit artifact
+  unmodified, and it is cheap: the chain is a prebuilt binary over markdown.
+- Two deviations from the kit file, both required here and both recorded in the
+  file's own header:
+  1. The kit's `probe` and `build` jobs are **not** copied. They run the
+     language gates on `ubuntu-latest`, and this workspace includes the Tauri
+     app crate, which does not build on Linux. The language gates are §3.2's
+     Windows and macOS matrix; copying the kit's would either fail or pay for a
+     second matrix to say the same thing.
+  2. `spec-spine` is installed at the version pinned in `Makefile` (§3.1), not
+     at whatever `install.sh` last published. A gate governed by an unpinned
+     binary is a gate whose verdict can change without a commit.
+
 ## 4. Functional requirements
 
 - **FR-001.** A PR that edits `.github/workflows/spec-spine.yml` under
   `permissions:` without editing this spec fails `couple` with `C-001`.
 - **FR-002.** A PR that edits a `spec.md` without recompiling fails
-  `jobs.govern` at `compile --check` with exit 2.
+  `jobs.govern` at `spec-spine check` with exit 2, and the report line names
+  the `spec-registry` tree rather than leaving the caller to guess which of the
+  two moved.
 - **FR-003.** A PR that adds a source file inside a discovered package without
   a specific claim fails `jobs.govern` at `coverage --fail-on-untraced` and, if
   the file changed, at `couple` with `C-002`.
@@ -226,6 +262,27 @@ This section exists so the class does not recur as later phases add gates.
   entry point, and `jobs.ci-gate` is the one aggregate check, matching how
   spec-spine composes its own CI. AC-2 now names that single context and the
   four repository settings that make the gate binding rather than advisory.
+- **D-4 (2026-09-09, one freshness verb, and the kit's workflow beside ours).**
+  Two changes arrive with spec-spine 0.18.0 (spec 002 D-10 has the adoption in
+  full).
+
+  The gate chain's first two steps collapse into one. `spec-spine check`
+  (spec-spine spec 075) reads both committed shard trees and returns the more
+  severe verdict, so `compile --check` and `index check` no longer appear in
+  either workflow, in `make gate`, or in `.githooks/pre-commit`. The primitives
+  are not deprecated and stay where exactly one tree is in question: spec 002's
+  `index check --slice governance`, and spec 000's constitution probe. What the
+  composed verb costs is that its exit code cannot name the tree that moved,
+  which is why every caller here reads its report lines instead.
+
+  `govern.yml` (§3.5) is the spec-spine kit's own workflow, run unmodified in
+  the half that matters and deviating twice where this repository's stack
+  requires it. It duplicates the chain `ci-gate` already covers, and that was a
+  deliberate trade rather than an oversight: a second advisory check costs one
+  prebuilt-binary run per PR, and the alternative is a kit file this repository
+  maintains by hand, which is the merge the kit's invariance exists to avoid.
+  `ci-gate` stays the single **required** context, so branch protection does not
+  change.
 
 ## 8. Verification
 
@@ -241,8 +298,22 @@ sh -c '! grep -rn "^  gate:" .github/workflows/'
 # §3.1: the governance workflow is reusable only (no triggers of its own).
 grep -q 'workflow_call' .github/workflows/spec-spine.yml
 sh -c '! grep -qE "^  (push|pull_request):" .github/workflows/spec-spine.yml'
-# §3.2: ci.yml is the single triggered entry point, and calls the governance chain.
+# §3.2: ci.yml calls the governance chain, and ci-gate is the only required
+# context it aggregates.
 grep -q 'uses: ./.github/workflows/spec-spine.yml' .github/workflows/ci.yml
+# §3.1 + D-4: the chain runs one freshness verb, and neither workflow calls a
+# writing form before the read that judges it.
+grep -q 'spec-spine check --fail-on-warn' .github/workflows/spec-spine.yml
+sh -c '! grep -qE "spec-spine (compile|index)[[:space:]]*$" .github/workflows/spec-spine.yml'
+# §3.5 + D-4: the kit's workflow runs the same chain, pinned, and does not copy
+# the kit's ubuntu language jobs (this workspace has a Tauri crate).
+grep -q 'make gate' .github/workflows/govern.yml
+grep -q 'SPEC_SPINE_VERSION' .github/workflows/govern.yml
+sh -c '! grep -qE "^  (probe|build):" .github/workflows/govern.yml'
+# §3.3 + D-4: the opt-in pre-commit hook reads the composed verb, and writes
+# nothing.
+grep -qF '"$sc" check' .githooks/pre-commit
+sh -c '! grep -qE "spec-spine (compile|index)" .githooks/pre-commit'
 # AC-1: every unit this spec claims resolves (no W-001 against 003).
 sh -c 'spec-spine index render | grep "W-001" | grep -q "003-governance-ci" && exit 1 || exit 0'
 # §3.4 R-4: no Docker container action on a Windows or macOS job.

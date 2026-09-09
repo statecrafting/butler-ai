@@ -100,5 +100,5 @@
     "title": "Overlay UI: a transparent SolidJS surface that renders runtime state and answers"
   },
   "shardHash": "3b13db3811bf8c09868f57d42c2e968bcdbc5d9fcc5bb89f87d791a2f3ccdaf9",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

@@ -99,5 +99,5 @@
     "title": "Diagnostics and logging: structured, content-free tracing and a user-initiated diagnostics bundle"
   },
   "shardHash": "12ae577d42af3c5e30942773ac6eb2a366db98fdf6b1e52c21f293ff0a8a0c97",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

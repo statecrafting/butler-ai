@@ -315,6 +315,20 @@ refusal rule, or the ownership ratchet. Amendments may add surface elsewhere.
   that were already correct. It constrains the binary only; `SPEC_SPINE_VERSION`
   in the `Makefile` (spec 002) is what CI and `make setup` install, and the two
   move together.
+- **D-6 (2026-09-09, the floor moves to the verb the gates call).** `[meta]
+  required_version` moves from `">=0.17.0"` to `">=0.18.0"`, superseding D-4's
+  value while keeping its reasoning intact. The whole gate chain now goes
+  through one freshness verb, `spec-spine check` (spec-spine spec 075): the
+  `Makefile`, both CI workflows and all four hooks in `.claude/settings.json`
+  call it, and every release before 0.18.0 rejects it as an unknown
+  subcommand. A floor below the verb the corpus depends on is a floor that
+  admits a binary which cannot answer, which is the failure mode D-4 exists to
+  prevent, one level up. Spec-spine spec 080 made the PR gate read that
+  refusal honestly, as exit 3, "the read was not performed", rather than as
+  staleness; this floor is what keeps it from ever having to. The bump is not
+  byte-compatible and that is expected, not a defect: 0.18.0 writes
+  `specVersion: 1.2.0` into every shard, so all 46 restale exactly once and
+  are regenerated in the same change (spec 002 D-10 has the measurement).
 - **D-5 (2026-09-08, a fourth floor rule).** `.claude/rules/derived-artifacts-are-compiler-output.md`
   joins the three, ported from the spec-spine kit at its spec 068. It is
   paths-scoped to `.derived/**` and says nothing new: hand-editing a shard is a
@@ -334,10 +348,11 @@ mechanically checkable from a clean checkout.
 
 ```verify:cli
 # §1 + §5: the committed shards are exactly what the corpus compiles to.
-# `--check` compiles in memory and compares without writing, so a pass proves
-# the ledger is a pure function of the authored markdown (§6 determinism).
-spec-spine compile --check
-spec-spine index check
+# `check` compiles in memory and compares both trees without writing, so a pass
+# proves the ledger is a pure function of the authored markdown (§6
+# determinism). The primitives it composes are used below where one tree is
+# specifically in question.
+spec-spine check
 # §3: every spec's frontmatter satisfies the grammar and the closed taxonomies.
 spec-spine lint --fail-on-warn
 # §7.5: the ownership ratchet, on since the first commit.
@@ -356,8 +371,10 @@ sh -c 'b="${TMPDIR:-/tmp}/butler-000-probe.bak"; cp standards/spec/constitution.
 # reported, and the lint is green at the tier CI gates on.
 spec-spine index check
 spec-spine lint --fail-on-warn
-# D-4: the corpus pins the binary it is governed by.
+# D-4 + D-6: the corpus pins the binary it is governed by, at or above the
+# release that introduced the `check` verb every gate in this corpus calls.
 spec-spine config show --json | python3 -c "import json,sys; v=json.load(sys.stdin)['meta']['required_version']; assert v, v"
+spec-spine config show --json | python3 -c "import json,sys; v=json.load(sys.stdin)['meta']['required_version']; assert v == '>=0.18.0', v"
 # D-5: the fourth floor rule exists and is paths-scoped to the derived tree.
 sh -c 'head -4 .claude/rules/derived-artifacts-are-compiler-output.md | grep -q "\.derived/\*\*"'
 ```

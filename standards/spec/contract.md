@@ -19,8 +19,11 @@ govern.
   code-as-source shards (`index`).
 - `.derived/**/build-meta.json`: wall-clock metadata; gitignored.
 
-Both shard trees are **committed**. `spec-spine compile --check` and
-`spec-spine index check` refuse a stale tree in CI.
+Both shard trees are **committed**. `spec-spine check` refuses a stale tree in
+CI: it asks about both in one read, reports them on separate lines, and returns
+the more severe verdict (`3`, then `1`, then `2`, then `0`). The two primitives
+it composes, `compile --check` and `index check`, keep their own contracts and
+are the right verb when only one tree is in question.
 
 ## Required frontmatter
 
@@ -75,7 +78,7 @@ coverage; only (2) or (3) makes a file *specifically claimed*.
 
 ## The gate chain
 
-`compile --check` → `index check` → `lint --fail-on-warn` →
+`check --fail-on-warn` → `lint --fail-on-warn` →
 `index coverage --fail-on-untraced` → `couple`. The coupling gate refuses a
 merge where a claimed unit and its owning spec disagree (`C-001`) or where a
 changed source file has no specific owner (`C-002`), unless a scoped

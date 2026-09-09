@@ -35,10 +35,9 @@ references:
   - { unit: { kind: file, path: ".claude/rules/derived-artifacts-are-compiler-output.md" }, role: "floor rule (owned by 000)" }
 summary: >
   The governed-development loop for agents working in this repository: the
-  cross-agent session protocol (AGENTS.md), the Claude Code skills (`/init`,
-  `/setup`, `/spec-new`, `/burndown`, `/implement-plan`, `/validate-and-fix`,
-  `/code-review`, `/commit`, `/ship`, `/shepherd`, `/cleanup`, `/research`,
-  `/refactor-claude-md`), the pipeline agents plus two domain specialists
+  cross-agent session protocol (AGENTS.md), the Claude Code skills (`/prime`,
+  `/setup`, `/next`, `/build`, `/verify`, `/ship`, `/shepherd`, `/spec`,
+  `/commit`, `/code-review`, `/burndown`), the pipeline agents plus two domain specialists
   (`spec-author`, `tauri-expert`), the paths-scoped context rules, the
   deterministic hooks in `.claude/settings.json`, and the Makefile targets the
   skills call. Adapted from the spec-spine kit (spec-spine spec 029) and
@@ -72,7 +71,7 @@ change to what an agent may do.
   `pr-prep`, `burndown`, `coverage`, `spec-new` are this spec's; `build`,
   `test`, `lint` are co-owned with spec 001, which defines their content.
 - `.claude/settings.json`: permissions and the four hooks.
-- `.claude/skills/`: thirteen skills (§3.2).
+- `.claude/skills/`: eleven skills (§3.2).
 - `.claude/agents/`: six agents (§3.3).
 - `.claude/rules/{spec-authoring,rust-crates,overlay-frontend,build-commands}.md`:
   paths-scoped context rules. The four floor rules are spec 000's.
@@ -81,33 +80,43 @@ change to what an agent may do.
 
 ### 3.1 Session protocol (`AGENTS.md` § New Sessions)
 
-`/init` MUST read the protocol from `AGENTS.md` and execute it, never
+`/prime` MUST read the protocol from `AGENTS.md` and execute it, never
 duplicate it. The protocol MUST: load the unconditional floor rules first (the
-fourth is paths-scoped and loads on contact); dispatch the
-parallel reads (`CLAUDE.md`, `README.md`, contract, constitution, `spec-spine
-compile --check`, `spec-spine index check`, `registry status-report`,
-`registry list --ids-only`, the burn-down via `index render`, surface listings,
-recent git history); and emit an `## initialized: butler-ai` block with a
-`## lifecycle:` and a `## burndown:` sub-section. Freshness gates are reported,
-never repaired, by `/init`.
+fourth is paths-scoped and loads on contact); dispatch the parallel reads
+(`CLAUDE.md`, `README.md`, contract, constitution, `spec-spine --version`,
+`spec-spine check`, `registry status-report`, `registry list --ids-only`, the
+burn-down via `index render`, surface listings, recent git history); and emit a
+`## primed: butler-ai` block with a `## lifecycle:` and a `## burndown:`
+sub-section. Freshness is reported, never repaired, by `/prime`.
+
+Freshness is one read: `spec-spine check` (spec-spine spec 075) asks about both
+committed shard trees, reports each on its own line, and returns the more severe
+of the two verdicts (`3`, then `1`, then `2`, then `0`). Because the composed
+code cannot say which tree moved, the protocol MUST read the report lines rather
+than infer from the code. The `--version` read comes first and qualifies every
+exit code after it: a binary that predates a verb rejects it, and reading that as
+drift sends a session to regenerate shards that were already correct.
 
 ### 3.2 Skills
 
 | Skill | Role | Origin |
 |---|---|---|
-| `init` | execute the AGENTS.md protocol | kit |
+| `prime` | execute the AGENTS.md protocol | kit |
 | `setup` | install spec-spine, verify the loop | kit, pinned version |
-| `spec-new` | scaffold `specs/NNN-slug/spec.md` from the template with the next ordinal, taxonomy and phase prompts | butler |
-| `burndown` | list unresolved owning units (`W-001`) per spec via `spec-spine index render`; propose the next build step from spec 018 | butler |
-| `implement-plan` | execute a plan file with checkpoints | kit |
-| `validate-and-fix` | run `make ci`, fix by severity | kit, `make ci` |
+| `next` | name the next work order from `registry plan` | kit |
+| `build` | one spec start to finish, per "Working the backlog" | kit |
+| `verify` | run one spec's declared acceptance via `spec-spine verify` | kit |
+| `spec` | author the next spec from the template, born `draft` | kit |
 | `code-review` | correctness + spec drift findings | kit |
 | `commit` | conventional commit | kit |
 | `ship` | gate → review → commit → PR | kit, `make pr-prep` |
-| `shepherd` | drive an open PR to merge: CI, review threads, merge queue | butler |
-| `cleanup` | dead code and duplicates | kit, cargo/knip commands |
-| `research` | parallel research | kit |
-| `refactor-claude-md` | tighten `CLAUDE.md` | kit |
+| `shepherd` | drive an open PR to merge: CI, review threads, merge queue | kit |
+| `burndown` | list unresolved owning units (`W-001`) per spec via `spec-spine index diagnostics`; propose the next build step from spec 018 | butler |
+
+Ten are the spec-spine kit's at kit v18.0.0, byte for byte; `burndown` is this
+repository's own. The kit ships exactly the loop and the two skills the loop
+calls (spec-spine spec 081); a skill the loop never invokes MUST NOT be carried
+here merely because an earlier kit shipped it.
 
 Every skill that reads compiled state MUST do so through `spec-spine`
 subcommands. Every skill that mutates MUST stop at the checkpoints
@@ -145,10 +154,23 @@ Paths-scoped rules auto-load when an agent touches a matching file:
 
 | Hook | Matcher | Behavior |
 |---|---|---|
-| `SessionStart` | startup, resume, clear, compact | establish the binary understands `compile --check` before reading its exit code, then report registry and index freshness; never write |
-| `PostToolUse` | `Edit`, `Write` | after a `spec.md` edit, recompile; after any hashed-input edit, `index check` |
-| `PreToolUse` | `Bash` | refuse a `git push` that would update `main` (a tag push is not one); on `gh pr create` run `spec-spine couple`, block without a waiver, block if the index is stale or `.derived/` is dirty |
-| `Stop` | `*` | report a stale index; never regenerate it |
+| `SessionStart` | startup, resume, clear, compact | establish the binary understands `check` before reading its exit code, then report both trees from that verb's own report lines; never write |
+| `PostToolUse` | `Edit`, `Write` | after a `spec.md` edit, recompile; after any hashed-input edit, `spec-spine check` |
+| `PreToolUse` | `Bash` | refuse a `git push` that would update the resolved default branch (a tag push is not one); on `gh pr create` run `spec-spine check` then `couple`, block without a waiver, block if either tree is stale or `.derived/` is dirty |
+| `Stop` | `*` | report a stale tree; never regenerate it |
+
+The `PreToolUse` gate MUST distinguish `check`'s four answers rather than read
+every non-zero code as staleness (spec-spine spec 080): exit 2 is stale, exit 1
+is a corpus that does not validate, exit 3 is a read that was not performed
+(most often a binary predating the verb), and every non-zero code still refuses,
+because a gate whose check did not run is not green. The version read that
+qualifies a non-answer is asked only on exit 3, never on the happy path.
+
+The branch the push gate protects MUST be resolved for the repository the
+command acts on, never assumed to be `main` (spec-spine spec 072):
+`$SPEC_SPINE_DEFAULT_BRANCH`, then the remote's own HEAD, then `main` as a
+compatibility floor. Resolution asks `git` and never the spec-spine binary, so
+the push half still protects a repository where the binary is absent.
 
 Hooks MUST read and MUST NOT write, with one exception: the `PostToolUse`
 recompile after a `spec.md` edit, where the session is live and can commit the
@@ -176,16 +198,27 @@ delete/archive`, and any `rm -rf` outside `target/`, `node_modules/`, `dist/`.
 | Target | Guarantee |
 |---|---|
 | `setup` | installs the pinned `spec-spine`, compiles, indexes, verifies the loop |
-| `spine` | `compile --check` → `index check` → `lint --fail-on-warn` → `coverage --fail-on-untraced` |
-| `ci` | `spine` + `build` + `test` + `lint` (the same set CI runs) |
-| `pr-prep` | `spec-spine index` then `couple --base origin/main` |
+| `gate` | `check --fail-on-warn` → `lint --fail-on-warn` → `index coverage --fail-on-untraced` → `couple --base $(BASE) --head HEAD`; read-only throughout |
+| `refresh` | `spec-spine compile` then `spec-spine index`: the writing half, for a session that can commit the regenerated shards |
+| `verify` | `SPEC=<id> make verify` runs one spec's declared acceptance through `spec-spine verify` |
+| `spine` | alias for `gate`, the name this contract used before 0.18.0 |
+| `ci` | `gate` + `build` + `test` + `lint` (the same set CI runs) |
+| `pr-prep` | `refresh` then `couple --base $(BASE) --head HEAD` |
 | `burndown` | the `W-001` list per spec |
 | `coverage` | `spec-spine index coverage` |
 | `spec-new` | `SLUG=... make spec-new` scaffolds the next spec directory |
 | `build`, `test`, `lint` | the language gates (content per spec 001) |
 
+`gate`, `refresh` and `verify` are the spec-spine kit's names for the governed
+loop (kit v18.0.0, `kit/Makefile`); adopting them keeps a kit update a copy
+rather than a merge. `spine` and `pr-prep` stay because this contract published
+them.
+
 `SPEC_SPINE` MAY be overridden (`make SPEC_SPINE=/path/to/binary ...`); the
-default is the binary on `PATH`.
+default is the binary on `PATH`. `BASE` MUST be resolved from the repository
+rather than assumed (`$SPEC_SPINE_DEFAULT_BRANCH`, then the remote's own HEAD,
+then `main`), the same three steps in the same order the push gate uses; an
+explicit `BASE=` on the command line still wins.
 
 ### 3.7 Verification blocks
 
@@ -212,7 +245,7 @@ block this session did not author.
 
 ## 4. Functional requirements
 
-- **FR-001.** `/init` on a clean checkout emits the initialized block with
+- **FR-001.** `/prime` on a clean checkout emits the primed block with
   lifecycle counts and the burn-down without parsing `.derived/**` directly.
 - **FR-002.** The `PreToolUse` hook blocks `gh pr create` when `spec-spine
   couple` exits non-zero and the command's `--body` lacks the waiver keyword.
@@ -248,9 +281,11 @@ block this session did not author.
   verbs; `/ship` and `/shepherd` are the only skills that push.
 - **AC-5.** For each `implementation: complete` spec, `spec-spine verify <id>`
   prints `passed` and exits 0; none prints `not-declared`.
-- **AC-6.** The `Stop` hook's command contains no `spec-spine index`
-  invocation other than `index check`, and the `PreToolUse` hook refuses a
-  push to `main`.
+- **AC-6.** The `Stop` hook's command names no `spec-spine index` invocation
+  at all: its freshness read is `spec-spine check`, which writes nothing. The
+  `PreToolUse` hook refuses a push that would update the resolved default
+  branch, and reports `check` exit 3 as a read that was not performed rather
+  than as staleness.
 
 ## 6. Out of scope
 
@@ -370,24 +405,78 @@ block this session did not author.
      implementation was broader than the requirement it served, but the spec
      was silent on tag pushes and spec 017 cuts a release tag from `main`, so
      the carve-out is written down rather than left to be rediscovered.
+- **D-10 (2026-09-09, the kit at v18.0.0, and the pin that had to move with
+  it).** `SPEC_SPINE_VERSION` moves from 0.17.0 to 0.18.0 and the harness is
+  re-taken from the spec-spine kit at v18.0.0. Byte-compatibility was checked
+  the way D-2, D-4 and D-8 checked theirs, and it does not hold: 0.18.0 writes
+  `specVersion: 1.2.0` into every shard, so all 46 report stale against shards
+  written by 0.17.0 and are regenerated in this change. That is a format stamp,
+  not drift; `lint --fail-on-warn` is clean and `couple` finds no path.
+
+  Five behaviors change, each one a spec-spine spec:
+
+  1. **One freshness verb** (spec-spine 075). `spec-spine check` replaces the
+     `compile --check` and `index check` pair in the `Makefile`, in both CI
+     workflows and in all four hooks. It reads both committed trees, reports
+     them separately and returns the more severe verdict. The primitives keep
+     their contracts and stay where one tree is specifically in question: spec
+     000's constitution probe and its unwitnessed-count read, and AC-1's
+     `index check --slice governance`. This is what 000 D-6 raises `[meta]
+     required_version` for: every release before 0.18.0 rejects the verb.
+  2. **The protocol has one name** (spec-spine 075). `/init` becomes `/prime`,
+     and the emitted block becomes `## primed: butler-ai`. The old name also
+     collided with Claude Code's own built-in `/init`, which shadowed the skill
+     this repository told every session to run first.
+  3. **The kit ships what the loop calls** (spec-spine 081). The skill set drops
+     from sixteen to eleven: `/implement-plan`, `/validate-and-fix`, `/cleanup`,
+     `/research` and `/refactor-claude-md` are deleted. Nothing in the loop
+     invoked them and each restated a neighbour; `/validate-and-fix` restated
+     `/ship`'s gate step and `/shepherd`'s remediation role, which is where that
+     work now lives. `/burndown` stays: it is this repository's own, and reads
+     the typed `index diagnostics` no kit skill offers.
+  4. **The default branch is resolved, not assumed** (spec-spine 072). The push
+     gate, the `Makefile`'s `BASE` and the kit skills all take
+     `$SPEC_SPINE_DEFAULT_BRANCH`, then the remote's own HEAD, then `main`.
+     butler-ai's default branch *is* `main`, so nothing observable changes here
+     today; what changes is that the gate no longer asserts it.
+  5. **A gate that cannot ask says so** (spec-spine 080). The PR gate reads
+     `check`'s four answers separately instead of treating every non-zero code
+     as staleness, and asks `--version` only on exit 3, where a non-answer needs
+     qualifying. Every non-zero code still refuses.
+
+  The `Makefile` gains the kit's `gate`, `refresh` and `verify` targets, and
+  `spine` becomes an alias for `gate` so the published contract keeps working.
+  `--fail-on-unresolved` stays off, as in D-7 and D-8: the burn-down is at zero
+  today, but D-7's reasoning is about what this corpus *is*, not how much of it
+  is built, and turning the flag on would redden the gate the moment a human
+  approves a spec whose code has not been written.
 
 ## 8. Verification
 
 ```verify:cli
 # AC-3: the governance gate chain is green.
-make spine
+make gate
 # AC-1: the governance slice is fresh (the harness files are hashed inputs).
+# `index check --slice` is the index primitive; `check` composes both trees and
+# has no slice of its own, so the narrow read stays the narrow verb.
 spec-spine index check --slice governance
-# §3.6: every Makefile target the contract names still exists.
-sh -c 'for t in setup spine ci pr-prep burndown coverage spec-new build test lint; do grep -qE "^${t}:" Makefile || { echo "missing target: ${t}"; exit 1; }; done'
+# §3.6: every Makefile target the contract names still exists, including the
+# three the kit's build half added and the alias the old name became.
+sh -c 'for t in setup gate refresh verify spine ci pr-prep burndown coverage spec-new build test lint; do grep -qE "^${t}:" Makefile || { echo "missing target: ${t}"; exit 1; }; done'
 # §3.7 + AC-5: the verify verb works, and no complete spec is undeclared.
 # This spec is excluded from its own list: verifying 002 from inside 002's
 # verification block would recurse.
 sh -c 'for s in 000-butler-bootstrap 001-workspace-layout 003-governance-ci 008-change-detection 009-pipeline-state-machine; do spec-spine verify "$s" >/dev/null 2>&1 || { echo "verify failed: $s"; exit 1; }; done'
 # D-6: the script the verb replaced is gone, and nothing calls it.
 sh -c '! test -e scripts/verify-spec.sh'
-# FR-003 + AC-6: the Stop hook reads and never regenerates the index.
-sh -c 'test "$(jq -r ".hooks.Stop[].hooks[].command" .claude/settings.json | grep -o "index [a-z]*" | sort -u | tr "\n" ",")" = "index check,"'
+# §3.2 + D-10.3: the kit ships the loop and the two skills the loop calls. The
+# five it stopped shipping are gone; the eleven this repository runs are here.
+sh -c 'for s in implement-plan validate-and-fix cleanup research refactor-claude-md init; do test ! -e ".claude/skills/$s" || { echo "still present: $s"; exit 1; }; done'
+sh -c 'for s in prime setup next build verify ship shepherd spec commit code-review burndown; do test -f ".claude/skills/$s/SKILL.md" || { echo "missing: $s"; exit 1; }; done'
+# FR-003 + AC-6 + D-10.1: the Stop hook reads and never regenerates. It names
+# no `index` verb at all now; its freshness read is the composed one.
+sh -c 'test -z "$(jq -r ".hooks.Stop[].hooks[].command" .claude/settings.json | grep -o "index [a-z]*" | sort -u)"'
+sh -c 'jq -r ".hooks.Stop[].hooks[].command" .claude/settings.json | grep -q "check >/dev/null 2>&1 && exit 0"'
 # FR-008 + AC-6: the push gate exists.
 sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "push-gate"'
 # FR-008 + D-9: it is anchored on the invocation of the verb, not a substring
@@ -398,9 +487,16 @@ sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep 
 # The positional-argument walk is what distinguishes "would update main" from
 # "runs from main": without it the gate refuses a tag push too.
 sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "npos"'
-# D-9: SessionStart establishes the binary understands the flag before reading
-# its exit code (spec-spine spec 063).
-sh -c 'jq -r ".hooks.SessionStart[].hooks[].command" .claude/settings.json | grep -q -- "compile --check --help"'
+# §3.5 + D-10.4: the protected branch is resolved for the repository the command
+# acts on, not written as a literal.
+sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "default_branch()"'
+# §3.5 + D-10.5: the PR gate tells "not fresh" apart from "not answered".
+sh -c 'jq -r ".hooks.PreToolUse[].hooks[].command" .claude/settings.json | grep -q "the freshness read was not performed"'
+# D-9 + D-10.1: SessionStart establishes the binary understands the verb before
+# reading its exit code (spec-spine spec 063), then reads the report lines
+# rather than the composed exit code, which cannot say which tree moved.
+sh -c 'jq -r ".hooks.SessionStart[].hooks[].command" .claude/settings.json | grep -q -- "check --help"'
+sh -c 'jq -r ".hooks.SessionStart[].hooks[].command" .claude/settings.json | grep -q "spec-registry: STALE"'
 # §3.5: the PostToolUse glob list equals `[index] extra_hashed_inputs`. Both
 # are owned (the config by 000, the hook here), so they move in one PR.
 sh -c 'jq -r ".hooks.PostToolUse[].hooks[].command" .claude/settings.json | grep -q "githooks"'

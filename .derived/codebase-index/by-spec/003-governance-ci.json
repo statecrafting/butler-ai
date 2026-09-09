@@ -22,6 +22,10 @@
         "source": "spec-edge"
       },
       {
+        "path": ".github/workflows/govern.yml",
+        "source": "spec-edge"
+      },
+      {
         "path": ".github/workflows/spec-spine.yml",
         "source": "spec-edge"
       },
@@ -229,10 +233,64 @@
       {
         "locations": [
           {
+            "file": ".github/workflows/govern.yml",
+            "span": {
+              "endLine": 79,
+              "startLine": 35
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "jobs.govern",
+          "file": ".github/workflows/govern.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/govern.yml",
+            "span": {
+              "endLine": 30,
+              "startLine": 26
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "on",
+          "file": ".github/workflows/govern.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": ".github/workflows/govern.yml",
+            "span": {
+              "endLine": 33,
+              "startLine": 31
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "permissions",
+          "file": ".github/workflows/govern.yml",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
             "file": ".github/workflows/spec-spine.yml",
             "span": {
-              "endLine": 66,
-              "startLine": 24
+              "endLine": 74,
+              "startLine": 29
             }
           }
         ],
@@ -249,8 +307,8 @@
           {
             "file": ".github/workflows/spec-spine.yml",
             "span": {
-              "endLine": 19,
-              "startLine": 17
+              "endLine": 24,
+              "startLine": 22
             }
           }
         ],
@@ -267,8 +325,8 @@
           {
             "file": ".github/workflows/spec-spine.yml",
             "span": {
-              "endLine": 22,
-              "startLine": 20
+              "endLine": 27,
+              "startLine": 25
             }
           }
         ],
@@ -285,5 +343,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "7c0c839d79f9cab24ee0650a091ff1bc8c3b82e015d44fb758c7c6cddeed7187"
+  "shardHash": "91ce95141ec3564bb7fe6f139b60121371ac60925bd78bade35865c3445708a8"
 }

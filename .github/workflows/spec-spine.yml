@@ -1,8 +1,13 @@
 # Spec: specs/003-governance-ci/spec.md
 #
 # The governance gate: spec-spine's gate chain on every PR. Nothing here writes
-# to .derived/ (a writing `compile` before `--check` would make the freshness
-# check pass unconditionally).
+# to .derived/ (a writing `compile` or `index` before the freshness read would
+# make that read pass unconditionally).
+#
+# Freshness is one verb since spec-spine 0.18.0 (spec-spine spec 075): `check`
+# asks about both committed shard trees in one call, reports them separately,
+# and returns the more severe of the two verdicts (3, then 1, then 2, then 0).
+# It replaces the `compile --check` and `index check` pair that stood here.
 #
 # This is a REUSABLE workflow (spec 003 §3.1). It declares no event triggers of
 # its own: `ci.yml` calls it as `jobs.govern`, so its result folds into the one
@@ -22,7 +27,7 @@ permissions:
 
 jobs:
   govern:
-    name: govern (compile --check · index check · lint · coverage · couple)
+    name: govern (check · lint · coverage · couple)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -38,10 +43,13 @@ jobs:
             | SPEC_SPINE_VERSION="v${ver}" SPEC_SPINE_BIN_DIR="$HOME/.local/bin" sh
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           "$HOME/.local/bin/spec-spine" --version
-      - name: Compile registry (validation + shard freshness)
-        run: spec-spine compile --check
-      - name: Codebase index freshness
-        run: spec-spine index check
+      # One verb, both committed trees, read-only (spec-spine spec 075).
+      # `--fail-on-warn` covers the compile half's warning-tier violations.
+      # `--fail-on-unresolved` is deliberately absent: butler-ai is specified
+      # before it is built, so unresolved units on an approved-but-pending spec
+      # are the counted W-001 burn-down, not a CI failure (spec 002 D-4).
+      - name: Freshness (spec registry + codebase index)
+        run: spec-spine check --fail-on-warn
       - name: Conformance lint (fail on warn)
         run: spec-spine lint --fail-on-warn
       # The ownership ratchet (spec 000 §7.5): every source file inside a

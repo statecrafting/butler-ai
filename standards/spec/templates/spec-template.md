@@ -84,5 +84,5 @@ prompts. A spec MUST carry at least one `verify:cli` command before it flips to
 
 ```verify:cli
 # Each line is one command; a failure stops the run.
-make spine
+make gate
 ```

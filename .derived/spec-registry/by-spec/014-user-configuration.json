@@ -217,5 +217,5 @@
     "title": "User configuration: a typed settings model, an atomic on-disk store, and the settings panel"
   },
   "shardHash": "ad5c9e533bd57a722d7f5fd8f3793532c466495de5f9005406daa87d722c8c1e",
-  "specVersion": "1.1.0"
+  "specVersion": "1.2.0"
 }

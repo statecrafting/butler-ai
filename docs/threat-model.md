@@ -136,6 +136,6 @@ compositor, so the product promise cannot be verified there yet (spec 001 §6).
 |---|---|
 | Code merged that no spec claims | `require_ownership = true` (`C-002`) and `index coverage --fail-on-untraced` in CI; unamendable anchor `ownership-ratchet` |
 | An agent edits a spec to make the gate pass | the refusal rule (`adversarial-prompt-refusal.md`), the coherence-guard halts in `/ship` and `/shepherd`, human-only `status: approved` |
-| Stale derived artifacts | `compile --check` and `index check` in CI; hooks recompute locally; the merge driver regenerates on conflict |
+| Stale derived artifacts | `spec-spine check` (both committed trees, read-only) in CI and in the opt-in pre-commit hook; the session hooks report staleness; the merge driver regenerates on conflict |
 | A change to what runs with tokens | `on`/`permissions`/job keypaths are section units owned by specs 003 and 017; CODEOWNERS on `.github/` |
 | A change to what agents may do | `.claude/settings.json` and the skills/agents/rules are claimed, hashed, and gated (spec 002) |
