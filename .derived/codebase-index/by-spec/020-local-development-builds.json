@@ -1,38 +1,30 @@
 {
-  "diagnostics": {
-    "errors": [],
-    "warnings": [
-      {
-        "code": "W-001",
-        "message": "spec '020-local-development-builds' file unit 'scripts/local_app.sh' does not exist",
-        "path": "scripts/local_app.sh"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '020-local-development-builds' file unit 'docs/local-install.md' does not exist",
-        "path": "docs/local-install.md"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '020-local-development-builds' section unit 'dev' not found in Makefile",
-        "path": "Makefile"
-      },
-      {
-        "code": "W-001",
-        "message": "spec '020-local-development-builds' section unit 'app' not found in Makefile",
-        "path": "Makefile"
-      }
-    ]
-  },
   "mapping": {
     "dependsOn": [
       "004-desktop-shell",
       "013-output-pacing"
     ],
-    "implementingPaths": [],
+    "implementingPaths": [
+      {
+        "path": "Makefile",
+        "source": "spec-edge"
+      },
+      {
+        "path": "docs/local-install.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": "scripts/local_app.sh",
+        "source": "spec-edge"
+      }
+    ],
     "resolvedUnits": [
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "docs/local-install.md"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -41,7 +33,11 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "scripts/local_app.sh"
+          }
+        ],
         "ownership": true,
         "sourceField": "establishes",
         "unit": {
@@ -50,7 +46,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 142,
+              "startLine": 141
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -60,7 +64,15 @@
         }
       },
       {
-        "locations": [],
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 135,
+              "startLine": 133
+            }
+          }
+        ],
         "ownership": true,
         "sourceField": "extends",
         "unit": {
@@ -87,5 +99,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "4497b9cac8c80e9c8dbfb692ea8a77c55711f96d4e52168f31c184a824efae35"
+  "shardHash": "2da60e796aff1e49c66ee2a054f10344c51ab763822b945289fec6083da8b13b"
 }

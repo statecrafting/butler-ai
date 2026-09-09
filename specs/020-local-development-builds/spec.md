@@ -180,7 +180,112 @@ rather than let the developer discover them as bugs:
   `docs/local-install.md` and automated by nothing.
 - **The updater.** Absent, per 017 D-4, and this path never checks for one.
 
-## 7. Verification
+## 7. Resolved decisions
+
+- **D-1 (2026-09-09, the bundler is not trusted to have left it unsigned).**
+  §3.2 step 4 says "ad-hoc sign". The first reading was "sign what the bundler
+  did not", which is wrong on a machine whose shell already exports a real
+  signing identity: the Tauri bundler would sign with it and the script would
+  add nothing, producing a locally built bundle carrying a Developer ID.
+
+  Nothing about that is dangerous, and it is still not what this path may
+  produce. FR-003 exists so a local artifact is inspectably local, and an
+  artifact that is sometimes ad-hoc and sometimes not, depending on an
+  environment variable nobody remembers exporting, is exactly the ambiguity it
+  forbids. The script therefore re-signs unconditionally and verifies
+  `Signature=adhoc` before it installs anything.
+
+  §3.2's prohibition on naming a credential is what rules out the obvious
+  alternative, unsetting the identity variable before the build: the script
+  cannot name it. Re-signing afterwards reaches the same guarantee without
+  knowing what the variable is called.
+
+- **D-2 (2026-09-09, nested code before the bundle, and not with `--deep`).**
+  Signing the outer bundle in one pass is what the deprecated deep flag does,
+  and it visits nested code in an order `codesign` itself warns about. The
+  script signs dylibs and frameworks first, then the bundle, which is the order
+  Apple documents and the only one that produces a bundle passing
+  `--verify --strict`.
+
+- **D-3 (2026-09-09, an assertion that a comment could satisfy).** The first
+  version of §8's check for the deprecated flag was a bare `grep` over the
+  whole script, and it failed on the first run against a script that does not
+  use the flag: the comment in D-2 above, written into the source to explain
+  the choice, satisfied the grep.
+
+  That is 017 D-10's defect in a different file. An assertion about what code
+  *does* must read only what executes, so the four behavioral checks strip
+  comments first, and the signing check anchors on a line that begins with the
+  command rather than on the flag appearing anywhere.
+
+  The credential check deliberately does **not** strip comments. §3.2 forbids
+  the script from setting, reading *or naming* a release credential, so a
+  secret name written in a comment is a violation and the assertion covering it
+  is correct to read the whole file.
+
+- **D-4 (2026-09-09, the bundle shipped the wrong binary).** The first bundle
+  this script produced installed cleanly, signed cleanly, verified cleanly, and
+  had `Contents/MacOS/export-bindings` as its executable: spec 011's bindings
+  exporter, which writes a TypeScript file and exits. Butler was never in it.
+
+  `butler-desktop` declares two binary targets, `src/main.rs` (the app,
+  10,769,232 bytes) and `src/bin/export-bindings.rs` (the exporter, 3,117,696
+  bytes). The bundler ships the second.
+
+  **Two obvious levers do not work, and each fails quietly.** Passing
+  `-- --bin butler-desktop` produces `cargo build --bin butler-desktop --bins
+  --features tauri/custom-protocol --release`: the CLI appends `--bins` after
+  the caller's arguments, so both binaries are built anyway and the selection
+  is unchanged. Setting `mainBinaryName` renames the copy without changing
+  which file is copied, which is the worse of the two failures: the bundle then
+  contains `Contents/MacOS/butler-desktop` holding the exporter's bytes, and
+  every name-based check passes on it. That is how this defect survived its
+  first fix here; it was caught by a content marker, not by a name.
+
+  So the script replaces the bundle's executable with `target/release/
+  butler-desktop` after bundling and rewrites `CFBundleExecutable`. The
+  replacement is sound because it comes from the same build: the CLI compiles
+  every binary with `--features tauri/custom-protocol`, the feature that makes
+  a release binary serve embedded assets rather than look for a dev server. The
+  script then compares the two files byte for byte, before signing rewrites
+  them, and refuses to install on a mismatch.
+
+  This is a workaround in this spec's territory, not a fix. The fix is to stop
+  the exporter being an auto-discovered binary, with `required-features` on a
+  `[[bin]]` table in 004's manifest or by moving it out of `src/bin/`. Both are
+  other specs' territory and would change how 011's bindings are generated, so
+  neither is made here.
+
+  **This is not only this spec's problem, and it is not fixed here.**
+  `.github/workflows/release.yml` lines 140 and 165 run `cargo tauri build`
+  with no binary named, and `tauri.conf.json` sets no `mainBinaryName`. A
+  release cut today would sign, notarize, staple, hash and attest an installer
+  whose application is the bindings exporter, and every check in 017 would pass
+  on it, exactly as 017 D-10 describes for a bundle whose webview renders
+  nothing. The fix belongs to 004 (a `mainBinaryName` key in its config) or to
+  017 (the flag in its workflow); both are other specs' requirements and
+  changing one mid-build is not this spec's to make. It is reported instead.
+
+- **D-5 (2026-09-09, what is verified, and the one row that waits for a
+  person).** Everything §8 asserts runs and passes, and the path was exercised
+  end to end on macOS 15 (arm64, Command Line Tools, no signing identity in the
+  keychain): `make app` built, repaired, signed, verified and installed;
+  `codesign --verify --strict` accepts the bundle; `codesign -dv` reports
+  `Signature=adhoc` with no team identifier; the installed executable is
+  10,724,768 bytes, carries none of the exporter's markers, and
+  `CFBundleExecutable` names it. Launched from `/Applications`, it runs, does
+  not crash, and creates its settings directory and 016's log file.
+
+  **AC-1's last clause is not signed.** "Launches to the overlay" needs an eye
+  on the overlay, and this one cannot be automated here for a reason that is
+  the product working correctly: spec 005 excludes the window from the
+  compositor's frame buffer, so a screenshot of a healthy Butler and a
+  screenshot of a Butler that renders nothing are the same image. R-010 governs
+  this shape, and here the row waits on no later spec, only on an operator
+  looking at their own screen. The spec stays `implementation: in-progress`
+  until that signature, as 017 D-9 stays open for its own handed-over rows.
+
+## 8. Verification
 
 ```verify:cli
 # FR-001: a missing Tauri CLI is named, not guessed at, and nothing is built.
@@ -198,14 +303,26 @@ sh -c '! grep -qE ">[[:space:]]*(apps/desktop/src-tauri/tauri\.conf\.json|\.gith
 # reach `app` or `dev`.
 sh -c '! awk "/^ci:/{print}" Makefile | grep -qE "\b(app|dev)\b"'
 sh -c '! awk "/^gate:/,/^\$/" Makefile | grep -qE "make (app|dev)"'
-# §3.2: the bundle target is `app` alone. A `dmg` here would be a transport
-# format for something this spec does not transport.
-grep -q -- "--bundles app" scripts/local_app.sh
-sh -c '! grep -q -- "--bundles dmg" scripts/local_app.sh'
-# §3.2 step 4: ad-hoc, and not via the deprecated `--deep`, which signs nested
-# code in an order codesign itself warns about.
-grep -q -- "--sign -" scripts/local_app.sh
-sh -c '! grep -q -- "--deep" scripts/local_app.sh'
+# §3.2 and D-3: these four read only the lines that execute. A comment saying
+# why the deprecated flag is not used satisfied an earlier bare grep, which is
+# 017 D-10's defect in a different file.
+#
+# The bundle target is `app` alone. A `dmg` here would be a transport format
+# for something this spec does not transport.
+sh -c 'sed "s/#.*//" scripts/local_app.sh | grep -q -- "cargo tauri build --bundles app"'
+sh -c '! sed "s/#.*//" scripts/local_app.sh | grep -q -- "--bundles dmg"'
+# D-4: the crate has two binaries and the bundler ships spec 011's exporter.
+# The repair must survive a later edit, and so must the byte comparison that
+# proves it worked: a name-based check passes on a renamed exporter, which is
+# how the first attempt at this fix went undetected.
+sh -c 'sed "s/#.*//" scripts/local_app.sh | grep -qE "cp .*target/release/butler-desktop|cp \"\\\$REAL_BIN\""'
+sh -c 'sed "s/#.*//" scripts/local_app.sh | grep -q "CFBundleExecutable"'
+sh -c 'sed "s/#.*//" scripts/local_app.sh | grep -q "cmp -s"'
+# Step 4: ad-hoc, anchored on the command rather than the flag, and never via
+# the deprecated deep flag, which signs nested code in an order codesign itself
+# warns about (D-2).
+sh -c 'sed "s/#.*//" scripts/local_app.sh | grep -qE "^[[:space:]]*codesign --force --sign - "'
+sh -c '! sed "s/#.*//" scripts/local_app.sh | grep -q -- "--deep"'
 # AC-2: the three costs of §3.3 are each named in the document.
 grep -qi "Screen Recording" docs/local-install.md
 grep -qi "rebuild" docs/local-install.md
