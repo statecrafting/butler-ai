@@ -98,6 +98,6 @@
     "summary": "Operational visibility without content: `tracing` with a rolling file appender in the platform log directory, level from settings (default `info`; `trace` records every state transition by id), structured fields restricted to a closed set of key names, and a diagnostics bundle (recent log, settings, versions, exclusion status, platform info) that the user builds from the tray and saves where they choose. The privacy boundary (015) constrains `logging.rs`; this spec makes the constraint operational with a field allowlist enforced at compile time.\n",
     "title": "Diagnostics and logging: structured, content-free tracing and a user-initiated diagnostics bundle"
   },
-  "shardHash": "12ae577d42af3c5e30942773ac6eb2a366db98fdf6b1e52c21f293ff0a8a0c97",
+  "shardHash": "c185756b8fc4d89938fd9a2fd883ee3677479e8881ba0d88caae2462bdd55b99",
   "specVersion": "1.2.0"
 }

@@ -595,3 +595,16 @@ sh -c 'spec-spine index render | grep "W-001" | grep -q "004-desktop-shell" && e
   a spec to ratify code that contradicts it; it does not require keeping a
   check that tests the wrong thing. The requirement is unchanged, and the
   maintainer approved the reading in session.
+
+- **D-16 (2026-09-09, the tray passes the version it can see).**
+  `tray.rs` is this spec's file and `write_diagnostics_bundle` is where spec
+  016's bundle is assembled, so removing the last environment read from product
+  source (spec 014 FR-005, D-7) had to be made here. The call now passes
+  `app.package_info().version`, which the tray already has an `AppHandle` for
+  and which 016 D-6 argues is the more accurate source than the crate version
+  it replaces.
+
+  Nothing about this spec's requirements moves. §3.4 says the tray routes the
+  diagnostics item to spec 016's bundle, and it still does; one argument is now
+  supplied by the caller that knows it rather than baked in by a macro at the
+  callee.

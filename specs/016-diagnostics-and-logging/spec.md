@@ -205,3 +205,25 @@ grep -q "pub const BUNDLE_MEMBERS" apps/desktop/src-tauri/src/diagnostics.rs
 # Territory: every unit this spec claims resolves.
 sh -c 'spec-spine index render | grep "W-001" | grep -q "016-diagnostics-and-logging" && exit 1 || exit 0'
 ```
+
+- **D-6 (2026-09-09, the version a support bundle should report).**
+  `SystemInfo::app_version` was `env!("CARGO_PKG_VERSION")`, which spec 014
+  FR-005 forbids in product source. 014 D-7 records the scope question; this
+  records the substance, because the fix is better than the rule required.
+
+  The crate's version and the version the **installed bundle advertises** are
+  two facts, kept in step by spec 017's `bump_version.py` across `Cargo.toml`,
+  `package.json` and `tauri.conf.json`. A support bundle exists to describe the
+  copy the user is running, and the moment those numbers disagree, which is
+  exactly what 017 FR-003 guards against, the crate version is the wrong one to
+  report: it would describe the source a build came from rather than the
+  application on the user's disk.
+
+  `SystemInfo::collect` therefore takes the version from its caller, and
+  `tray.rs` passes Tauri's `package_info().version`, which is
+  `tauri.conf.json`'s and so is `CFBundleShortVersionString`. The tests supply
+  `0.0.0-test`, a literal no release can carry, so a test that started sourcing
+  the version elsewhere fails loudly rather than agreeing by coincidence.
+
+  This changes no requirement here: §3.2 asks the bundle to carry the platform
+  facts and this is one of them, reported more accurately than before.

@@ -216,6 +216,6 @@
     "summary": "One typed `Settings` struct in `butler-core` is the only configuration surface: capture (monitor, interval, region), detection (threshold, stability), assistant (provider, model, effort, answer style, budget caps, endpoint override), pacing (words per minute), shortcuts, privacy toggles (redaction on, allow degraded mode, diagnostics level), and window geometry. Defaults are in code, validation is pure, the file is TOML in the platform config directory written atomically, secrets are never in it (010), and every change flows through one `UpdateSettings` command that validates, persists, applies, and broadcasts. No environment variables configure the product.\n",
     "title": "User configuration: a typed settings model, an atomic on-disk store, and the settings panel"
   },
-  "shardHash": "ad5c9e533bd57a722d7f5fd8f3793532c466495de5f9005406daa87d722c8c1e",
+  "shardHash": "3cf0f17339360c347511bc85cc76d6dc3903630a17ee78801d3454e493a294c3",
   "specVersion": "1.2.0"
 }

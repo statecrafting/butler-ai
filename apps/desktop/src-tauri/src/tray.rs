@@ -158,8 +158,13 @@ fn write_diagnostics_bundle<R: Runtime>(app: &AppHandle<R>) {
     // The transition ring buffer and the live exclusion status arrive with
     // specs 019 and 005. Until then the bundle carries the log, the settings
     // and the platform facts, which is three of its four members.
+    // The version comes from Tauri's package info, which is `tauri.conf.json`'s
+    // and therefore the one the installed bundle advertises. Spec 016 D-6 says
+    // why that is the right source and spec 014 FR-005 why it is not read from
+    // the environment here.
     let bundle = DiagnosticsBundle::collect(
         &directory,
+        app.package_info().version.to_string(),
         state.settings(),
         Vec::new(),
         ExclusionSummary::Unknown,
