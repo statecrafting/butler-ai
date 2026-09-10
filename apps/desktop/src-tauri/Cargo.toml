@@ -7,6 +7,12 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false
+# D-14: this crate has two binaries, the app (`src/main.rs`) and spec 011's
+# bindings exporter (`src/bin/export-bindings.rs`). Without this key the Tauri
+# bundler makes `export-bindings` the application inside `Butler.app`, and
+# `cargo run` refuses to choose at all. Neither `--bin` nor `mainBinaryName`
+# corrects the bundler; this does.
+default-run = "butler-desktop"
 
 [package.metadata.butler]
 spec = "004-desktop-shell"
