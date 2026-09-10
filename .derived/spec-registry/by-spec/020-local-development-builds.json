@@ -1,0 +1,91 @@
+{
+  "record": {
+    "created": "2026-09-09",
+    "dependsOn": [
+      "004-desktop-shell",
+      "013-output-pacing"
+    ],
+    "domain": "distribution",
+    "establishes": [
+      {
+        "kind": "file",
+        "path": "scripts/local_app.sh"
+      },
+      {
+        "anchor": "give-it-screen-recording",
+        "file": "docs/local-install.md",
+        "kind": "section"
+      },
+      {
+        "anchor": "the-rebuild-re-prompt-and-how-to-stop-it",
+        "file": "docs/local-install.md",
+        "kind": "section"
+      },
+      {
+        "anchor": "gatekeeper-and-quarantine",
+        "file": "docs/local-install.md",
+        "kind": "section"
+      }
+    ],
+    "extends": [
+      {
+        "nature": "additive",
+        "spec": "002-agentic-harness",
+        "unit": {
+          "anchor": "dev",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "nature": "additive",
+        "spec": "002-agentic-harness",
+        "unit": {
+          "anchor": "app",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      }
+    ],
+    "extraFrontmatter": {
+      "phase": 5,
+      "platforms": [
+        "macos"
+      ]
+    },
+    "id": "020-local-development-builds",
+    "implementation": "in-progress",
+    "kind": "tooling",
+    "owner": "butler-ai maintainers",
+    "references": [
+      {
+        "role": "what an ad-hoc signature does not attest",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "risk": "medium",
+    "sectionHeadings": [
+      "020: Local development builds",
+      "1. Purpose",
+      "2. Territory",
+      "3. Behavior",
+      "3.1 `make dev`",
+      "3.2 `make app`",
+      "3.3 What an ad-hoc signature costs, stated plainly",
+      "4. Functional requirements",
+      "5. Acceptance criteria",
+      "6. Out of scope",
+      "7. Resolved decisions",
+      "8. Verification"
+    ],
+    "specPath": "specs/020-local-development-builds/spec.md",
+    "status": "approved",
+    "summary": "The route from this checkout to a running Butler on the developer's own Mac, which no spec claimed: a `make dev` hot-reload loop and a `make app` that produces an ad-hoc signed `Butler.app` and installs it. It needs no Developer ID, no notarization and no repository secret, because nothing it produces is published: the artifact carries no authority in its signature and says so. Spec 017 is untouched and still governs anything a stranger downloads. The costs an ad-hoc signature imposes, chiefly that macOS re-asks for Screen Recording after every rebuild, are written down rather than papered over.\n",
+    "title": "Local development builds: run and install Butler on your own machine without a signing identity"
+  },
+  "shardHash": "2d6586db8e16a1cda6dae0e4100e45536bcd54a44350f907bbd8fb8d171bbfda",
+  "specVersion": "1.2.0"
+}

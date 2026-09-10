@@ -1,0 +1,144 @@
+{
+  "mapping": {
+    "dependsOn": [
+      "004-desktop-shell",
+      "013-output-pacing"
+    ],
+    "implementingPaths": [
+      {
+        "path": "Makefile",
+        "source": "spec-edge"
+      },
+      {
+        "path": "docs/local-install.md",
+        "source": "spec-edge"
+      },
+      {
+        "path": "scripts/local_app.sh",
+        "source": "spec-edge"
+      }
+    ],
+    "resolvedUnits": [
+      {
+        "locations": [
+          {
+            "file": "scripts/local_app.sh"
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "kind": "file",
+          "path": "scripts/local_app.sh"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/local-install.md",
+            "span": {
+              "endLine": 108,
+              "startLine": 88
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "gatekeeper-and-quarantine",
+          "file": "docs/local-install.md",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/local-install.md",
+            "span": {
+              "endLine": 53,
+              "startLine": 41
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "give-it-screen-recording",
+          "file": "docs/local-install.md",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/local-install.md",
+            "span": {
+              "endLine": 87,
+              "startLine": 54
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "establishes",
+        "unit": {
+          "anchor": "the-rebuild-re-prompt-and-how-to-stop-it",
+          "file": "docs/local-install.md",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 147,
+              "startLine": 146
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "anchor": "app",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "Makefile",
+            "span": {
+              "endLine": 140,
+              "startLine": 138
+            }
+          }
+        ],
+        "ownership": true,
+        "sourceField": "extends",
+        "unit": {
+          "anchor": "dev",
+          "file": "Makefile",
+          "kind": "section"
+        }
+      },
+      {
+        "locations": [
+          {
+            "file": "docs/threat-model.md"
+          }
+        ],
+        "ownership": false,
+        "sourceField": "references",
+        "unit": {
+          "kind": "file",
+          "path": "docs/threat-model.md"
+        }
+      }
+    ],
+    "specId": "020-local-development-builds",
+    "specStatus": "approved"
+  },
+  "schemaVersion": "1.1.0",
+  "shardHash": "7fca16fa08085c3001fc07208c22ea0261b69909a8d7bf5b8d7458183a202528"
+}

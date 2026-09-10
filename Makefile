@@ -125,6 +125,27 @@ spec-new:
 	      standards/spec/templates/spec-template.md > "$$dir/spec.md"; \
 	  echo "scaffolded $$dir/spec.md; fill in title, summary, edges, then: spec-spine compile && spec-spine lint --fail-on-warn"
 
+# Spec 020 §3.1: the hot-reload loop. The toolchain refusal lives in the script
+# so `dev` and `app` cannot drift into two different messages for one missing
+# prerequisite. Both run from `apps/desktop`, the app directory the Tauri CLI
+# discovers `src-tauri/` from, which is the same directory 017 D-10 pinned the
+# build hook to.
+# `--bin butler-desktop` is required, not tidiness. The crate has two binary
+# targets and `cargo run` refuses to choose ("could not determine which binary
+# to run"), so `make dev` fails outright without it. Same root cause as the
+# bundler shipping the wrong binary (spec 020 D-4); here it fails loudly, which
+# is the better of the two failures.
+dev:
+	sh scripts/local_app.sh --check-toolchain
+	cd apps/desktop && cargo tauri dev -- --bin butler-desktop
+
+# Spec 020 §3.2: build, ad-hoc sign, verify, install. Needs no credential and
+# produces nothing publishable; releases are 017's, from a tag, signed.
+# Deliberately not a prerequisite of `ci` or `gate` (FR-005): installing an
+# application is not a gate, and CI has no display.
+app:
+	sh scripts/local_app.sh
+
 build:
 # Spec 001 §3.5: the cargo half activates on a populated workspace (at least
 # one crates/*/Cargo.toml), not on the root manifest alone, which cargo cannot
