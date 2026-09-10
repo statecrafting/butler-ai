@@ -54,8 +54,15 @@ pub struct TransitionRecord {
 /// Platform facts, for support triage (§3.2).
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct SystemInfo {
-    /// The app's version, from its manifest.
-    pub app_version: &'static str,
+    /// The app's version, as the installed bundle advertises it.
+    ///
+    /// Supplied by the caller rather than read here. Spec 014 FR-005 forbids
+    /// an environment read in product source, and `env!("CARGO_PKG_VERSION")`
+    /// would report the *crate's* version, which is not necessarily what the
+    /// bundle claims to be: spec 017's `bump_version.py` keeps the two in step,
+    /// so the moment they disagree is exactly the moment a support bundle must
+    /// report the one the user installed (spec 016 D-6).
+    pub app_version: String,
     /// The target triple this binary was built for.
     pub target: &'static str,
     /// The OS family, as Rust names it.
@@ -69,9 +76,9 @@ pub struct SystemInfo {
 impl SystemInfo {
     /// The facts this build knows about itself.
     #[must_use]
-    pub fn collect(exclusion: ExclusionSummary) -> Self {
+    pub fn collect(app_version: String, exclusion: ExclusionSummary) -> Self {
         Self {
-            app_version: env!("CARGO_PKG_VERSION"),
+            app_version,
             target: std::env::consts::FAMILY,
             os: std::env::consts::OS,
             arch: std::env::consts::ARCH,
@@ -119,6 +126,7 @@ impl DiagnosticsBundle {
     #[must_use]
     pub fn collect(
         log_directory: &Path,
+        app_version: String,
         settings: Settings,
         transitions: Vec<TransitionRecord>,
         exclusion: ExclusionSummary,
@@ -132,7 +140,7 @@ impl DiagnosticsBundle {
                 .take(TRANSITION_CAPACITY)
                 .rev()
                 .collect(),
-            system: SystemInfo::collect(exclusion),
+            system: SystemInfo::collect(app_version, exclusion),
         }
     }
 
@@ -225,6 +233,13 @@ mod tests {
     use butler_core::ipc::{ExclusionSummary, StateName};
     use butler_core::settings::Settings;
 
+    /// A version these tests supply themselves. Deliberately not the real one:
+    /// the bundle records what its caller passes, and a literal that could
+    /// never be a released version makes a test that started reading the
+    /// version from somewhere else fail loudly instead of coincidentally
+    /// agreeing.
+    const TEST_VERSION: &str = "0.0.0-test";
+
     struct TempDir(std::path::PathBuf);
 
     impl TempDir {
@@ -267,6 +282,7 @@ mod tests {
 
         DiagnosticsBundle::collect(
             &logs.0,
+            TEST_VERSION.to_owned(),
             Settings::default(),
             vec![transition(1)],
             ExclusionSummary::Verified,
@@ -296,6 +312,7 @@ mod tests {
 
         DiagnosticsBundle::collect(
             &logs.0,
+            TEST_VERSION.to_owned(),
             Settings::default(),
             Vec::new(),
             ExclusionSummary::Unknown,
@@ -335,6 +352,7 @@ mod tests {
 
         let bundle = DiagnosticsBundle::collect(
             &logs.0,
+            TEST_VERSION.to_owned(),
             Settings::default(),
             many,
             ExclusionSummary::Verified,
@@ -361,6 +379,7 @@ mod tests {
 
         let bundle = DiagnosticsBundle::collect(
             &missing,
+            TEST_VERSION.to_owned(),
             Settings::default(),
             Vec::new(),
             ExclusionSummary::Unknown,
@@ -385,6 +404,7 @@ mod tests {
 
         let bundle = DiagnosticsBundle::collect(
             &logs.0,
+            TEST_VERSION.to_owned(),
             Settings::default(),
             Vec::new(),
             ExclusionSummary::Unknown,

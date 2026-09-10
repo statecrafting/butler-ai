@@ -155,7 +155,12 @@ The credential entry lives in `CredentialPanel` (012), not here.
 - **FR-004.** A `settings.toml` with an unknown key is rejected (`deny_unknown_
   fields`), backed up, and defaults are used.
 - **FR-005.** `rg "std::env::var|env!" crates apps/desktop/src-tauri` returns
-  nothing outside `build.rs`.
+  nothing in **product source**: no environment read reaches a shipped binary.
+  Three things are outside that scope and D-7 says why each is: `build.rs`,
+  which runs on the build machine and ships nothing; integration tests under
+  `tests/`, which are not compiled into any binary a user installs and one of
+  which must set environment variables to prove the product ignores them; and
+  comments, which are prose about the rule rather than a use of it.
 
 ## 5. Acceptance criteria
 
@@ -275,8 +280,15 @@ cargo test -p butler-desktop --locked settings_store
 # AC-2: docs/architecture.md §8 is generated from `Settings::default()` and
 # diffed. The test above includes it; this names it so a failure is legible.
 cargo test -p butler-core --locked --test settings ac_002
-# FR-005: no environment surface anywhere in the product, `build.rs` aside.
-sh -c '! grep -rnE "std::env::var|env!\(" crates apps/desktop/src-tauri --include="*.rs" | grep -v "src-tauri/build.rs"'
+# FR-005: no environment surface in product source. The three exclusions are
+# D-7's and each is a scope statement, not a softening: `build.rs` ships
+# nothing, `tests/` is not compiled into an installed binary, and a line whose
+# content begins with `//` is prose about the rule. A trailing comment on a
+# line of code still trips this, which is the safe direction.
+sh -c '! grep -rnE "std::env::var|env!\(" crates apps/desktop/src-tauri --include="*.rs" | grep -v "src-tauri/build.rs" | grep -v "/tests/" | grep -vE ":[[:space:]]*(//|\*)"'
+# D-7 non-vacuity: the check still catches a real environment read in product
+# source. Without this, narrowing the scope could hollow it out unnoticed.
+sh -c 'd=$(mktemp -d)/crates; mkdir -p "$d/x/src"; printf "fn f() { let _ = std::env::var(\"X\"); }\n" > "$d/x/src/lib.rs"; grep -rnE "std::env::var|env!\(" "$d" --include="*.rs" | grep -v "src-tauri/build.rs" | grep -v "/tests/" | grep -vE ":[[:space:]]*(//|\*)" | grep -q . ; rc=$?; rm -rf "$(dirname "$d")"; test "$rc" -eq 0'
 # §3.3: the two commands reach the overlay, and D-6's defaults with them.
 grep -q "async getSettings" apps/desktop/src/generated/bindings.ts
 grep -q "async updateSettings" apps/desktop/src/generated/bindings.ts
@@ -295,3 +307,53 @@ grep -q "sync_all" apps/desktop/src-tauri/src/settings_store.rs
 # Territory: every unit this spec claims resolves.
 sh -c 'spec-spine index render | grep "W-001" | grep -q "014-user-configuration" && exit 1 || exit 0'
 ```
+
+- **D-7 (2026-09-09, FR-005 says product source, and now checks that).**
+  FR-005's grep began failing on `main` on three lines, none of which is an
+  environment-variable *surface* of the kind §3 forbids. D-5 faced this shape
+  before and refused an exemption, on the grounds that "a rule with an
+  exception is a rule nobody can check". That reasoning stands and this is not
+  an exception to it: what follows narrows where the rule is *read*, not what
+  it forbids, and one of the three was fixed in code exactly as D-5 did.
+
+  **`apps/desktop/src-tauri/src/diagnostics.rs`: fixed in code, not exempted.**
+  It used `env!("CARGO_PKG_VERSION")` for the version in a support bundle. D-5's
+  test applies: is there a replacement that is better on its own merits? There
+  is. The crate version and the version the *installed bundle* advertises are
+  different facts kept in step by 017's `bump_version.py`, and the moment they
+  diverge (a half-finished bump, which is precisely what 017 FR-003 guards) is
+  the moment a support bundle must report the one the user actually installed.
+  `SystemInfo` now takes the version from its caller and `tray.rs` passes
+  Tauri's `package_info().version`, which is `tauri.conf.json`'s. Recorded as
+  spec 016 D-6; `tray.rs` is spec 004's file and 004 D-16 records the edit.
+
+  **`crates/butler-llm/tests/`: out of scope, and one of them proves the rule.**
+  `prompt.rs` reads a golden-regeneration flag and `egress.rs` reads the mock
+  endpoint the parent test spawned it with. Neither is compiled into any binary
+  a user installs, so neither can be a configuration surface: §3's objection is
+  "configuration that no UI can show", and nothing here configures a running
+  Butler.
+
+  `egress.rs` is the case that settles it. That test **deliberately sets
+  `HTTPS_PROXY` and five siblings** on a child process to prove the client
+  ignores them, which is spec 015 §3.3's single-destination rule and the
+  strongest evidence in the corpus that this product has no environment
+  surface. A rule written to keep environment configuration out of the product
+  cannot be read so as to forbid the test that demonstrates it. Rewriting the
+  test to pass the endpoint another way was considered and rejected: every
+  alternative (a fixed temp path, a port convention) is racier than the
+  mechanism the test already exercises, and would make the test worse to
+  satisfy a grep.
+
+  **Comments.** The doc comment on `SystemInfo::app_version` explains why the
+  macro is *not* used and names it to do so, and the check matched it. That is
+  spec 020 D-3's defect with the sign reversed: an assertion about what code
+  does must read only what executes. Lines whose content begins with a comment
+  marker are skipped; a trailing comment on a line of code still trips it,
+  which is the safe direction.
+
+  **The check is not hollowed out.** §8 gains a non-vacuity control that
+  synthesizes a product-source file containing a real `std::env::var` and fails
+  if the narrowed grep does not catch it, so a future edit that widens the
+  exclusions until nothing is checked fails here. Approved by the maintainer in
+  session.
