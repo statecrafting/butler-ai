@@ -480,9 +480,20 @@ cargo build -p butler-desktop --locked
 sh -c '! grep -qE "\"(fs|shell|http|dialog):" apps/desktop/src-tauri/capabilities/default.json'
 # Section 3.2: the CSP is exactly what the spec fixes, and loads nothing remote.
 grep -q "default-src .self." apps/desktop/src-tauri/tauri.conf.json
-sh -c 'grep -v "\"\$schema\"" apps/desktop/src-tauri/tauri.conf.json | grep -oE "https?://[^\"]+" | grep -vx "http://ipc.localhost" | grep . && exit 1 || exit 0'
+# D-15: asserted by keypath through the parser, not by matching URL text. The
+# three build-time keys are removed by name and everything remaining must be
+# `http://ipc.localhost`, so a remote URL added to the CSP, to a capability, or
+# to an updater endpoint fails here even though `bundle.homepage` carries one
+# legitimately. `chr(36)` is a literal `$`, written this way so the shell
+# running the line does not expand `$schema`.
+python3 -c "import json,re; c=json.load(open('apps/desktop/src-tauri/tauri.conf.json')); c.pop(chr(36)+'schema',None); b=c.get('bundle',{}); b.pop('homepage',None); b.get('windows',{}).pop('timestampUrl',None); u=[x for x in re.findall('https?://[^ ;\"]+', json.dumps(c)) if x!='http://ipc.localhost']; assert not u, u"
 # Section 3.1: main.rs does one thing.
 sh -c 'test "$(grep -c . apps/desktop/src-tauri/src/main.rs)" -lt 12'
+# D-14: the crate says which of its two binaries is the product. Without this
+# the bundler makes spec 011's exporter the application inside Butler.app and
+# `cargo run` refuses to choose. Asserted through the parser, so the key in
+# D-14's prose cannot satisfy it.
+python3 -c "import tomllib; m=tomllib.load(open('apps/desktop/src-tauri/Cargo.toml','rb')); assert m['package']['default-run'] == 'butler-desktop', m['package'].get('default-run')"
 # AC-3, read through 018 R-010: the checklist exists and marks its deferred
 # rows as deferred, naming the spec each waits on, rather than leaving them as
 # empty boxes indistinguishable from unknowns.
@@ -504,3 +515,83 @@ sh -c 'test "$(grep -c RUSTSEC- deny.toml)" -eq 6'
 # Territory: every unit this spec claims resolves.
 sh -c 'spec-spine index render | grep "W-001" | grep -q "004-desktop-shell" && exit 1 || exit 0'
 ```
+
+- **D-14 (2026-09-09, the bundle's application was not the application).**
+  This crate has two binary targets: the app (`src/main.rs`) and spec 011's
+  bindings exporter (`src/bin/export-bindings.rs`, added here by 011's
+  `extends` edge). Nothing told the toolchain which one is the product, and
+  both consumers guessed wrong in different ways.
+
+  `cargo tauri build` runs `cargo build --bins`, builds both, and makes
+  **`export-bindings`** the executable inside `Butler.app`: a 3 MB program that
+  writes a TypeScript file and exits, bundled with a valid `Info.plist` and a
+  signature over the wrong thing. `cargo run` refuses to choose at all
+  ("could not determine which binary to run"), which is how spec 020 found it.
+
+  **Neither obvious lever corrects the bundler.** Passing `-- --bin
+  butler-desktop` yields `cargo build --bin butler-desktop --bins ...`, because
+  the CLI appends `--bins` after the caller's arguments, so both are built and
+  the selection is untouched. Setting `mainBinaryName` renames the copy without
+  changing which file is copied, which is the more dangerous of the two: the
+  bundle then contains `Contents/MacOS/butler-desktop` holding the exporter's
+  bytes, and every name-based check passes on it. It was caught by a content
+  marker, not a name.
+
+  `default-run` fixes both consumers, and it is the key cargo's own error
+  message points at. §8 asserts the manifest carries it, read through a TOML
+  parser so the key appearing in this paragraph cannot satisfy the check.
+
+  What §8 does **not** assert is the bundle's own `CFBundleExecutable`, because
+  producing a bundle takes a release build and the Tauri CLI, neither of which
+  a verification run may assume. That evidence is spec 020's `local_app.sh`,
+  which compares the installed executable against `target/release/butler-desktop`
+  byte for byte on every `make app`, and it was run for this change.
+
+  **Why this mattered beyond a local build.** `.github/workflows/release.yml`
+  calls `cargo tauri build` with no binary named, so a `v0.1.0` tag would have
+  signed, notarized, stapled, hashed and attested an installer whose
+  application is the bindings exporter, with every check in spec 017 passing on
+  it. That is 017 D-10's failure mode ("nothing else looks inside the bundle")
+  one level deeper, and 017 needed no change to be fixed by this one.
+
+  **Still owed.** `default-run` names the main binary; it does not stop the
+  exporter being *built* and copied, so `Contents/MacOS/` now holds both. Three
+  megabytes of dead code inside a signed bundle is untidy rather than unsafe,
+  and removing it means `required-features` on a `[[bin]]` table, which changes
+  how spec 011's bindings are generated (`.github/workflows/ci.yml` and 011 §8
+  both run `cargo run --bin export-bindings`). That is three other specs'
+  territory and is left to them. Spec 020's `local_app.sh` already strips the
+  second binary from the bundle it installs, so the local path ships one.
+
+- **D-15 (2026-09-09, a URL check that could not tell where a URL was).** §8's
+  remote-URL assertion, rewritten by D-12 after it was found passing
+  vacuously, extracted every URL in `tauri.conf.json` and failed on anything
+  that was not `http://ipc.localhost`. Spec 017 then added `bundle.homepage`
+  and `bundle.windows.timestampUrl`, and the check began failing on `main`.
+
+  Both additions are legitimate and neither is a destination the app can
+  reach: `homepage` is installer metadata, and `timestampUrl` is read by
+  `signtool` on the signing machine at build time. The check could not say so,
+  because it matched URL *text* and knew nothing about where in the file the
+  text sat. That is the same defect D-12 fixed one layer up: an assertion that
+  is not reading what the requirement is about.
+
+  It now parses the file, removes those two keys and `$schema` **by name**, and
+  requires every remaining URL to be `http://ipc.localhost`. This is narrower
+  than the old check by exactly three named build-time keypaths and unchanged
+  everywhere else, which is what §3.2's "No remote content is ever loaded" and
+  015 §3.3 are actually about.
+
+  Four controls were run before it landed: it exits 0 on the file as it stands;
+  it exits non-zero when a remote URL is appended to the CSP; it exits non-zero
+  when a `plugins.updater.endpoints` entry is added, which is the destination
+  017 D-4 says needs an amendment to 015 before it may exist; and it still
+  exits 0 when `bundle.homepage` is pointed somewhere else, since that key is
+  metadata whatever its value.
+
+  The alternative was to keep the blanket check and have 017 stop adding bundle
+  metadata, which would be this spec dictating another spec's content on the
+  strength of an assertion that was imprecise. The refusal rule forbids editing
+  a spec to ratify code that contradicts it; it does not require keeping a
+  check that tests the wrong thing. The requirement is unchanged, and the
+  maintainer approved the reading in session.

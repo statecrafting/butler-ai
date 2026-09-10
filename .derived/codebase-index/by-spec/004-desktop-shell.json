@@ -242,8 +242,8 @@
           {
             "file": "apps/desktop/src-tauri/Cargo.toml",
             "span": {
-              "endLine": 13,
-              "startLine": 11
+              "endLine": 19,
+              "startLine": 17
             }
           }
         ],
@@ -364,5 +364,5 @@
     "specStatus": "approved"
   },
   "schemaVersion": "1.1.0",
-  "shardHash": "fcd51c2cef053fa963bea0c4ce06e1c3886fefc9ecb08615d5617c0e3a24a09c"
+  "shardHash": "570ab54552514bddcb95662b469610359cae345c9f3b0aefeee115b4dea3ce91"
 }
