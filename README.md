@@ -10,10 +10,15 @@ then, asks an LLM about it and renders the answer in the overlay at a reading
 pace. Frames and recognized text never touch disk; only redacted text leaves
 the machine, to the one provider you configure.
 
-**Status: specified, not yet built.** This repository currently contains the
-complete specification of the system as a [spec-spine](https://github.com/statecrafting/spec-spine)
-corpus, the agentic engineering harness that will build it, and the CI that
-governs both. The code arrives phase by phase under those specs.
+**Status: built, and runnable on macOS.** Every spec's declared units exist
+(`make burndown` reports zero) and `make app` installs a working Butler.app.
+Two specs remain open and neither is waiting on code: 017 (signed, notarized
+releases) stops at credentials no agent may hold, and 020 waits on a person
+confirming the overlay renders.
+
+The repository is a [spec-spine](https://github.com/statecrafting/spec-spine)
+corpus: the specification is the authority, the agentic harness builds under
+it, and CI refuses code that drifts from its owning spec.
 
 ## How this repository works
 
@@ -37,10 +42,22 @@ Start with [`docs/architecture.md`](docs/architecture.md) and
 
 ```sh
 make setup      # installs the pinned spec-spine, compiles, indexes, verifies the loop
-make burndown   # what remains to be built, per spec
 make gate       # the governance gate chain (what CI runs), read-only
+make burndown   # what remains to be built, per spec
 make refresh    # recompute the committed shard trees, then commit them
 ```
+
+To run it (macOS), after `cargo install tauri-cli --version "^2" --locked`:
+
+```sh
+make dev        # hot-reload loop
+make app        # build, ad-hoc sign, install to /Applications
+```
+
+No signing identity is needed: `make app` distributes nothing. See
+[`docs/local-install.md`](docs/local-install.md), which also explains why macOS
+re-asks for Screen Recording after every rebuild. Releases are a different
+path entirely (spec 017): signed, notarized, attested, and cut from a tag.
 
 In Claude Code: `/setup`, then `/prime`.
 
@@ -50,10 +67,10 @@ In Claude Code: `/setup`, then `/prime`.
 |---|---|---|
 | 0 | 000 bootstrap · 002 agentic harness · 003 governance CI · 018 sequencing | governance |
 | 1 | 001 workspace layout · 009 pipeline state machine · 008 change detection · 015 privacy boundary | governance, pipeline, platform |
-| 2 | 004 desktop shell · 011 IPC contract · 012 overlay UI · 014 user configuration · 016 diagnostics | platform, ui |
+| 2 | 004 desktop shell · 011 IPC contract · 012 overlay UI · 014 user configuration · 016 diagnostics · 019 runtime host | platform, ui, pipeline |
 | 3 | 006 screen capture · 007 text recognition · 005 capture exclusion | pipeline, platform |
 | 4 | 010 assistant inference · 013 output pacing | assistant, ui |
-| 5 | 017 release and distribution | distribution |
+| 5 | 017 release and distribution · 020 local development builds | distribution |
 
 ## License
 
